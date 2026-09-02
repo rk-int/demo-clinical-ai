@@ -1,0 +1,68 @@
+# ==============================================================================
+# Enterprise AI Clinical Assistant - System & Environment Requirements
+# ==============================================================================
+# This project is a full-stack Node.js / TypeScript / React / Express application
+# powered by the Gemini 2.5 / 3.x Flash API and Vite.
+#
+# Follow the instructions below to run this project on any local machine (macOS / Linux / Windows).
+
+# ------------------------------------------------------------------------------
+# 1. Primary Runtime & Engine Requirements
+# ------------------------------------------------------------------------------
+# Node.js >= 18.0.0 (Recommended: Node.js 20.x or 22.x LTS)
+# npm >= 9.0.0 or bun >= 1.0.0 or yarn >= 1.22.0
+# Python >= 3.10 (Optional: only if running ancillary clinical data scripts or Google Cloud SDK)
+
+# ------------------------------------------------------------------------------
+# 2. Node.js Core Package Dependencies (managed in package.json)
+# ------------------------------------------------------------------------------
+# @google/genai>=2.4.0           # Official Google Gemini TypeScript SDK
+# express>=4.21.2               # Full-stack backend API server & middleware
+# react>=19.0.1                 # Frontend user interface library
+# react-dom>=19.0.1             # React DOM rendering engine
+# vite>=6.2.3                   # Fast frontend build tool and dev server
+# typescript>=5.8.2             # Static type checking
+# tsx>=4.21.0                   # TypeScript execution for Node.js backend
+# tailwindcss>=4.1.14           # Tailwind CSS styling framework
+# @tailwindcss/vite>=4.1.14     # Tailwind CSS Vite plugin
+# lucide-react>=0.546.0         # Medical and enterprise UI icon system
+# motion>=12.23.24              # Smooth UI and agentic graph animations
+# react-markdown>=10.1.0        # Secure clinical markdown renderer
+# canvas-confetti>=1.9.4        # Interactive UI celebrations & notifications
+# dotenv>=17.2.3                # Environment variable management
+# jszip>=3.10.1                 # In-memory document and archive processing
+# archiver>=8.0.0               # Archive packaging utility
+# esbuild>=0.25.0               # High-speed server bundling for production
+
+# ------------------------------------------------------------------------------
+# 3. Optional Python Utilities (if using Python CLI or GCP Administration)
+# ------------------------------------------------------------------------------
+google-genai>=0.1.1
+google-cloud-secret-manager>=2.20.0
+google-cloud-firestore>=2.16.0
+python-dotenv>=1.0.0
+requests>=2.31.0
+pydantic>=2.0.0
+
+# ------------------------------------------------------------------------------
+# 4. Quick Start Commands for Local Execution
+# ------------------------------------------------------------------------------
+# Step 1: Clone or extract the project directory
+#   cd <project-folder>
+#
+# Step 2: Configure Environment Variables
+#   cp .env.example .env
+#   (Add your GEMINI_API_KEY in .env if testing live AI inference)
+#
+# Step 3: Install Dependencies
+#   npm install
+#
+# Step 4: Run Development Server (Frontend + Express Backend on Port 3000)
+#   npm run dev
+#
+# Step 5: Open Browser
+#   Navigate to http://localhost:3000
+#
+# Production Build & Start:
+#   npm run build
+#   npm start

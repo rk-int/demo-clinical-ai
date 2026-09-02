@@ -1,0 +1,38 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <script>
+      (function() {
+        try {
+          var originalFetch = window.fetch ? window.fetch.bind(window) : undefined;
+          var currentFetch = originalFetch;
+          Object.defineProperty(window, 'fetch', {
+            get: function() {
+              return currentFetch;
+            },
+            set: function(fn) {
+              currentFetch = fn;
+            },
+            configurable: true,
+            enumerable: true
+          });
+        } catch (e) {
+          // Graceful fallback
+        }
+      })();
+    </script>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Enterprise AI Clinical Assistant</title>
+    <meta name="description" content="Governed Multi-Hospital Clinical AI Platform • HIPAA §164 & GDPR Art. 9 Compliant" />
+    <meta property="og:title" content="Enterprise AI Clinical Assistant" />
+    <meta property="og:description" content="Governed Multi-Hospital Clinical AI Platform • HIPAA §164 & GDPR Art. 9 Compliant" />
+    <meta property="og:type" content="website" />
+    <meta name="twitter:card" content="summary_large_image" />
+  </head>
+  <body>
+    <div id="root"></div>
+    <script type="module" src="/src/main.tsx"></script>
+  </body>
+</html>
+

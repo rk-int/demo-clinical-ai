@@ -1,0 +1,6 @@
+{
+  "name": "Enterprise AI Clinical Assistant",
+  "description": "Production-scale, HIPAA & GDPR compliant Enterprise AI Clinical Assistant with high-definition looping clinical hospital video background, 8.1 RBAC login matrix, 5-page clinician workspace, 4 core clinical agents, governed hybrid RAG, live agent operations dashboard, and automated adversarial break-it suite.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

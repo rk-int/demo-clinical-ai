@@ -76,6 +76,8 @@ export interface SyntheticPatient {
   birthDate: string;
   age: number;
   gender: 'MALE' | 'FEMALE' | 'OTHER';
+  phoneNumber?: string;
+  email?: string;
   assignedPhysicianId: string;
   hospitalSite: string;
   roomBed?: string;

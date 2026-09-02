@@ -34,7 +34,8 @@ import {
   Stethoscope,
   Lock,
   ArrowLeft,
-  Download
+  Download,
+  User
 } from 'lucide-react';
 import { UserProfile, PurposeOfUse, SyntheticPatient } from '../types';
 import { useTheme } from '../context/ThemeContext';
@@ -49,11 +50,18 @@ import { EvaluationLifecycleVisualizer } from './AgentOperations/EvaluationLifec
 import { AIJudgeGovernanceView } from './AgentOperations/AIJudgeGovernanceView';
 import { PostgreSQLArchitectureView } from './DataArchitecture/PostgreSQLArchitectureView';
 import { AIGatewayView } from './AgentOperations/AIGatewayView';
+import { LlmGatewayGuardrailsView } from './AgentOperations/LlmGatewayGuardrailsView';
 import { HomeMetricDetailsPanel, MetricCategory } from './ClinicianPortal/HomeMetricDetailsPanel';
 import { ClinicalReportsCenterView } from './ClinicianPortal/ClinicalReportsCenterView';
 import { RegisterNewPatientModal } from './ClinicianPortal/RegisterNewPatientModal';
 import { ExportZipModal } from './ExportZipModal';
+import { getUserAvatarUrl } from '../utils/patientAvatar';
+import { AuditComplianceCenterView } from './ClinicianPortal/AuditComplianceCenterView';
+import { AppointmentsCenterView } from './ClinicianPortal/AppointmentsCenterView';
+import { ExecutiveDashboardView } from './ClinicianPortal/ExecutiveDashboardView';
 import { FileUp, GitBranch, Scale, Database as DatabaseIcon } from 'lucide-react';
+import { HospitalNetworkSelector } from './HospitalNetworkSelector';
+import { NETWORK_HOSPITALS, HospitalFacility } from '../data/hospitalNetwork';
 
 
 export type WorkspaceTab = 
@@ -63,6 +71,7 @@ export type WorkspaceTab =
   | 'WORKFLOW' 
   | 'INGESTION'
   | 'AI_GATEWAY'
+  | 'LLM_GUARDRAILS'
   | 'EVALUATION_DAG'
   | 'AI_JUDGE'
   | 'POSTGRES'
@@ -70,6 +79,8 @@ export type WorkspaceTab =
   | 'REPORTS' 
   | 'OBSERVABILITY' 
   | 'AGENT_MONITOR' 
+  | 'AUDIT_CENTER'
+  | 'EXECUTIVE_DASHBOARD'
   | 'SETTINGS';
 
 interface HealthNetWorkspaceProps {
@@ -80,6 +91,7 @@ interface HealthNetWorkspaceProps {
   selectedPatient: SyntheticPatient;
   onSelectPatient: (patientId: string) => void;
   onRegisterNewPatient: (patient: SyntheticPatient) => void;
+  onDeletePatient?: (patientId: string) => void;
   onSignOut: () => void;
   onSwitchUser?: () => void;
 }
@@ -92,6 +104,7 @@ export const HealthNetWorkspace: React.FC<HealthNetWorkspaceProps> = ({
   selectedPatient,
   onSelectPatient,
   onRegisterNewPatient,
+  onDeletePatient,
   onSignOut,
   onSwitchUser,
 }) => {
@@ -126,6 +139,7 @@ export const HealthNetWorkspace: React.FC<HealthNetWorkspaceProps> = ({
   const [showNewPatientModal, setShowNewPatientModal] = useState(false);
   const [exportModalOpen, setExportModalOpen] = useState(false);
   const [qaPrefilledQuery, setQaPrefilledQuery] = useState('');
+  const [selectedHospital, setSelectedHospital] = useState<HospitalFacility>(NETWORK_HOSPITALS[0]);
 
   const [qaAttachedPatient, setQaAttachedPatient] = useState<SyntheticPatient | null>(null);
   const [selectedMetricCategory, setSelectedMetricCategory] = useState<MetricCategory | null>(null);
@@ -161,8 +175,8 @@ export const HealthNetWorkspace: React.FC<HealthNetWorkspaceProps> = ({
         return { title: 'Clinical Specialist & Surgeon', tag: 'Consultant MD', color: 'text-cyan-400 bg-cyan-500/10 border-cyan-500/20' };
       case 'CARE_COORDINATOR':
         return { title: 'Care Coordinator & Social Work', tag: 'Care Coord', color: 'text-purple-400 bg-purple-500/10 border-purple-500/20' };
-      case 'ADMINISTRATOR':
-        return { title: 'Hospital Operations Administrator', tag: 'Operations Admin', color: 'text-amber-400 bg-amber-500/10 border-amber-500/20' };
+      case 'CLINICIAN':
+        return { title: 'Attending Clinician (MD/DO)', tag: 'Clinician', color: 'text-blue-400 bg-blue-500/10 border-blue-500/20' };
       case 'PORTAL_ADMIN':
         return { title: 'Enterprise Portal & AI Governance Admin', tag: 'Portal Admin', color: 'text-indigo-400 bg-indigo-500/10 border-indigo-500/20' };
       case 'AUDITOR':
@@ -173,7 +187,7 @@ export const HealthNetWorkspace: React.FC<HealthNetWorkspaceProps> = ({
   };
 
   const roleInfo = getRoleBadge(currentUser.role);
-  const isAdmin = currentUser.role === 'ADMINISTRATOR' || currentUser.role === 'PORTAL_ADMIN';
+  const isAdmin = currentUser.role === 'PORTAL_ADMIN';
 
   const renderRestrictedAdminBanner = (featureTitle: string) => (
     <div className="flex-1 overflow-y-auto p-6 flex items-center justify-center min-h-[60vh]">
@@ -249,7 +263,7 @@ export const HealthNetWorkspace: React.FC<HealthNetWorkspaceProps> = ({
   ];
 
   return (
-    <div className={`flex min-h-screen font-sans ${isDark ? 'bg-[#0B1120] text-slate-100' : 'bg-[#F4F7FB] text-slate-900'}`}>
+    <div className={`relative flex min-h-screen font-sans ${isDark ? 'bg-[#0B1120] text-slate-100' : 'bg-[#F4F7FB] text-slate-900'}`}>
       
       {/* ========================================================================= */}
       {/* LEFT NAVIGATION SIDEBAR (Matching Screen 3)                                */}
@@ -394,6 +408,21 @@ export const HealthNetWorkspace: React.FC<HealthNetWorkspaceProps> = ({
                 </button>
 
                 <button
+                  onClick={() => setActiveTab('LLM_GUARDRAILS')}
+                  className={`w-full flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-xs font-semibold transition-all cursor-pointer ${
+                    activeTab === 'LLM_GUARDRAILS'
+                      ? 'bg-blue-600 text-white shadow-lg shadow-blue-600/30'
+                      : 'text-slate-300 hover:bg-white/10 hover:text-white'
+                  }`}
+                >
+                  <ShieldCheck className="w-4 h-4 text-emerald-400" />
+                  <div className="flex items-center justify-between w-full">
+                    <span>LLM Guardrails</span>
+                    <span className="text-[9px] px-1.5 py-0.2 rounded bg-emerald-500/20 text-emerald-300 font-mono font-bold">Pre/Post</span>
+                  </div>
+                </button>
+
+                <button
                   onClick={() => setActiveTab('EVALUATION_DAG')}
                   className={`w-full flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-xs font-semibold transition-all cursor-pointer ${
                     activeTab === 'EVALUATION_DAG'
@@ -478,26 +507,56 @@ export const HealthNetWorkspace: React.FC<HealthNetWorkspaceProps> = ({
                   : 'text-slate-300 hover:bg-white/10 hover:text-white'
               }`}
             >
-              <LineChart className="w-4 h-4" />
-              <span>Observability</span>
+              <LineChart className="w-4 h-4 text-purple-400" />
+              <span>Dashboard</span>
             </button>
 
-            {/* Agent Monitor: ONLY visible under Operations for Administrator and Portal Admin */}
+            {/* Executive Dashboard: Visible to ALL USERS */}
+            <button
+              onClick={() => setActiveTab('EXECUTIVE_DASHBOARD')}
+              className={`w-full flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-xs font-semibold transition-all cursor-pointer ${
+                activeTab === 'EXECUTIVE_DASHBOARD'
+                  ? 'bg-blue-600 text-white shadow-lg shadow-blue-600/30'
+                  : 'text-slate-300 hover:bg-white/10 hover:text-white'
+              }`}
+            >
+              <BarChart3 className="w-4 h-4 text-cyan-400" />
+              <span>Executive Dashboard</span>
+            </button>
+
+            {/* Agent Monitor & Audit Center: ONLY visible under Operations for Portal Admin */}
             {isAdmin && (
-              <button
-                onClick={() => setActiveTab('AGENT_MONITOR')}
-                className={`w-full flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-xs font-semibold transition-all cursor-pointer ${
-                  activeTab === 'AGENT_MONITOR'
-                    ? 'bg-blue-600 text-white shadow-lg shadow-blue-600/30'
-                    : 'text-slate-300 hover:bg-white/10 hover:text-white'
-                }`}
-              >
-                <Network className="w-4 h-4 text-cyan-400" />
-                <div className="flex items-center justify-between w-full">
-                  <span>Agent Monitor</span>
-                  <span className="text-[9px] px-1.5 py-0.2 rounded bg-cyan-500/20 text-cyan-300 font-mono">Admin</span>
-                </div>
-              </button>
+              <>
+                <button
+                  onClick={() => setActiveTab('AGENT_MONITOR')}
+                  className={`w-full flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-xs font-semibold transition-all cursor-pointer ${
+                    activeTab === 'AGENT_MONITOR'
+                      ? 'bg-blue-600 text-white shadow-lg shadow-blue-600/30'
+                      : 'text-slate-300 hover:bg-white/10 hover:text-white'
+                  }`}
+                >
+                  <Network className="w-4 h-4 text-cyan-400" />
+                  <div className="flex items-center justify-between w-full">
+                    <span>Agent Monitor</span>
+                    <span className="text-[9px] px-1.5 py-0.2 rounded bg-cyan-500/20 text-cyan-300 font-mono">Admin</span>
+                  </div>
+                </button>
+
+                <button
+                  onClick={() => setActiveTab('AUDIT_CENTER')}
+                  className={`w-full flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-xs font-semibold transition-all cursor-pointer ${
+                    activeTab === 'AUDIT_CENTER'
+                      ? 'bg-blue-600 text-white shadow-lg shadow-blue-600/30'
+                      : 'text-slate-300 hover:bg-white/10 hover:text-white'
+                  }`}
+                >
+                  <ShieldCheck className="w-4 h-4 text-emerald-400" />
+                  <div className="flex items-center justify-between w-full">
+                    <span>Audit & Compliance</span>
+                    <span className="text-[9px] px-1.5 py-0.2 rounded bg-emerald-500/20 text-emerald-300 font-mono">Admin</span>
+                  </div>
+                </button>
+              </>
             )}
 
             <button
@@ -521,11 +580,8 @@ export const HealthNetWorkspace: React.FC<HealthNetWorkspaceProps> = ({
             className="p-3 rounded-2xl bg-white/5 hover:bg-white/10 border border-white/10 transition-all cursor-pointer flex items-center justify-between group"
           >
             <div className="flex items-center gap-2.5 min-w-0">
-              <div className="relative">
-                <div className="w-9 h-9 rounded-full bg-gradient-to-tr from-blue-600 to-cyan-500 flex items-center justify-center font-bold text-xs text-white uppercase shadow">
-                  {currentUser.name.replace('Dr. ', '').split(' ').map(n => n[0]).join('')}
-                </div>
-                <span className="absolute bottom-0 right-0 w-2.5 h-2.5 rounded-full bg-emerald-500 border-2 border-slate-900" />
+              <div className="w-9 h-9 rounded-xl bg-blue-500/20 text-blue-400 border border-blue-500/30 flex items-center justify-center shrink-0">
+                <User className="w-5 h-5" />
               </div>
               <div className="min-w-0">
                 <p className="text-xs font-bold text-white truncate group-hover:text-cyan-300 transition-colors">
@@ -719,19 +775,30 @@ export const HealthNetWorkspace: React.FC<HealthNetWorkspaceProps> = ({
               <MessageSquare className="w-4 h-4" />
             </button>
 
-            {/* Export ZIP Project Button */}
-            <button
-              onClick={() => setExportModalOpen(true)}
-              className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl border text-xs font-bold transition-all cursor-pointer shadow-sm active:scale-95 ${
-                isDark 
-                  ? 'bg-blue-600/20 hover:bg-blue-600/30 border-blue-500/30 text-blue-300 hover:text-white' 
-                  : 'bg-blue-50 hover:bg-blue-100 text-blue-700 border-blue-200'
-              }`}
-              title="Download full project source code as a ZIP archive (27.0 MB)"
-            >
-              <Download className="w-3.5 h-3.5 text-blue-400" />
-              <span className="hidden sm:inline">Export ZIP (27MB)</span>
-            </button>
+            {/* Global Multi-Hospital Selector in Top Navbar */}
+            <div className="hidden lg:block">
+              <HospitalNetworkSelector
+                selectedHospitalId={selectedHospital.id}
+                onSelectHospital={setSelectedHospital}
+                isDark={isDark}
+              />
+            </div>
+
+            {/* Export ZIP Project Button (Portal Admin Only) */}
+            {currentUser?.role === 'PORTAL_ADMIN' && (
+              <button
+                onClick={() => setExportModalOpen(true)}
+                className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl border text-xs font-bold transition-all cursor-pointer shadow-sm active:scale-95 ${
+                  isDark 
+                    ? 'bg-blue-600/20 hover:bg-blue-600/30 border-blue-500/30 text-blue-300 hover:text-white' 
+                    : 'bg-blue-50 hover:bg-blue-100 text-blue-700 border-blue-200'
+                }`}
+                title="Download full project source code as a ZIP archive (27.0 MB)"
+              >
+                <Download className="w-3.5 h-3.5 text-blue-400" />
+                <span className="hidden sm:inline">Export ZIP (27MB)</span>
+              </button>
+            )}
 
 
             {/* Direct Header Sign Out & Return Button */}
@@ -758,8 +825,8 @@ export const HealthNetWorkspace: React.FC<HealthNetWorkspaceProps> = ({
                     : 'bg-slate-100 border-slate-200 hover:bg-slate-200 text-slate-900'
                 }`}
               >
-                <div className="w-7 h-7 rounded-full bg-blue-600 text-white flex items-center justify-center font-bold text-xs shadow-sm">
-                  {currentUser.name.replace('Dr. ', '').split(' ').map(n => n[0]).join('')}
+                <div className="w-7 h-7 rounded-lg bg-blue-500/20 text-blue-400 border border-blue-500/30 flex items-center justify-center shrink-0">
+                  <User className="w-4 h-4 text-blue-400" />
                 </div>
                 <div className="text-left hidden sm:block">
                   <p className="text-xs font-bold leading-tight truncate max-w-[130px]">{currentUser.name}</p>
@@ -780,9 +847,18 @@ export const HealthNetWorkspace: React.FC<HealthNetWorkspaceProps> = ({
                     isDark ? 'bg-slate-900 border-white/10 text-white' : 'bg-white border-slate-200 text-slate-900'
                   }`}>
                     <div className="p-3.5 border-b border-white/10">
-                      <p className="text-xs font-bold">{currentUser.name}</p>
-                      <p className="text-[11px] text-blue-500 font-medium">{roleInfo.title}</p>
-                      <p className="text-[10px] text-slate-400 mt-0.5">{currentUser.hospitalSite}</p>
+                      <div className="flex items-center gap-3">
+                        <img
+                          src={getUserAvatarUrl(currentUser)}
+                          alt={currentUser.name}
+                          className="w-10 h-10 rounded-full object-cover border border-blue-500/40 shadow shrink-0"
+                        />
+                        <div className="min-w-0">
+                          <p className="text-xs font-bold truncate">{currentUser.name}</p>
+                          <p className="text-[11px] text-blue-500 font-medium truncate">{roleInfo.title}</p>
+                          <p className="text-[10px] text-slate-400 mt-0.5 truncate">{currentUser.hospitalSite}</p>
+                        </div>
+                      </div>
                       <div className="mt-2 inline-flex items-center gap-1.5 px-2 py-0.5 rounded-md text-[10px] font-bold border border-emerald-500/20 bg-emerald-500/10 text-emerald-400">
                         <ShieldCheck className="w-3 h-3" /> MFA Authenticated • HIPAA Verified
                       </div>
@@ -832,35 +908,84 @@ export const HealthNetWorkspace: React.FC<HealthNetWorkspaceProps> = ({
         {/* TAB 1: HOME DASHBOARD (Exact representation of Screen 3)                   */}
         {/* ========================================================================= */}
         {activeTab === 'HOME' && (
-          <div className="flex-1 overflow-y-auto p-6 space-y-6">
+          <div className="flex-1 overflow-y-auto p-6 space-y-6 relative z-10">
             
             {/* Top Welcome Header & Facility Indicator */}
             <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
-              <div>
-                <h1 className={`text-2xl sm:text-3xl font-extrabold tracking-tight flex items-center gap-2 ${
-                  isDark ? 'text-white' : 'text-slate-900'
-                }`}>
-                  Welcome, {currentUser.name} <span className="animate-pulse">👋</span>
-                </h1>
-                <p className={`text-xs sm:text-sm mt-0.5 ${isDark ? 'text-slate-400' : 'text-slate-600'}`}>
-                  Here's what's happening today.
-                </p>
+              <div className="flex items-center gap-4">
+                {/* Doctor Avatar Photo */}
+                <div className="relative group shrink-0">
+                  <img
+                    src={getUserAvatarUrl(currentUser)}
+                    alt={currentUser.name}
+                    className="w-14 h-14 sm:w-16 sm:h-16 rounded-2xl object-cover border-2 border-blue-500/80 shadow-xl ring-4 ring-blue-500/20 transition-transform group-hover:scale-105"
+                  />
+                  <span className="absolute -bottom-1 -right-1 w-4 h-4 rounded-full bg-emerald-500 border-2 border-slate-900 flex items-center justify-center shadow-md">
+                    <span className="w-2 h-2 rounded-full bg-white animate-pulse" />
+                  </span>
+                </div>
+
+                <div>
+                  <div className="flex items-center gap-2">
+                    <h1 className={`text-2xl sm:text-3xl font-extrabold tracking-tight flex items-center gap-2 ${
+                      isDark ? 'text-white' : 'text-slate-900'
+                    }`}>
+                      Welcome, {currentUser.name} <span className="animate-pulse">👋</span>
+                    </h1>
+                  </div>
+                  <div className="flex items-center gap-2 mt-1">
+                    <span className="px-2.5 py-0.5 rounded-full bg-blue-500/15 border border-blue-500/30 text-blue-400 text-[11px] font-mono font-bold">
+                      {currentUser.role.replace('_', ' ')}
+                    </span>
+                    <p className={`text-xs sm:text-sm ${isDark ? 'text-slate-400' : 'text-slate-600'}`}>
+                      Here's what's happening today.
+                    </p>
+                  </div>
+                </div>
               </div>
 
-              {/* Facility Chip */}
-              <div className={`flex items-center gap-3 px-4 py-2.5 rounded-2xl border backdrop-blur-md shadow-sm ${
-                isDark 
-                  ? 'bg-slate-900/80 border-white/10 text-white' 
-                  : 'bg-white border-slate-200 text-slate-900'
-              }`}>
-                <div className="w-8 h-8 rounded-xl bg-blue-600/15 border border-blue-500/30 text-blue-500 flex items-center justify-center">
-                  <Building2 className="w-4 h-4" />
+              {/* Multi-Hospital Network Selector */}
+              <HospitalNetworkSelector
+                selectedHospitalId={selectedHospital.id}
+                onSelectHospital={setSelectedHospital}
+                isDark={isDark}
+              />
+            </div>
+
+            {/* Multi-Hospital Network Status Overview Bar */}
+            <div className={`p-4 rounded-2xl border flex flex-col md:flex-row md:items-center justify-between gap-4 backdrop-blur-md shadow-lg ${
+              isDark ? 'bg-slate-900/80 border-white/10 text-white' : 'bg-white border-slate-200 text-slate-900'
+            }`}>
+              <div className="flex items-center gap-3">
+                <div className="p-2.5 rounded-xl bg-cyan-500/15 border border-cyan-500/30 text-cyan-400">
+                  <Network className="w-5 h-5" />
                 </div>
-                <div className="text-left">
-                  <p className="text-xs font-bold leading-tight">City Hospital – Main Campus</p>
-                  <p className="text-[11px] text-slate-400 leading-tight">Tuesday, May 14, 2024 • 10:30 AM</p>
+                <div>
+                  <div className="flex flex-wrap items-center gap-2">
+                    <h3 className="text-xs font-mono font-bold uppercase tracking-wider text-slate-200">
+                      Multi-Hospital Healthcare Network: <span className="text-cyan-400 font-extrabold">{selectedHospital.name}</span>
+                    </h3>
+                    <span className="text-[9px] font-mono px-2 py-0.5 rounded-full bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 font-bold">
+                      4 REGIONAL SITES
+                    </span>
+                  </div>
+                  <p className="text-[11px] text-slate-400 mt-0.5 font-mono">
+                    EHR System: <strong className="text-cyan-300">{selectedHospital.ehrSystem}</strong>
+                  </p>
                 </div>
-                <ChevronDown className="w-4 h-4 text-slate-400 ml-1" />
+              </div>
+
+              <div className="flex flex-wrap items-center gap-3 text-xs font-mono">
+                <div className="px-3 py-1.5 rounded-xl bg-slate-950/60 border border-white/5 flex items-center gap-2">
+                  <span className="text-slate-400">Total Network Beds:</span>
+                  <strong className="text-white">{selectedHospital.occupiedBeds} / {selectedHospital.totalBeds}</strong>
+                  <span className="text-emerald-400 font-bold">({Math.round((selectedHospital.occupiedBeds / selectedHospital.totalBeds) * 100)}%)</span>
+                </div>
+
+                <div className="px-3 py-1.5 rounded-xl bg-emerald-500/10 border border-emerald-500/30 text-emerald-300 flex items-center gap-1.5 font-bold">
+                  <span className="w-2 h-2 rounded-full bg-emerald-400 animate-ping" />
+                  <span>Cross-Facility Sync Active ⚡</span>
+                </div>
               </div>
             </div>
 
@@ -898,11 +1023,11 @@ export const HealthNetWorkspace: React.FC<HealthNetWorkspaceProps> = ({
                     </div>
                   </div>
                 </div>
-                <div className="flex flex-col items-end gap-1">
-                  <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full font-mono transition-all ${
+                <div className="flex flex-col items-end gap-1 shrink-0">
+                  <span className={`text-[11px] font-bold px-2.5 py-1 rounded-xl font-mono whitespace-nowrap shrink-0 transition-all ${
                     selectedMetricCategory === 'PATIENTS_SEEN'
                       ? 'bg-blue-500 text-white shadow-sm'
-                      : 'bg-white/5 text-slate-400 group-hover:bg-blue-500/20 group-hover:text-blue-300'
+                      : 'bg-white/10 text-slate-300 group-hover:bg-blue-500/20 group-hover:text-blue-300 border border-white/10'
                   }`}>
                     {selectedMetricCategory === 'PATIENTS_SEEN' ? 'Active' : 'Click to View'}
                   </span>
@@ -938,11 +1063,11 @@ export const HealthNetWorkspace: React.FC<HealthNetWorkspaceProps> = ({
                     </div>
                   </div>
                 </div>
-                <div className="flex flex-col items-end gap-1">
-                  <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full font-mono transition-all ${
+                <div className="flex flex-col items-end gap-1 shrink-0">
+                  <span className={`text-[11px] font-bold px-2.5 py-1 rounded-xl font-mono whitespace-nowrap shrink-0 transition-all ${
                     selectedMetricCategory === 'PENDING_APPROVALS'
                       ? 'bg-purple-500 text-white shadow-sm'
-                      : 'bg-white/5 text-slate-400 group-hover:bg-purple-500/20 group-hover:text-purple-300'
+                      : 'bg-white/10 text-slate-300 group-hover:bg-purple-500/20 group-hover:text-purple-300 border border-white/10'
                   }`}>
                     {selectedMetricCategory === 'PENDING_APPROVALS' ? 'Active' : 'Click to View'}
                   </span>
@@ -978,11 +1103,11 @@ export const HealthNetWorkspace: React.FC<HealthNetWorkspaceProps> = ({
                     </div>
                   </div>
                 </div>
-                <div className="flex flex-col items-end gap-1">
-                  <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full font-mono transition-all ${
+                <div className="flex flex-col items-end gap-1 shrink-0">
+                  <span className={`text-[11px] font-bold px-2.5 py-1 rounded-xl font-mono whitespace-nowrap shrink-0 transition-all ${
                     selectedMetricCategory === 'ALERTS'
                       ? 'bg-amber-500 text-slate-950 font-bold shadow-sm'
-                      : 'bg-white/5 text-slate-400 group-hover:bg-amber-500/20 group-hover:text-amber-300'
+                      : 'bg-white/10 text-slate-300 group-hover:bg-amber-500/20 group-hover:text-amber-300 border border-white/10'
                   }`}>
                     {selectedMetricCategory === 'ALERTS' ? 'Active' : 'Click to View'}
                   </span>
@@ -1018,11 +1143,11 @@ export const HealthNetWorkspace: React.FC<HealthNetWorkspaceProps> = ({
                     </div>
                   </div>
                 </div>
-                <div className="flex flex-col items-end gap-1">
-                  <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full font-mono transition-all ${
+                <div className="flex flex-col items-end gap-1 shrink-0">
+                  <span className={`text-[11px] font-bold px-2.5 py-1 rounded-xl font-mono whitespace-nowrap shrink-0 transition-all ${
                     selectedMetricCategory === 'TASKS'
                       ? 'bg-emerald-500 text-white shadow-sm'
-                      : 'bg-white/5 text-slate-400 group-hover:bg-emerald-500/20 group-hover:text-emerald-300'
+                      : 'bg-white/10 text-slate-300 group-hover:bg-emerald-500/20 group-hover:text-emerald-300 border border-white/10'
                   }`}>
                     {selectedMetricCategory === 'TASKS' ? 'Active' : 'Click to View'}
                   </span>
@@ -1218,7 +1343,32 @@ export const HealthNetWorkspace: React.FC<HealthNetWorkspaceProps> = ({
                 </div>
               )}
 
-              {/* Tile 6: Observability */}
+              {/* Tile 6: Executive Dashboard (ALL USERS) */}
+              <div
+                onClick={() => setActiveTab('EXECUTIVE_DASHBOARD')}
+                className={`p-5 rounded-2xl border transition-all hover:scale-[1.01] hover:shadow-xl cursor-pointer group relative overflow-hidden flex items-center justify-between ${
+                  isDark 
+                    ? 'bg-slate-900/70 border-white/10 hover:border-blue-500/50' 
+                    : 'bg-white border-slate-200 hover:border-blue-300 shadow-sm'
+                }`}
+              >
+                <div className="flex items-center gap-4 z-10">
+                  <div className="w-12 h-12 rounded-2xl bg-blue-500/10 border border-blue-500/20 text-blue-400 flex items-center justify-center shrink-0 group-hover:scale-110 transition-transform">
+                    <BarChart3 className="w-6 h-6" />
+                  </div>
+                  <div>
+                    <h3 className="text-sm font-extrabold group-hover:text-blue-400 transition-colors">Executive Dashboard</h3>
+                    <p className="text-xs text-slate-400 mt-0.5">Patients impacted, hours saved, & value realized</p>
+                  </div>
+                </div>
+                <ChevronRight className="w-5 h-5 text-slate-400 group-hover:text-blue-400 group-hover:translate-x-1 transition-all z-10" />
+                {/* Background Watermark */}
+                <div className="absolute right-3 -bottom-2 text-slate-800/10 dark:text-white/5 pointer-events-none">
+                  <BarChart3 className="w-24 h-24" />
+                </div>
+              </div>
+
+              {/* Tile 7: Observability */}
               <div
                 onClick={() => setActiveTab('OBSERVABILITY')}
                 className={`p-5 rounded-2xl border transition-all hover:scale-[1.01] hover:shadow-xl cursor-pointer group relative overflow-hidden flex items-center justify-between ${
@@ -1232,16 +1382,46 @@ export const HealthNetWorkspace: React.FC<HealthNetWorkspaceProps> = ({
                     <LineChart className="w-6 h-6" />
                   </div>
                   <div>
-                    <h3 className="text-sm font-extrabold group-hover:text-purple-500 transition-colors">Observability</h3>
+                    <h3 className="text-sm font-extrabold group-hover:text-purple-500 transition-colors">Dashboard</h3>
                     <p className="text-xs text-slate-400 mt-0.5">AI performance, safety & system metrics</p>
                   </div>
                 </div>
                 <ChevronRight className="w-5 h-5 text-slate-400 group-hover:text-purple-500 group-hover:translate-x-1 transition-all z-10" />
                 {/* Background Watermark */}
                 <div className="absolute right-3 -bottom-2 text-slate-800/10 dark:text-white/5 pointer-events-none">
-                  <BarChart3 className="w-24 h-24" />
+                  <LineChart className="w-24 h-24" />
                 </div>
               </div>
+
+              {/* Tile 7: Audit & Compliance Center (Portal Admin) */}
+              {isAdmin && (
+                <div
+                  onClick={() => setActiveTab('AUDIT_CENTER')}
+                  className={`p-5 rounded-2xl border transition-all hover:scale-[1.01] hover:shadow-xl cursor-pointer group relative overflow-hidden flex items-center justify-between ${
+                    isDark 
+                      ? 'bg-slate-900/70 border-white/10 hover:border-emerald-500/50' 
+                      : 'bg-white border-slate-200 hover:border-emerald-300 shadow-sm'
+                  }`}
+                >
+                  <div className="flex items-center gap-4 z-10">
+                    <div className="w-12 h-12 rounded-2xl bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 flex items-center justify-center shrink-0 group-hover:scale-110 transition-transform">
+                      <ShieldCheck className="w-6 h-6" />
+                    </div>
+                    <div>
+                      <div className="flex items-center gap-2">
+                        <h3 className="text-sm font-extrabold group-hover:text-emerald-400 transition-colors">Audit & Compliance</h3>
+                        <span className="text-[9px] px-1.5 py-0.2 rounded font-mono bg-emerald-500/20 text-emerald-300">Admin</span>
+                      </div>
+                      <p className="text-xs text-slate-400 mt-0.5">HIPAA/GDPR access logs, approvals & policy audit</p>
+                    </div>
+                  </div>
+                  <ChevronRight className="w-5 h-5 text-slate-400 group-hover:text-emerald-400 group-hover:translate-x-1 transition-all z-10" />
+                  {/* Background Watermark */}
+                  <div className="absolute right-3 -bottom-2 text-slate-800/10 dark:text-white/5 pointer-events-none">
+                    <ShieldCheck className="w-24 h-24" />
+                  </div>
+                </div>
+              )}
 
             </div>
 
@@ -1340,7 +1520,12 @@ export const HealthNetWorkspace: React.FC<HealthNetWorkspaceProps> = ({
               <PatientSearchView
                 currentUser={currentUser}
                 purposeOfUse={purposeOfUse}
-                patients={patients}
+                patients={selectedHospital.id === 'hosp-all' 
+                  ? patients 
+                  : patients.filter(p => 
+                      p.hospitalSite.toLowerCase().includes(selectedHospital.shortName.toLowerCase()) || 
+                      p.hospitalSite.toLowerCase().includes(selectedHospital.name.split(' ')[0].toLowerCase())
+                    )}
                 onSelectPatient={(id) => {
                   onSelectPatient(id);
                   const p = patients.find(pat => pat.id === id);
@@ -1348,6 +1533,7 @@ export const HealthNetWorkspace: React.FC<HealthNetWorkspaceProps> = ({
                   setPatientViewMode('360');
                 }}
                 onRegisterNewPatient={onRegisterNewPatient}
+                onDeletePatient={onDeletePatient}
               />
             ) : (
               <Patient360View
@@ -1357,6 +1543,10 @@ export const HealthNetWorkspace: React.FC<HealthNetWorkspaceProps> = ({
                 onBackToSearch={() => setPatientViewMode('SEARCH')}
                 onOpenKnowledgeQA={(query, patientRef) => handleOpenKnowledgeQA(query || '', patientRef || selectedPatient)}
                 onOpenWorkflow={() => setActiveTab('WORKFLOW')}
+                onDeletePatient={(patientId) => {
+                  if (onDeletePatient) onDeletePatient(patientId);
+                  setPatientViewMode('SEARCH');
+                }}
               />
             )}
           </div>
@@ -1461,6 +1651,21 @@ export const HealthNetWorkspace: React.FC<HealthNetWorkspaceProps> = ({
         )}
 
         {/* ========================================================================= */}
+        {/* TAB: LLM GATEWAY & GUARDRAILS (Portal Admin Only)                          */}
+        {/* ========================================================================= */}
+        {activeTab === 'LLM_GUARDRAILS' && (
+          !isAdmin ? renderRestrictedAdminBanner('LLM Gateway & Pre/Post Guardrails Architecture') : (
+            <div className="flex-1 overflow-y-auto p-6">
+              <LlmGatewayGuardrailsView
+                currentUser={currentUser}
+                purposeOfUse={purposeOfUse}
+                onBack={handleGoBack}
+              />
+            </div>
+          )
+        )}
+
+        {/* ========================================================================= */}
         {/* TAB: 14-STAGE EVALUATION DAG LIFECYCLE                                    */}
         {/* ========================================================================= */}
         {activeTab === 'EVALUATION_DAG' && (
@@ -1507,57 +1712,12 @@ export const HealthNetWorkspace: React.FC<HealthNetWorkspaceProps> = ({
         {/* TAB 5: APPOINTMENTS VIEW                                                  */}
         {/* ========================================================================= */}
         {activeTab === 'APPOINTMENTS' && (
-          <div className="flex-1 overflow-y-auto p-6 space-y-6">
-            <div className="flex items-center justify-between">
-              <div className="flex items-center gap-3">
-                <button
-                  onClick={handleGoBack}
-                  className="p-2 rounded-xl bg-white/10 hover:bg-white/15 border border-white/10 text-slate-200 transition-colors cursor-pointer"
-                  title="Back to Previous Page"
-                >
-                  <ArrowLeft className="w-4 h-4" />
-                </button>
-                <div>
-                  <h2 className="text-2xl font-extrabold">Clinical Encounters & Appointments</h2>
-                  <p className="text-xs text-slate-400">Scheduled outpatient reviews and inpatient ward rounds</p>
-                </div>
-              </div>
-              <button
-                onClick={() => setShowNewPatientModal(true)}
-                className="px-4 py-2 rounded-xl bg-blue-600 hover:bg-blue-500 text-white font-bold text-xs flex items-center gap-2 cursor-pointer shadow-lg shadow-blue-600/30"
-              >
-                <UserPlus className="w-4 h-4" /> Book Encounter
-              </button>
-            </div>
-
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-              <div className={`p-4 rounded-2xl border ${isDark ? 'bg-slate-900/80 border-white/10' : 'bg-white border-slate-200'}`}>
-                <div className="flex items-center justify-between mb-3">
-                  <span className="text-xs font-bold text-blue-500 uppercase tracking-wider">Morning Inpatient Rounds</span>
-                  <span className="text-[10px] px-2 py-0.5 rounded-full bg-blue-500/10 text-blue-400 font-bold">08:00 - 11:30</span>
-                </div>
-                <p className="text-xs text-slate-300 font-medium">Cardiology Inpatient 4W (6 Patients)</p>
-                <p className="text-[11px] text-slate-400 mt-1">Elena Rostova, Marcus Vance, Arthur Pendelton</p>
-              </div>
-
-              <div className={`p-4 rounded-2xl border ${isDark ? 'bg-slate-900/80 border-white/10' : 'bg-white border-slate-200'}`}>
-                <div className="flex items-center justify-between mb-3">
-                  <span className="text-xs font-bold text-cyan-500 uppercase tracking-wider">Specialty Clinic Visits</span>
-                  <span className="text-[10px] px-2 py-0.5 rounded-full bg-cyan-500/10 text-cyan-400 font-bold">13:00 - 16:00</span>
-                </div>
-                <p className="text-xs text-slate-300 font-medium">Heart Failure & Post-CABG Review</p>
-                <p className="text-[11px] text-slate-400 mt-1">John Doe (13:30), Jane Smith (14:15), Robert Brown (15:00)</p>
-              </div>
-
-              <div className={`p-4 rounded-2xl border ${isDark ? 'bg-slate-900/80 border-white/10' : 'bg-white border-slate-200'}`}>
-                <div className="flex items-center justify-between mb-3">
-                  <span className="text-xs font-bold text-purple-500 uppercase tracking-wider">Multi-Disciplinary Handoff</span>
-                  <span className="text-[10px] px-2 py-0.5 rounded-full bg-purple-500/10 text-purple-400 font-bold">16:30 - 17:00</span>
-                </div>
-                <p className="text-xs text-slate-300 font-medium">Care Coordination & Transition Board</p>
-                <p className="text-[11px] text-slate-400 mt-1">Nursing supervisor & clinical social worker review</p>
-              </div>
-            </div>
+          <div className="flex-1 overflow-y-auto p-6">
+            <AppointmentsCenterView
+              selectedHospital={selectedHospital}
+              patients={patients}
+              onGoBack={handleGoBack}
+            />
           </div>
         )}
 
@@ -1614,7 +1774,38 @@ export const HealthNetWorkspace: React.FC<HealthNetWorkspaceProps> = ({
         )}
 
         {/* ========================================================================= */}
-        {/* TAB 9: SETTINGS & ROLE IAM                                                */}
+        {/* TAB 9: AUDIT & COMPLIANCE CENTER (PORTAL ADMIN ONLY)                      */}
+        {/* ========================================================================= */}
+        {activeTab === 'AUDIT_CENTER' && (
+          !isAdmin ? renderRestrictedAdminBanner('Audit & Compliance Center') : (
+            <div className="flex-1 overflow-y-auto p-6">
+              <AuditComplianceCenterView
+                currentUser={currentUser}
+                purposeOfUse={purposeOfUse}
+                patients={patients}
+                selectedHospital={selectedHospital}
+              />
+            </div>
+          )
+        )}
+
+        {/* ========================================================================= */}
+        {/* TAB 10: EXECUTIVE DASHBOARD (VISIBLE TO ALL USERS)                        */}
+        {/* ========================================================================= */}
+        {activeTab === 'EXECUTIVE_DASHBOARD' && (
+          <div className="flex-1 overflow-y-auto p-6">
+            <ExecutiveDashboardView
+              currentUser={currentUser}
+              purposeOfUse={purposeOfUse}
+              patients={patients}
+              selectedHospital={selectedHospital}
+              onGoBack={handleGoBack}
+            />
+          </div>
+        )}
+
+        {/* ========================================================================= */}
+        {/* TAB 11: SETTINGS & ROLE IAM                                               */}
         {/* ========================================================================= */}
         {activeTab === 'SETTINGS' && (
           <div className="flex-1 overflow-y-auto p-6 space-y-6">

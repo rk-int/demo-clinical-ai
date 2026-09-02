@@ -53,6 +53,16 @@ export function App() {
     }).catch((err) => console.warn('Failed to sync new patient with server:', err));
   };
 
+  const handleDeletePatient = (patientId: string) => {
+    setPatients((prev) => prev.filter((p) => p.id !== patientId));
+    if (selectedPatientId === patientId) {
+      const remaining = patients.filter((p) => p.id !== patientId);
+      if (remaining.length > 0) {
+        setSelectedPatientId(remaining[0].id);
+      }
+    }
+  };
+
   const handleOpenKnowledgeQA = (prefilledQuery?: string) => {
     if (prefilledQuery) setQaPrefilledQuery(prefilledQuery);
     setClinicianSubView('KNOWLEDGE_QA');
@@ -65,7 +75,7 @@ export function App() {
   };
 
   const handleTriggerBreakItFromLanding = () => {
-    const adminUser = DEMO_USERS.find(u => u.role === 'ADMINISTRATOR') || DEMO_USERS[5];
+    const adminUser = DEMO_USERS.find(u => u.role === 'PORTAL_ADMIN') || DEMO_USERS[5];
     setCurrentUser(adminUser);
     setPurposeOfUse('CLINICAL_AUDIT');
     setCurrentTab('WORKSPACE');
@@ -85,7 +95,7 @@ export function App() {
   };
 
   const handleEnterOperationsWithUser = (user?: UserProfile) => {
-    const userToUse = user || currentUser || DEMO_USERS.find(u => u.role === 'ADMINISTRATOR') || DEMO_USERS[5];
+    const userToUse = user || currentUser || DEMO_USERS.find(u => u.role === 'PORTAL_ADMIN') || DEMO_USERS[5];
     setCurrentUser(userToUse);
     if (userToUse.role === 'AUDITOR') {
       setPurposeOfUse('CLINICAL_AUDIT');
@@ -163,6 +173,7 @@ export function App() {
           selectedPatient={selectedPatient}
           onSelectPatient={handleSelectPatient}
           onRegisterNewPatient={handleRegisterNewPatient}
+          onDeletePatient={handleDeletePatient}
           onSignOut={handleSignOut}
           onSwitchUser={() => setIsSignInModalOpen(true)}
         />

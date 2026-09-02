@@ -1218,6 +1218,7 @@ export const DEMO_USERS = [
     licenseNumber: 'MD-CA-992148',
     assignedPatientIds: ['PT-1002', 'PT-1003', 'PT-1005', 'PT-1006', 'PT-1007', 'PT-1008', 'PT-1009', 'PT-1010', 'PT-1011', 'PT-1012', 'PT-1013'],
     mfaVerified: true,
+    avatarUrl: 'https://images.unsplash.com/photo-1559839734-2b71ea197ec2?auto=format&fit=crop&q=80&w=256&h=256',
   },
   {
     id: 'usr-spec-01',
@@ -1228,6 +1229,7 @@ export const DEMO_USERS = [
     licenseNumber: 'MD-CA-449102',
     assignedPatientIds: ['PT-1004', 'PT-1008'],
     mfaVerified: true,
+    avatarUrl: 'https://images.unsplash.com/photo-1594824813566-78a932757271?auto=format&fit=crop&q=80&w=256&h=256',
   },
   {
     id: 'usr-coord-01',
@@ -1238,6 +1240,7 @@ export const DEMO_USERS = [
     licenseNumber: 'LCSW-CA-338192',
     assignedPatientIds: ['PT-1002', 'PT-1005', 'PT-1010'],
     mfaVerified: true,
+    avatarUrl: 'https://images.unsplash.com/photo-1537368910025-700350fe46c7?auto=format&fit=crop&q=80&w=256&h=256',
   },
   {
     id: 'usr-rn-01',
@@ -1248,16 +1251,18 @@ export const DEMO_USERS = [
     licenseNumber: 'RN-CA-771920',
     assignedPatientIds: ['PT-1002', 'PT-1003', 'PT-1005'],
     mfaVerified: true,
+    avatarUrl: 'https://images.unsplash.com/photo-1582750433449-648ed127bb54?auto=format&fit=crop&q=80&w=256&h=256',
   },
   {
     id: 'usr-admin-01',
-    name: 'Rebecca Thorne, MBA',
-    role: 'ADMINISTRATOR' as const,
-    department: 'Hospital Network Operations & Clinical Informatics',
+    name: 'Dr. Rebecca Thorne, MD',
+    role: 'CLINICIAN' as const,
+    department: 'General Internal Medicine & Outpatient Clinic',
     hospitalSite: 'Metro St. Jude Academic Medical Center',
-    licenseNumber: 'N/A',
-    assignedPatientIds: [],
+    licenseNumber: 'MD-CA-889102',
+    assignedPatientIds: ['PT-1002', 'PT-1005'],
     mfaVerified: true,
+    avatarUrl: 'https://images.unsplash.com/photo-1622253692010-333f2da6031d?auto=format&fit=crop&q=80&w=256&h=256',
   },
   {
     id: 'usr-portal-admin-01',
@@ -1268,6 +1273,7 @@ export const DEMO_USERS = [
     licenseNumber: 'AI-GOV-9901',
     assignedPatientIds: ['PT-1000', 'PT-1001', 'PT-1002', 'PT-1003', 'PT-1004', 'PT-1005'],
     mfaVerified: true,
+    avatarUrl: 'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?auto=format&fit=crop&q=80&w=256&h=256',
   },
   {
     id: 'usr-audit-01',
@@ -1278,5 +1284,6 @@ export const DEMO_USERS = [
     licenseNumber: 'AUD-88210',
     assignedPatientIds: [],
     mfaVerified: true,
+    avatarUrl: 'https://images.unsplash.com/photo-1560250097-0b93528c311a?auto=format&fit=crop&q=80&w=256&h=256',
   }
 ];

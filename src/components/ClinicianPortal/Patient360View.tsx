@@ -5,7 +5,7 @@ import {
   PurposeOfUse,
   UserRole 
 } from '../../types';
-import { getPatientAvatarUrl } from '../../utils/patientAvatar';
+import { getPatientAvatarUrl, getUserAvatarUrl } from '../../utils/patientAvatar';
 import { 
   UserCheck, 
   Calendar, 
@@ -34,13 +34,16 @@ import {
   Share2,
   FileCheck,
   Filter,
-  History
+  History,
+  Trash2,
+  UserX
 } from 'lucide-react';
 import { 
   getTeamNotesForPatient, 
   getRoleBadgeStyle, 
   getDraftNoteButtonLabel 
 } from '../../data/syntheticTeamNotes';
+import { ClinicalPatientDeletionModal } from './ClinicalPatientDeletionModal';
 
 interface Patient360ViewProps {
   patient: SyntheticPatient;
@@ -49,6 +52,7 @@ interface Patient360ViewProps {
   onBackToSearch: () => void;
   onOpenKnowledgeQA: (prefilledQuery?: string, patient?: SyntheticPatient) => void;
   onOpenWorkflow: (workflowType: 'CLINICAL_NOTE' | 'DISCHARGE_SUMMARY' | 'SPECIALIST_REFERRAL') => void;
+  onDeletePatient?: (patientId: string) => void;
 }
 
 export const Patient360View: React.FC<Patient360ViewProps> = ({
@@ -58,8 +62,10 @@ export const Patient360View: React.FC<Patient360ViewProps> = ({
   onBackToSearch,
   onOpenKnowledgeQA,
   onOpenWorkflow,
+  onDeletePatient,
 }) => {
   const [activeTab, setActiveTab] = useState<'OVERVIEW' | 'TEAM_NOTES' | 'TIMELINE' | 'LABS' | 'MEDS' | 'PROVENANCE'>('OVERVIEW');
+  const [isDeletionModalOpen, setIsDeletionModalOpen] = useState(false);
   const [selectedRoleFilter, setSelectedRoleFilter] = useState<string>('ALL');
   const [searchQuery, setSearchQuery] = useState('');
   const [expandedNoteIds, setExpandedNoteIds] = useState<Record<string, boolean>>({
@@ -226,6 +232,16 @@ export const Patient360View: React.FC<Patient360ViewProps> = ({
             >
               <FileText className="w-3.5 h-3.5" />
               <span>{getDraftNoteButtonLabel(currentUser.role)}</span>
+            </button>
+
+            {/* Delete Patient Button (Admin/Portal Admin only with approval modal) */}
+            <button
+              onClick={() => setIsDeletionModalOpen(true)}
+              className="px-3.5 py-2 rounded-xl bg-rose-600/20 hover:bg-rose-600/30 border border-rose-500/40 text-rose-300 font-bold text-xs flex items-center gap-1.5 transition-all cursor-pointer"
+              title="Delete Patient Record (Requires Admin RBAC & MDT Approval)"
+            >
+              <Trash2 className="w-3.5 h-3.5 text-rose-400" />
+              <span>Delete Record</span>
             </button>
           </div>
         </div>
@@ -872,7 +888,17 @@ export const Patient360View: React.FC<Patient360ViewProps> = ({
 
                   <div className="text-xs text-slate-300 space-y-1.5">
                     <div><strong className="text-slate-400">Chief Complaint:</strong> {enc.chiefComplaint}</div>
-                    <div><strong className="text-slate-400">Attending Physician:</strong> {enc.attendingPhysician}</div>
+                    <div className="flex items-center gap-1.5 flex-wrap">
+                      <strong className="text-slate-400">Attending Physician:</strong>
+                      <span className="inline-flex items-center gap-1.5 bg-white/10 px-2 py-0.5 rounded-full border border-white/10 text-white font-bold">
+                        <img 
+                          src={getUserAvatarUrl(enc.attendingPhysician)} 
+                          alt={enc.attendingPhysician}
+                          className="w-4 h-4 rounded-full object-cover border border-cyan-400/50" 
+                        />
+                        <span>{enc.attendingPhysician}</span>
+                      </span>
+                    </div>
                     {enc.dischargeSummaryNote && (
                       <div className="mt-2 p-2.5 rounded-lg bg-slate-900/60 border border-white/10 text-slate-300 italic">
                         "{enc.dischargeSummaryNote}"
@@ -965,6 +991,19 @@ export const Patient360View: React.FC<Patient360ViewProps> = ({
           </div>
         </div>
       )}
+
+      {/* Patient Record Deletion & Approval Modal */}
+      <ClinicalPatientDeletionModal
+        isOpen={isDeletionModalOpen}
+        onClose={() => setIsDeletionModalOpen(false)}
+        patient={patient}
+        currentUser={currentUser}
+        onConfirmDelete={(patientId) => {
+          if (onDeletePatient) {
+            onDeletePatient(patientId);
+          }
+        }}
+      />
     </div>
   );
 };

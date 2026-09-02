@@ -22,6 +22,7 @@ import {
 } from 'lucide-react';
 import { UserProfile, UserRole, PurposeOfUse } from '../types';
 import { useTheme } from '../context/ThemeContext';
+import { getUserAvatarUrl } from '../utils/patientAvatar';
 import { ExportZipModal } from './ExportZipModal';
 
 
@@ -63,7 +64,7 @@ export const Navbar: React.FC<NavbarProps> = ({
     { role: 'SPECIALIST', label: 'Surgeon / Specialist (MD)' },
     { role: 'NURSE', label: 'Clinical Staff Nurse (RN)' },
     { role: 'CARE_COORDINATOR', label: 'Care Coordinator (MSW)' },
-    { role: 'ADMINISTRATOR', label: 'Clinical Informatics Admin' },
+    { role: 'PORTAL_ADMIN', label: 'Portal Admin & Super User' },
     { role: 'AUDITOR', label: 'HIPAA & Compliance Auditor' },
   ];
 
@@ -145,8 +146,8 @@ export const Navbar: React.FC<NavbarProps> = ({
                 Clinician Workspace
               </button>
 
-              {/* Agent Operations & Traces (Restricted to Administrator and Portal Admin only) */}
-              {(currentUser.role === 'ADMINISTRATOR' || currentUser.role === 'PORTAL_ADMIN') && (
+              {/* Agent Operations & Traces (Restricted to Portal Admin super user only) */}
+              {(currentUser.role === 'PORTAL_ADMIN') && (
                 <button
                   onClick={() => setCurrentTab('OPERATIONS')}
                   className={`px-3.5 py-1.5 rounded-lg text-xs font-semibold transition-all flex items-center gap-1.5 cursor-pointer ${
@@ -166,19 +167,21 @@ export const Navbar: React.FC<NavbarProps> = ({
 
           {/* User Profile, Theme Toggle, Export ZIP & Purpose-of-Use Controls */}
           <div className="flex items-center gap-2">
-            {/* Direct Export Source ZIP Button */}
-            <button
-              onClick={() => setExportModalOpen(true)}
-              className={`p-2 sm:px-3 sm:py-1.5 rounded-xl border backdrop-blur-xl transition-all cursor-pointer shadow-sm flex items-center gap-1.5 font-medium text-xs ${
-                isDark 
-                  ? 'bg-blue-600/20 hover:bg-blue-600/30 border-blue-500/30 text-blue-300 hover:text-blue-200 shadow-[0_0_15px_rgba(59,130,246,0.2)]' 
-                  : 'bg-blue-50 hover:bg-blue-100 border-blue-200 text-blue-700 hover:text-blue-800'
-              }`}
-              title="Download full project source code as a ZIP archive (27.0 MB)"
-            >
-              <Download className="w-3.5 h-3.5 text-blue-400" />
-              <span className="hidden sm:inline font-semibold">Export ZIP (27MB)</span>
-            </button>
+            {/* Direct Export Source ZIP Button (Portal Admin Only) */}
+            {currentUser?.role === 'PORTAL_ADMIN' && (
+              <button
+                onClick={() => setExportModalOpen(true)}
+                className={`p-2 sm:px-3 sm:py-1.5 rounded-xl border backdrop-blur-xl transition-all cursor-pointer shadow-sm flex items-center gap-1.5 font-medium text-xs ${
+                  isDark 
+                    ? 'bg-blue-600/20 hover:bg-blue-600/30 border-blue-500/30 text-blue-300 hover:text-blue-200 shadow-[0_0_15px_rgba(59,130,246,0.2)]' 
+                    : 'bg-blue-50 hover:bg-blue-100 border-blue-200 text-blue-700 hover:text-blue-800'
+                }`}
+                title="Download full project source code as a ZIP archive (27.0 MB)"
+              >
+                <Download className="w-3.5 h-3.5 text-blue-400" />
+                <span className="hidden sm:inline font-semibold">Export ZIP (27MB)</span>
+              </button>
+            )}
 
 
             {/* Theme Toggle Button (Light / Dark Mode) */}
@@ -214,9 +217,11 @@ export const Navbar: React.FC<NavbarProps> = ({
                   }`}
                   title="View logged-in user credentials and session profile"
                 >
-                  <div className="w-7 h-7 rounded-full bg-gradient-to-tr from-blue-600 to-cyan-500 flex items-center justify-center text-[11px] font-bold text-white shadow-sm ring-1 ring-white/20">
-                    {currentUser.name.split(' ').map((n) => n[0]).join('').slice(0, 2)}
-                  </div>
+                  <img
+                    src={getUserAvatarUrl(currentUser)}
+                    alt={currentUser.name}
+                    className="w-7 h-7 rounded-full object-cover border border-white/20 shadow-sm shrink-0"
+                  />
                   <div className="text-left hidden sm:block">
                     <div className={`text-xs font-bold leading-tight ${isDark ? 'text-white' : 'text-slate-900'}`}>{currentUser.name}</div>
                     <div className="flex items-center gap-1.5 mt-0.5">

@@ -26,6 +26,7 @@ import {
 } from 'lucide-react';
 import { SyntheticPatient, UserProfile, PurposeOfUse } from '../../types';
 import { SYNTHETIC_PATIENTS } from '../../data/syntheticFhirData';
+import { getUserAvatarUrl } from '../../utils/patientAvatar';
 
 export type MetricCategory = 'PATIENTS_SEEN' | 'PENDING_APPROVALS' | 'ALERTS' | 'TASKS';
 
@@ -686,9 +687,17 @@ export const HomeMetricDetailsPanel: React.FC<HomeMetricDetailsPanelProps> = ({
                             {item.patient.mrn}
                           </span>
                         </div>
-                        <p className="text-[11px] text-slate-400 font-mono">
-                          {item.patient.age} Y • {item.patient.gender === 'MALE' ? 'Male' : 'Female'} • Attending: <span className="text-slate-300">{item.attendingDoctor}</span>
-                        </p>
+                        <div className="text-[11px] text-slate-400 font-mono flex items-center gap-1.5 flex-wrap">
+                          <span>{item.patient.age} Y • {item.patient.gender === 'MALE' ? 'Male' : 'Female'} • Attending:</span>
+                          <span className="inline-flex items-center gap-1.5 bg-white/10 px-2 py-0.5 rounded-full border border-white/10 text-slate-200 font-bold">
+                            <img 
+                              src={getUserAvatarUrl(item.attendingDoctor)} 
+                              alt={item.attendingDoctor}
+                              className="w-4 h-4 rounded-full object-cover border border-cyan-400/50" 
+                            />
+                            <span>{item.attendingDoctor}</span>
+                          </span>
+                        </div>
                         <p className="text-[10px] text-slate-400 flex items-center gap-1 pt-0.5">
                           <span className="w-1.5 h-1.5 rounded-full bg-blue-400"></span>
                           <span>{item.location}</span>

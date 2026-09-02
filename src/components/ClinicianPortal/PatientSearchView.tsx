@@ -43,13 +43,15 @@ import {
   AlertTriangle,
   Pill,
   ExternalLink,
-  UserX
+  UserX,
+  Trash2
 } from 'lucide-react';
 import { SyntheticPatient, UserProfile, PurposeOfUse, IngestionModality, MultimodalIngestionResult } from '../../types';
 import { SYNTHETIC_PATIENTS } from '../../data/syntheticFhirData';
 import { getPatientAvatarUrl } from '../../utils/patientAvatar';
 import { VerticalPatientSearchFlowCanvas } from '../AgentOperations/VerticalPatientSearchFlowCanvas';
 import { RegisterNewPatientModal } from './RegisterNewPatientModal';
+import { ClinicalPatientDeletionModal } from './ClinicalPatientDeletionModal';
 
 type DisplayMode = 'TILES' | 'LIST' | 'DETAILS' | 'CONTENT';
 
@@ -59,6 +61,7 @@ interface PatientSearchViewProps {
   patients?: SyntheticPatient[];
   onSelectPatient: (patientId: string) => void;
   onRegisterNewPatient?: (patient: SyntheticPatient) => void;
+  onDeletePatient?: (patientId: string) => void;
 }
 
 export const PatientSearchView: React.FC<PatientSearchViewProps> = ({
@@ -67,21 +70,24 @@ export const PatientSearchView: React.FC<PatientSearchViewProps> = ({
   patients,
   onSelectPatient,
   onRegisterNewPatient,
+  onDeletePatient,
 }) => {
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedSpecialtyFilter, setSelectedSpecialtyFilter] = useState<'ALL' | 'MY_ASSIGNMENTS' | 'CARDIOLOGY' | 'TRANSFERS' | 'ALERTS'>('ALL');
+  const [selectedHospitalFilter, setSelectedHospitalFilter] = useState<string>('ALL');
   const [isIngestionModalOpen, setIsIngestionModalOpen] = useState(false);
+  const [deletingTargetPatient, setDeletingTargetPatient] = useState<SyntheticPatient | null>(null);
   const [expandedPatientId, setExpandedPatientId] = useState<string | null>(null);
 
-  // Display Mode switcher: TILES | LIST | DETAILS | CONTENT
-  const [displayMode, setDisplayMode] = useState<DisplayMode>('TILES');
+  // Display Mode switcher: TILES | LIST | DETAILS | CONTENT (Default LIST view mode)
+  const [displayMode, setDisplayMode] = useState<DisplayMode>('LIST');
 
-  // 1 & 2) Search state management - records hidden by default until search is executed or "View All" is toggled
-  const [hasExecutedSearch, setHasExecutedSearch] = useState<boolean>(false);
-  const [lastExecutedQuery, setLastExecutedQuery] = useState<string>('');
+  // 1 & 2) Search state management - records visible by default so patient list shows immediately
+  const [hasExecutedSearch, setHasExecutedSearch] = useState<boolean>(true);
+  const [lastExecutedQuery, setLastExecutedQuery] = useState<string>('All Cohort');
   
   // 3) Separate option to view all patient records
-  const [isViewingAllPatients, setIsViewingAllPatients] = useState<boolean>(false);
+  const [isViewingAllPatients, setIsViewingAllPatients] = useState<boolean>(true);
 
   // 4) Newly registered patient state & box expansion
   const [recentlyRegisteredPatient, setRecentlyRegisteredPatient] = useState<SyntheticPatient | null>(null);
@@ -166,6 +172,11 @@ IMPRESSION & FINDINGS:
   // Search filter logic
   const filteredPatients = activePatientList.filter((patient) => {
     const query = searchTerm.trim().toLowerCase();
+
+    if (selectedHospitalFilter !== 'ALL') {
+      const matchesHospital = patient.hospitalSite.toLowerCase().includes(selectedHospitalFilter.toLowerCase());
+      if (!matchesHospital) return false;
+    }
     
     // If user searched, check if matches search term
     if (query) {
@@ -543,8 +554,32 @@ IMPRESSION & FINDINGS:
           </div>
         </div>
 
+        {/* Multi-Hospital Healthcare Network Selector */}
+        <div className="mt-4 p-3 rounded-2xl bg-slate-900/80 border border-white/10 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+          <div className="flex items-center gap-2">
+            <Building className="w-4 h-4 text-cyan-400 shrink-0" />
+            <span className="text-xs font-mono font-bold text-slate-200">
+              Filter Patient Directory by Network Hospital Facility:
+            </span>
+          </div>
+
+          <div className="flex items-center gap-2">
+            <select
+              value={selectedHospitalFilter}
+              onChange={(e) => setSelectedHospitalFilter(e.target.value)}
+              className="bg-slate-950 border border-cyan-500/40 rounded-xl px-3 py-1.5 text-xs text-cyan-300 font-bold focus:outline-none focus:border-cyan-400 cursor-pointer"
+            >
+              <option value="ALL">All Network Hospitals (Healthcare Network)</option>
+              <option value="St. Jude">St. Jude Regional Medical Center (Epic EHR)</option>
+              <option value="Metropolitan">Metropolitan General Hospital (Cerner EHR)</option>
+              <option value="Mercy">Mercy Community Health System (MEDITECH EHR)</option>
+              <option value="St. Luke">St. Luke Surgical & Cardiac Pavilion (Allscripts EHR)</option>
+            </select>
+          </div>
+        </div>
+
         {/* Search Input Bar & Quick Filters */}
-        <div className="mt-6 flex flex-col sm:flex-row items-center gap-3">
+        <div className="mt-4 flex flex-col sm:flex-row items-center gap-3">
           <div className="relative flex-1 w-full">
             <Search className="w-4 h-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2" />
             <input
@@ -978,6 +1013,18 @@ IMPRESSION & FINDINGS:
                             </span>
 
                             <div className="flex items-center gap-2">
+                              {/* Delete Patient Button for Admins */}
+                              {(currentUser.role === 'PORTAL_ADMIN') && (
+                                <button
+                                  type="button"
+                                  onClick={() => setDeletingTargetPatient(patient)}
+                                  className="p-2 rounded-xl bg-rose-600/20 hover:bg-rose-600/30 border border-rose-500/40 text-rose-300 text-xs font-bold transition-all cursor-pointer"
+                                  title="Delete Patient Record (Admin RBAC & MDT Approval)"
+                                >
+                                  <Trash2 className="w-3.5 h-3.5 text-rose-400" />
+                                </button>
+                              )}
+
                               {/* Live Flow Option: Shows live agent flow in VERTICAL MODE */}
                               <button
                                 onClick={() => setExpandedPatientId(expandedPatientId === patient.id ? null : patient.id)}
@@ -1128,6 +1175,17 @@ IMPRESSION & FINDINGS:
                                 {/* Actions */}
                                 <td className="py-3 px-4 text-right">
                                   <div className="flex items-center justify-end gap-2">
+                                    {(currentUser.role === 'PORTAL_ADMIN') && (
+                                      <button
+                                        type="button"
+                                        onClick={() => setDeletingTargetPatient(patient)}
+                                        className="p-1.5 rounded-lg bg-rose-600/20 hover:bg-rose-600/30 border border-rose-500/40 text-rose-300 text-xs font-bold transition-all cursor-pointer"
+                                        title="Delete Patient Record"
+                                      >
+                                        <Trash2 className="w-3.5 h-3.5 text-rose-400" />
+                                      </button>
+                                    )}
+
                                     <button
                                       type="button"
                                       onClick={() => setExpandedPatientId(expandedPatientId === patient.id ? null : patient.id)}
@@ -1298,6 +1356,17 @@ IMPRESSION & FINDINGS:
                             </div>
 
                             <div className="flex items-center gap-2 pt-2">
+                              {(currentUser.role === 'PORTAL_ADMIN') && (
+                                <button
+                                  type="button"
+                                  onClick={() => setDeletingTargetPatient(patient)}
+                                  className="p-2 rounded-xl bg-rose-600/20 hover:bg-rose-600/30 border border-rose-500/40 text-rose-300 text-xs font-bold transition-all cursor-pointer"
+                                  title="Delete Patient Record"
+                                >
+                                  <Trash2 className="w-3.5 h-3.5 text-rose-400" />
+                                </button>
+                              )}
+
                               <button
                                 type="button"
                                 onClick={() => setExpandedPatientId(expandedPatientId === patient.id ? null : patient.id)}
@@ -1387,6 +1456,17 @@ IMPRESSION & FINDINGS:
                           </div>
 
                           <div className="flex items-center gap-2">
+                            {(currentUser.role === 'PORTAL_ADMIN') && (
+                              <button
+                                type="button"
+                                onClick={() => setDeletingTargetPatient(patient)}
+                                className="p-2 rounded-xl bg-rose-600/20 hover:bg-rose-600/30 border border-rose-500/40 text-rose-300 text-xs font-bold transition-all cursor-pointer"
+                                title="Delete Patient Record"
+                              >
+                                <Trash2 className="w-3.5 h-3.5 text-rose-400" />
+                              </button>
+                            )}
+
                             <button
                               type="button"
                               onClick={() => setExpandedPatientId(expandedPatientId === patient.id ? null : patient.id)}
@@ -1552,6 +1632,20 @@ IMPRESSION & FINDINGS:
           setIsIngestionModalOpen(false);
         }}
         isDark={true}
+      />
+
+      {/* Patient Record Deletion & Approval Modal */}
+      <ClinicalPatientDeletionModal
+        isOpen={!!deletingTargetPatient}
+        onClose={() => setDeletingTargetPatient(null)}
+        patient={deletingTargetPatient}
+        currentUser={currentUser}
+        onConfirmDelete={(patientId) => {
+          if (onDeletePatient) {
+            onDeletePatient(patientId);
+          }
+          setDeletingTargetPatient(null);
+        }}
       />
     </div>
   );

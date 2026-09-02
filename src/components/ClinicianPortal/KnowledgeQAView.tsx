@@ -171,6 +171,7 @@ export const KnowledgeQAView: React.FC<KnowledgeQAViewProps> = ({
 
   // Gemini Model Selection & Configuration State (Defaulting to High-Availability Primary)
   const [selectedModel, setSelectedModel] = useState<string>('gemini-3.6-flash');
+  const [selectedHospitalContext, setSelectedHospitalContext] = useState<string>('St. Jude Regional Medical Center');
   const [availableModels, setAvailableModels] = useState<GeminiModelOption[]>(DEFAULT_GEMINI_MODELS);
   const [isModelSelectorOpen, setIsModelSelectorOpen] = useState<boolean>(false);
   const [temperature, setTemperature] = useState<number>(0.2);
@@ -767,6 +768,24 @@ export const KnowledgeQAView: React.FC<KnowledgeQAViewProps> = ({
                 </div>
               </div>
             )}
+          </div>
+
+          {/* Multi-Hospital Network Target Selector */}
+          <div>
+            <div className="text-[10px] font-mono text-slate-400 uppercase tracking-wider mb-1 flex items-center gap-1">
+              <Building className="w-3 h-3 text-cyan-400" />
+              <span>Target Hospital Context:</span>
+            </div>
+            <select
+              value={selectedHospitalContext}
+              onChange={(e) => setSelectedHospitalContext(e.target.value)}
+              className="bg-slate-800/90 border border-cyan-500/30 rounded-xl px-2.5 py-1.5 text-xs text-cyan-300 font-bold focus:outline-none focus:border-cyan-400 cursor-pointer"
+            >
+              <option value="St. Jude Regional Medical Center">St. Jude Regional (Epic EHR)</option>
+              <option value="Metropolitan General Hospital">Metropolitan General (Cerner EHR)</option>
+              <option value="Mercy Community Health System">Mercy Community (MEDITECH EHR)</option>
+              <option value="St. Luke Surgical & Cardiac Pavilion">St. Luke Surgical (Allscripts EHR)</option>
+            </select>
           </div>
 
           {/* Temperature Setting */}

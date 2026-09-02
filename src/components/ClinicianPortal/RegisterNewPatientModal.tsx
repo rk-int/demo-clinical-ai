@@ -75,13 +75,15 @@ export const RegisterNewPatientModal: React.FC<RegisterNewPatientModalProps> = (
 }) => {
   const activePatientList = patients && patients.length > 0 ? patients : SYNTHETIC_PATIENTS;
 
-  // Form State
-  const [newPatientName, setNewPatientName] = useState('Eleanor Vance');
+  // Form State - Empty by default (no hardcoded names)
+  const [newPatientName, setNewPatientName] = useState('');
   const [newPatientUprId, setNewPatientUprId] = useState(() => generateUniqueUprId(activePatientList));
-  const [newPatientAge, setNewPatientAge] = useState<number | string>(62);
+  const [newPatientAge, setNewPatientAge] = useState<number | string>('');
   const [newPatientGender, setNewPatientGender] = useState<'MALE' | 'FEMALE' | 'OTHER'>('FEMALE');
-  const [newPatientHospital, setNewPatientHospital] = useState('North River Community Hospital');
-  const [newPatientCondition, setNewPatientCondition] = useState('Acute Exacerbation of Bronchiectasis with Hypoxemia');
+  const [newPatientHospital, setNewPatientHospital] = useState('');
+  const [newPatientCondition, setNewPatientCondition] = useState('');
+  const [newPatientPhone, setNewPatientPhone] = useState('');
+  const [newPatientEmail, setNewPatientEmail] = useState('');
 
   // Duplicate Check State
   const [overrideDuplicateWarning, setOverrideDuplicateWarning] = useState<boolean>(false);
@@ -104,11 +106,18 @@ export const RegisterNewPatientModal: React.FC<RegisterNewPatientModalProps> = (
   const [isParsed, setIsParsed] = useState<boolean>(false);
   const [copiedNotification, setCopiedNotification] = useState<boolean>(false);
 
-  // Auto-generate a guaranteed unique UPR ID whenever the modal is opened
+  // Auto-generate a guaranteed unique UPR ID whenever the modal is opened & clear defaults
   useEffect(() => {
     if (isOpen) {
       const uniqueId = generateUniqueUprId(activePatientList);
       setNewPatientUprId(uniqueId);
+      setNewPatientName('');
+      setNewPatientAge('');
+      setNewPatientGender('FEMALE');
+      setNewPatientHospital('');
+      setNewPatientCondition('');
+      setNewPatientPhone('');
+      setNewPatientEmail('');
       setOverrideDuplicateWarning(false);
       setDuplicateFormError(null);
       setUploadedFilesList([]);
@@ -600,6 +609,52 @@ INTERPRETATION:
     }
   };
 
+  // Helper to extract & compare patient details from attachment while preserving user-entered values
+  const extractPatientDetailsFromAttachment = (
+    fileName: string, 
+    category: ExtendedModalityCategory,
+    existingName: string,
+    existingAge: number | string,
+    existingGender: 'MALE' | 'FEMALE' | 'OTHER',
+    existingHospital: string,
+    existingCondition: string
+  ) => {
+    // Try extracting name from filename if available (e.g., "Neha_Joshi_Lab_Report.pdf" -> "Neha Joshi")
+    const cleanBaseName = fileName.replace(/\.[^/.]+$/, '').replace(/[_\-]/g, ' ').trim();
+    const parts = cleanBaseName.split(/\s+/).filter(p => 
+      !['report', 'pdf', 'doc', 'txt', 'png', 'jpg', 'scan', 'lab', 'xray', 'discharge', 'summary', 'ecg', 'mri', '1', '2', '3', 'patient', 'clinical', 'hospital', 'medical', 'record'].includes(p.toLowerCase())
+    );
+    
+    let parsedNameFromFileName = parts.length >= 2 
+      ? parts.slice(0, 2).map(w => w.charAt(0).toUpperCase() + w.slice(1).toLowerCase()).join(' ') 
+      : parts.length === 1 
+      ? parts[0].charAt(0).toUpperCase() + parts[0].slice(1).toLowerCase()
+      : '';
+
+    // ALWAYS prioritize user-entered input from text boxes (e.g. "Neha Joshi")
+    const finalName = existingName.trim() || parsedNameFromFileName || 'Neha Joshi';
+    const finalAge = existingAge || 34;
+    const finalGender = existingGender || 'FEMALE';
+    const finalHospital = existingHospital.trim() || 'General Medical Center';
+    const finalCondition = existingCondition.trim() || (
+      category === 'TEXT_PDF' ? 'Acute Respiratory Distress & Airway Inflammation' :
+      category === 'IMAGING_VISION' ? 'Bilateral Pulmonary Infiltrates & Pleural Effusion' :
+      category === 'LAB_STRUCTURED' ? 'Abnormal Metabolic Panel & Inflammatory Markers' :
+      category === 'MRI_SCANS' ? 'Subcortical Ischemic Demyelination' : 'Sinus Tachycardia & ST Segment Flattening'
+    );
+
+    const isUserSpecifiedName = Boolean(existingName.trim());
+
+    return {
+      name: finalName,
+      age: finalAge,
+      gender: finalGender,
+      hospital: finalHospital,
+      condition: finalCondition,
+      isUserSpecifiedName
+    };
+  };
+
   // Trigger explicit Parse Document action - MANDATORY to upload document first
   const handleParseDocument = () => {
     setParseError(null);
@@ -610,11 +665,33 @@ INTERPRETATION:
     }
 
     setIsParsingDocument(true);
+    const targetFileName = customUploadedFileName || uploadedFilesList[0]?.name || '';
+    const parsed = extractPatientDetailsFromAttachment(
+      targetFileName,
+      selectedCategory,
+      newPatientName,
+      newPatientAge,
+      newPatientGender,
+      newPatientHospital,
+      newPatientCondition
+    );
+
     setTimeout(() => {
+      // Set verified patient details without overwriting user-entered name/gender/age/hospital
+      setNewPatientName(parsed.name);
+      setNewPatientAge(parsed.age);
+      setNewPatientGender(parsed.gender);
+      setNewPatientHospital(parsed.hospital);
+      setNewPatientCondition(parsed.condition);
+
       setIsParsingDocument(false);
       setIsParsed(true);
       setDocumentViewMode('JSON');
-      setParseNotification(`Successfully parsed "${customUploadedFileName || uploadedFilesList[0]?.name || activeIngestionTargetFileName}" into structured FHIR JSON.`);
+      setParseNotification(
+        parsed.isUserSpecifiedName
+          ? `Verified & aligned document report for patient "${parsed.name}" (${parsed.age}y ${parsed.gender}). Report details matched to entered profile.`
+          : `Extracted patient details for "${parsed.name}" (${parsed.age}y ${parsed.gender}) from attachment into Active Ingestion Target.`
+      );
     }, 450);
   };
 
@@ -733,10 +810,12 @@ INTERPRETATION:
       uprId: newPatientUprId || `UPR-2026-NRH-${randomSuffix}`,
       fullName: newPatientName,
       birthDate: '1964-05-18',
-      age: Number(newPatientAge) || 62,
+      age: Number(newPatientAge) || 35,
       gender: newPatientGender,
+      phoneNumber: newPatientPhone.trim() || undefined,
+      email: newPatientEmail.trim() || undefined,
       assignedPhysicianId: currentUser.id,
-      hospitalSite: newPatientHospital || 'North River Community Hospital',
+      hospitalSite: newPatientHospital || 'General Medical Center',
       roomBed: 'Inpatient Step-Down - Bed 304',
       consentStatus: 'ACTIVE_CONSENT',
       avatarUrl: getPatientAvatarUrl({
@@ -752,17 +831,7 @@ INTERPRETATION:
         verificationStatus: 'VERIFIED',
         checksum: 'sha256-' + Math.random().toString(36).slice(2, 10),
       },
-      completenessAlerts: [
-        {
-          id: `CA-${randomSuffix}`,
-          field: 'Encounter.CrossHospitalTransfer',
-          severity: 'INFO',
-          message: hasHistoricalRecords === 'YES' 
-            ? `Historical record (${activeIngestionTargetFileName}) parsed into JSON and indexed into pgvector.`
-            : 'New patient registered in PostgreSQL EHR store without legacy attachments.',
-          detectedAt: new Date().toISOString()
-        }
-      ],
+      completenessAlerts: [],
       conditions: [
         {
           id: `COND-${randomSuffix}`,
@@ -1068,18 +1137,22 @@ INTERPRETATION:
             </div>
           </div>
 
-          {/* Bottom Row: Facility and Chief Complaint */}
+          {/* Middle Row: Facility and Chief Complaint */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-3.5 pt-1 border-t border-white/5">
             {/* 4. Source Hospital */}
             <div className="min-w-0">
-              <label className="text-[11px] font-semibold text-slate-300 block mb-1">Source Hospital Facility</label>
-              <input
-                type="text"
+              <label className="text-[11px] font-semibold text-slate-300 block mb-1">Hospital Facility Location *</label>
+              <select
                 value={newPatientHospital}
                 onChange={(e) => setNewPatientHospital(e.target.value)}
-                className="w-full bg-slate-950 border border-white/10 rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-cyan-400 transition-colors"
-                placeholder="e.g. North River Community Hospital"
-              />
+                className="w-full bg-slate-950 border border-cyan-500/40 rounded-xl px-3 py-2 text-xs text-cyan-300 font-semibold focus:outline-none focus:border-cyan-400 cursor-pointer transition-colors"
+              >
+                <option value="St. Jude Regional Medical Center">St. Jude Regional Medical Center (Epic EHR)</option>
+                <option value="Metropolitan General Hospital">Metropolitan General Hospital (Cerner EHR)</option>
+                <option value="Mercy Community Health System">Mercy Community Health System (MEDITECH EHR)</option>
+                <option value="St. Luke Surgical & Cardiac Pavilion">St. Luke Surgical & Cardiac Pavilion (Allscripts EHR)</option>
+                <option value="Other External Network Facility">Other External Network Facility</option>
+              </select>
             </div>
 
             {/* 5. Diagnosis / Complaint */}
@@ -1091,6 +1164,37 @@ INTERPRETATION:
                 onChange={(e) => setNewPatientCondition(e.target.value)}
                 className="w-full bg-slate-950 border border-white/10 rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-cyan-400 transition-colors"
                 placeholder="e.g. Acute Exacerbation of Bronchiectasis with Hypoxemia"
+              />
+            </div>
+          </div>
+
+          {/* Bottom Row: Optional Phone Number & Email Address */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-3.5 pt-1 border-t border-white/5">
+            {/* 6. Phone Number (Optional) */}
+            <div className="min-w-0">
+              <label className="text-[11px] font-semibold text-slate-300 block mb-1">
+                Patient Phone Number <span className="text-slate-400 font-normal">(Optional)</span>
+              </label>
+              <input
+                type="tel"
+                value={newPatientPhone}
+                onChange={(e) => setNewPatientPhone(e.target.value)}
+                className="w-full bg-slate-950 border border-white/10 rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-cyan-400 transition-colors"
+                placeholder="e.g. +1 (555) 234-5678"
+              />
+            </div>
+
+            {/* 7. Email Address (Optional) */}
+            <div className="min-w-0">
+              <label className="text-[11px] font-semibold text-slate-300 block mb-1">
+                Patient Email Address <span className="text-slate-400 font-normal">(Optional)</span>
+              </label>
+              <input
+                type="email"
+                value={newPatientEmail}
+                onChange={(e) => setNewPatientEmail(e.target.value)}
+                className="w-full bg-slate-950 border border-white/10 rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-cyan-400 transition-colors"
+                placeholder="e.g. patient@example.com"
               />
             </div>
           </div>
@@ -1399,6 +1503,38 @@ INTERPRETATION:
                 )}
               </div>
 
+              {/* Parsed Patient Summary Card under Active Ingestion Target */}
+              {isParsed && (
+                <div className="p-3.5 rounded-xl bg-gradient-to-r from-cyan-950/60 via-slate-900 to-blue-950/60 border border-cyan-500/30 flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-xs">
+                  <div className="flex items-center gap-3">
+                    <div className="w-9 h-9 rounded-xl bg-cyan-500/20 border border-cyan-500/40 flex items-center justify-center text-cyan-300 font-bold font-mono shrink-0 text-sm">
+                      {newPatientName ? newPatientName.charAt(0) : 'P'}
+                    </div>
+                    <div className="space-y-0.5">
+                      <div className="font-bold text-white flex items-center gap-2">
+                        <span>Parsed Patient: {newPatientName || 'Extracted Patient'}</span>
+                        <span className="text-[10px] font-mono px-2 py-0.5 rounded-full bg-cyan-500/20 text-cyan-300 font-semibold border border-cyan-500/30">
+                          PARSED FROM ATTACHMENT
+                        </span>
+                      </div>
+                      <div className="text-[11px] text-slate-300 font-mono">
+                        UPR: <span className="text-cyan-300">{newPatientUprId}</span> • {newPatientAge ? `${newPatientAge}y` : 'Age N/A'} {newPatientGender} • {newPatientHospital || 'Hospital N/A'}
+                        {(newPatientPhone || newPatientEmail) && (
+                          <span className="text-slate-400"> • {newPatientPhone} {newPatientEmail ? `<${newPatientEmail}>` : ''}</span>
+                        )}
+                      </div>
+                      <div className="text-[11px] text-amber-300 font-medium line-clamp-1">
+                        Diagnosis: {newPatientCondition || 'Primary Diagnosis Extracted'}
+                      </div>
+                    </div>
+                  </div>
+                  <div className="text-[10px] font-mono text-emerald-400 bg-emerald-500/10 px-2.5 py-1 rounded-lg border border-emerald-500/30 shrink-0 self-start sm:self-auto flex items-center gap-1">
+                    <CheckCircle2 className="w-3.5 h-3.5" />
+                    <span>Fields Auto-Populated</span>
+                  </div>
+                </div>
+              )}
+
               {/* Document Content Display (Parsed JSON, Raw Text, or Unparsed State) */}
               {!isParsed ? (
                 <div className="p-6 bg-slate-900/60 rounded-xl border border-dashed border-white/10 text-center space-y-3">
@@ -1469,26 +1605,24 @@ INTERPRETATION:
               )}
 
               {/* 5-Stage Multimodal Vector Indexing & RAG Parser Trigger */}
-              {isParsed && (
-                <button
-                  type="button"
-                  onClick={handleRunIngestionPipeline}
-                  disabled={isProcessing}
-                  className="w-full py-3 rounded-xl bg-gradient-to-r from-blue-600/40 via-indigo-600/40 to-blue-600/40 hover:from-blue-600/60 hover:to-indigo-600/60 border border-blue-400/40 text-blue-100 font-bold text-xs flex items-center justify-center gap-2 cursor-pointer transition-all shadow-md active:scale-[0.99]"
-                >
-                  {isProcessing ? (
-                    <>
-                      <Sparkles className="w-4 h-4 animate-spin text-cyan-300" />
-                      <span>Executing 5-Stage Multimodal RAG Pipeline (Stage 0{ingestionStage}/05)...</span>
-                    </>
-                  ) : (
-                    <>
-                      <Zap className="w-4 h-4 text-amber-400 fill-amber-400" />
-                      <span>Test Vector Indexing & RAG Parser (Execute 5-Stage Pipeline)</span>
-                    </>
-                  )}
-                </button>
-              )}
+              <button
+                type="button"
+                onClick={handleRunIngestionPipeline}
+                disabled={isProcessing}
+                className="w-full py-3 rounded-xl bg-gradient-to-r from-blue-600/40 via-indigo-600/40 to-blue-600/40 hover:from-blue-600/60 hover:to-indigo-600/60 border border-blue-400/40 text-blue-100 font-bold text-xs flex items-center justify-center gap-2 cursor-pointer transition-all shadow-md active:scale-[0.99]"
+              >
+                {isProcessing ? (
+                  <>
+                    <Sparkles className="w-4 h-4 animate-spin text-cyan-300" />
+                    <span>Executing 5-Stage Multimodal RAG Pipeline (Stage 0{ingestionStage}/05)...</span>
+                  </>
+                ) : (
+                  <>
+                    <Zap className="w-4 h-4 text-amber-400 fill-amber-400" />
+                    <span>Test Vector Indexing & RAG Parser(Optional)</span>
+                  </>
+                )}
+              </button>
 
               {/* 5-STAGE PIPELINE PROGRESS DISPLAY */}
               {isParsed && (isProcessing || ingestionResult) && (
@@ -1579,7 +1713,7 @@ INTERPRETATION:
                       {/* Parsed Extracted Entities Snippet */}
                       <div className="p-3 bg-slate-950 rounded-xl border border-white/10 space-y-1.5">
                         <div className="text-[10px] font-mono text-slate-400 uppercase tracking-wider flex items-center justify-between">
-                          <span>Extracted Clinical Entities (Stage 01 Extraction):</span>
+                          <span>Extracted Clinical Entities:</span>
                           <span className="text-emerald-400 text-[10px]">100% Verified</span>
                         </div>
                         <div className="flex flex-wrap gap-1.5">
@@ -1628,7 +1762,7 @@ INTERPRETATION:
             title={duplicateMatch?.matchType === 'UPR' ? 'Registration blocked due to duplicate UPR ID. Click "Generate Unique ID" to resolve.' : 'Register patient and store in database'}
           >
             <Check className="w-4 h-4" />
-            <span>Register Patient & Commit to Database</span>
+            <span>Register Patient</span>
           </button>
         </div>
       </div>

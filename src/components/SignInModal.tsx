@@ -19,6 +19,7 @@ import {
 import { UserProfile, UserRole } from '../types';
 import { DEMO_USERS } from '../data/syntheticFhirData';
 import { useTheme } from '../context/ThemeContext';
+import { getUserAvatarUrl } from '../utils/patientAvatar';
 
 export interface SignInModalProps {
   isOpen: boolean;
@@ -27,7 +28,7 @@ export interface SignInModalProps {
   currentUser?: UserProfile | null;
 }
 
-type RoleType = 'DOCTOR' | 'NURSE' | 'SPECIALIST' | 'COORDINATOR' | 'ADMINISTRATOR' | 'PORTAL_ADMIN';
+type RoleType = 'DOCTOR' | 'NURSE' | 'SPECIALIST' | 'COORDINATOR' | 'CLINICIAN' | 'PORTAL_ADMIN';
 
 interface RoleOption {
   id: RoleType;
@@ -120,9 +121,9 @@ export const SignInModal: React.FC<SignInModalProps> = ({
       targetPortal: 'CLINICIAN',
     },
     {
-      id: 'ADMINISTRATOR',
-      label: 'Administrator',
-      demoUsername: 'admin.demo',
+      id: 'CLINICIAN',
+      label: 'Clinician',
+      demoUsername: 'clinician.demo',
       colorTheme: {
         iconColor: 'text-rose-600',
         iconColorDark: 'text-rose-400',
@@ -132,8 +133,8 @@ export const SignInModal: React.FC<SignInModalProps> = ({
         bgSelectedDark: 'bg-rose-500/10',
         checkBg: 'bg-rose-600',
       },
-      demoUser: DEMO_USERS.find(u => u.role === 'ADMINISTRATOR') || DEMO_USERS[4],
-      targetPortal: 'OPERATIONS',
+      demoUser: DEMO_USERS.find(u => u.role === 'CLINICIAN') || DEMO_USERS[4],
+      targetPortal: 'CLINICIAN',
     },
     {
       id: 'PORTAL_ADMIN',
@@ -203,9 +204,9 @@ export const SignInModal: React.FC<SignInModalProps> = ({
       } else if (lower.includes('coord') || lower.includes('carlos') || lower.includes('mendez')) {
         user = DEMO_USERS.find(u => u.role === 'CARE_COORDINATOR') || DEMO_USERS[2];
         portal = 'CLINICIAN';
-      } else if (lower.includes('admin') || lower.includes('rebecca') || lower.includes('thorne')) {
-        user = DEMO_USERS.find(u => u.role === 'ADMINISTRATOR') || DEMO_USERS[4];
-        portal = 'OPERATIONS';
+      } else if (lower.includes('clinician') || lower.includes('rebecca') || lower.includes('thorne')) {
+        user = DEMO_USERS.find(u => u.role === 'CLINICIAN') || DEMO_USERS[4];
+        portal = 'CLINICIAN';
       } else if (lower.includes('auditor') || lower.includes('arthur') || lower.includes('sterling')) {
         user = DEMO_USERS.find(u => u.role === 'AUDITOR') || DEMO_USERS[6];
         portal = 'OPERATIONS';
@@ -385,7 +386,7 @@ export const SignInModal: React.FC<SignInModalProps> = ({
             <label className={`block text-xs font-semibold ${isDark ? 'text-slate-300' : 'text-slate-700'}`}>
               Select Role
             </label>
-            <div className="grid grid-cols-5 gap-2">
+            <div className="grid grid-cols-3 sm:grid-cols-6 gap-2">
               {roleOptions.map((role) => {
                 const isSelected = selectedRole === role.id;
                 return (
@@ -462,43 +463,7 @@ export const SignInModal: React.FC<SignInModalProps> = ({
             </button>
           </div>
 
-          {/* Demo Accounts (Click to use) Box */}
-          <div className={`p-3.5 rounded-2xl border space-y-2 mt-4 ${
-            isDark 
-              ? 'bg-slate-950/60 border-white/10' 
-              : 'bg-slate-50/80 border-slate-200'
-          }`}>
-            <div className="flex items-center gap-1.5 text-xs font-semibold text-blue-600 dark:text-blue-400">
-              <span>Demo Accounts (Click to use)</span>
-              <Info className="w-3.5 h-3.5 text-slate-400" />
-            </div>
 
-            <div className="grid grid-cols-5 gap-1.5">
-              {roleOptions.map((role) => (
-                <button
-                  key={role.id}
-                  type="button"
-                  onClick={() => handleSelectDemoAccount(role.id)}
-                  className={`p-2 rounded-xl border text-center transition-all hover:scale-[1.02] cursor-pointer flex flex-col items-center justify-center gap-0.5 ${
-                    isDark 
-                      ? 'bg-slate-900 border-white/10 hover:border-blue-500/50 hover:bg-blue-500/10' 
-                      : 'bg-white border-slate-200 hover:border-blue-400 hover:bg-blue-50/50 shadow-sm'
-                  }`}
-                  title={`Sign in as ${role.label}`}
-                >
-                  <div className="flex items-center gap-1">
-                    <User className={`w-3 h-3 ${isDark ? role.colorTheme.iconColorDark : role.colorTheme.iconColor}`} />
-                    <span className={`text-[10px] font-bold ${isDark ? 'text-slate-200' : 'text-slate-800'}`}>
-                      {role.label}
-                    </span>
-                  </div>
-                  <span className="text-[9px] text-slate-400 font-mono">
-                    {role.demoUsername}
-                  </span>
-                </button>
-              ))}
-            </div>
-          </div>
 
           {/* Security and Terms Footer */}
           <div className="pt-2 text-center space-y-1">

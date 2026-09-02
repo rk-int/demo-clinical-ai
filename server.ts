@@ -591,10 +591,8 @@ Always conclude with a brief disclaimer noting that final clinical decisions req
 
     // Determine note type and role badge based on actor role & workflow type
     let noteType: ClinicalTeamNote['noteType'] = 'DOCTOR_PROGRESS_NOTE';
-    if (actor.role === 'NURSE') noteType = 'NURSE_ASSESSMENT';
-    else if (actor.role === 'SPECIALIST') noteType = 'SPECIALIST_CONSULT';
-    else if (actor.role === 'CARE_COORDINATOR') noteType = 'CARE_COORDINATION';
-    else if (actor.role === 'ADMINISTRATOR') noteType = 'ADMIN_REVIEW';
+    if (actor.role === 'CLINICIAN') noteType = 'NURSE_ASSESSMENT';
+    else if ((actor.role as string) === 'ADMINISTRATOR') noteType = 'ADMIN_REVIEW';
     else if (actor.role === 'PORTAL_ADMIN') noteType = 'PORTAL_AUDIT';
     else if (approved.workflowType === 'DISCHARGE_SUMMARY') noteType = 'DISCHARGE_PLAN';
 
@@ -842,7 +840,7 @@ Always conclude with a brief disclaimer noting that final clinical decisions req
   }
 
   app.listen(PORT, '0.0.0.0', () => {
-    console.log(`Enterprise AI Clinical Assistant running at http://0.0.0.0:${PORT}`);
+    console.log(`Enterprise AI Clinical Assistant running at http://localhost:${PORT}`);
   });
 }
 

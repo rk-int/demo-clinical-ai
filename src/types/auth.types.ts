@@ -24,4 +24,5 @@ export interface UserProfile {
   licenseNumber: string;
   assignedPatientIds: string[];
   mfaVerified: boolean;
+  avatarUrl?: string;
 }

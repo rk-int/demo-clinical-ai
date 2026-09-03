@@ -29,10 +29,12 @@ export interface AppointmentData {
   appointmentDate: string;
   appointmentTime: string;
   reasonForVisit: string;
-  status: 'CONFIRMED' | 'PENDING';
+  status: 'CONFIRMED' | 'PENDING' | 'CLOSED' | 'COMPLETED';
   emailSent: boolean;
   smsSent: boolean;
   bookedAt: string;
+  closeReason?: string;
+  closedAt?: string;
 }
 
 interface BookAppointmentModalProps {
@@ -107,7 +109,7 @@ export const BookAppointmentModal: React.FC<BookAppointmentModalProps> = ({
   };
 
   return (
-    <div className="fixed inset-[#000000_0px] z-50 flex items-center justify-center p-4 bg-slate-950/80 backdrop-blur-md animate-fadeIn">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/80 backdrop-blur-md animate-fadeIn">
       <div className={`w-full max-w-lg rounded-3xl border shadow-2xl overflow-hidden transition-all ${
         isDark ? 'bg-slate-900 border-white/10 text-white' : 'bg-white border-slate-200 text-slate-900'
       }`}>

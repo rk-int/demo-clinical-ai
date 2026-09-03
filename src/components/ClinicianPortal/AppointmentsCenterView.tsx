@@ -14,7 +14,12 @@ import {
   PlusCircle, 
   ArrowLeft,
   Sparkles,
-  UserCheck
+  UserCheck,
+  XCircle,
+  X,
+  AlertTriangle,
+  FileCheck2,
+  Check
 } from 'lucide-react';
 import { useTheme } from '../../context/ThemeContext';
 import { HospitalFacility, NETWORK_HOSPITALS } from '../../data/hospitalNetwork';
@@ -104,12 +109,46 @@ export const AppointmentsCenterView: React.FC<AppointmentsCenterViewProps> = ({
   const [isBookModalOpen, setIsBookModalOpen] = useState(false);
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedDepartmentFilter, setSelectedDepartmentFilter] = useState('ALL');
+  const [selectedStatusFilter, setSelectedStatusFilter] = useState<'ALL' | 'CONFIRMED' | 'CLOSED'>('ALL');
+
+  // Close Appointment Modal state
+  const [aptToClose, setAptToClose] = useState<AppointmentData | null>(null);
+  const [closeReason, setCloseReason] = useState('Encounter Completed Successfully');
+  const [closureToast, setClosureToast] = useState<string | null>(null);
 
   const handleBookAppointment = (newApt: AppointmentData) => {
     setAppointments((prev) => [newApt, ...prev]);
   };
 
+  const handleConfirmClose = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!aptToClose) return;
+
+    const currentTimeStr = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+
+    setAppointments((prev) =>
+      prev.map((apt) =>
+        apt.id === aptToClose.id
+          ? {
+              ...apt,
+              status: 'CLOSED',
+              closeReason: closeReason || 'Encounter Completed',
+              closedAt: `Today ${currentTimeStr}`,
+            }
+          : apt
+      )
+    );
+
+    setClosureToast(`Appointment ${aptToClose.id} for ${aptToClose.patientName} has been closed. Email & SMS closure alerts dispatched.`);
+    setTimeout(() => setClosureToast(null), 5000);
+
+    setAptToClose(null);
+    setCloseReason('Encounter Completed Successfully');
+  };
+
   const filteredAppointments = appointments.filter((apt) => {
+    if (selectedStatusFilter === 'CONFIRMED' && apt.status !== 'CONFIRMED') return false;
+    if (selectedStatusFilter === 'CLOSED' && apt.status !== 'CLOSED' && apt.status !== 'COMPLETED') return false;
     if (selectedDepartmentFilter !== 'ALL' && !apt.department.includes(selectedDepartmentFilter)) {
       return false;
     }
@@ -124,8 +163,21 @@ export const AppointmentsCenterView: React.FC<AppointmentsCenterViewProps> = ({
     );
   });
 
+  const activeCount = appointments.filter(a => a.status === 'CONFIRMED' || a.status === 'PENDING').length;
+  const closedCount = appointments.filter(a => a.status === 'CLOSED' || a.status === 'COMPLETED').length;
+
   return (
     <div className="space-y-6 max-w-7xl mx-auto p-4 sm:p-6">
+      {/* Toast Notification */}
+      {closureToast && (
+        <div className="fixed top-6 right-6 z-50 p-4 rounded-2xl bg-emerald-950 border border-emerald-500/50 text-white shadow-2xl flex items-center gap-3 animate-fadeIn">
+          <div className="p-2 rounded-xl bg-emerald-500/20 text-emerald-400">
+            <CheckCircle2 className="w-5 h-5" />
+          </div>
+          <p className="text-xs font-semibold">{closureToast}</p>
+        </div>
+      )}
+
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div className="flex items-center gap-3">
@@ -181,36 +233,6 @@ export const AppointmentsCenterView: React.FC<AppointmentsCenterViewProps> = ({
         </div>
       </div>
 
-      {/* Daily Round Schedule Summaries */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-        <div className={`p-4 rounded-2xl border ${isDark ? 'bg-slate-900/80 border-white/10' : 'bg-white border-slate-200 shadow-sm'}`}>
-          <div className="flex items-center justify-between mb-3">
-            <span className="text-xs font-bold text-blue-500 uppercase tracking-wider">Morning Inpatient Rounds</span>
-            <span className="text-[10px] px-2 py-0.5 rounded-full bg-blue-500/10 text-blue-400 font-bold">08:00 - 11:30</span>
-          </div>
-          <p className="text-xs text-slate-300 font-medium">Cardiology Inpatient Ward 4W</p>
-          <p className="text-[11px] text-slate-400 mt-1">Elena Rostova, Marcus Vance, Arthur Pendelton</p>
-        </div>
-
-        <div className={`p-4 rounded-2xl border ${isDark ? 'bg-slate-900/80 border-white/10' : 'bg-white border-slate-200 shadow-sm'}`}>
-          <div className="flex items-center justify-between mb-3">
-            <span className="text-xs font-bold text-cyan-500 uppercase tracking-wider">Specialty Clinic Visits</span>
-            <span className="text-[10px] px-2 py-0.5 rounded-full bg-cyan-500/10 text-cyan-400 font-bold">13:00 - 16:00</span>
-          </div>
-          <p className="text-xs text-slate-300 font-medium">Heart Failure & Post-CABG Review</p>
-          <p className="text-[11px] text-slate-400 mt-1">John Doe (13:30), Jane Smith (14:15), Robert Brown (15:00)</p>
-        </div>
-
-        <div className={`p-4 rounded-2xl border ${isDark ? 'bg-slate-900/80 border-white/10' : 'bg-white border-slate-200 shadow-sm'}`}>
-          <div className="flex items-center justify-between mb-3">
-            <span className="text-xs font-bold text-purple-500 uppercase tracking-wider">Multi-Disciplinary Handoff</span>
-            <span className="text-[10px] px-2 py-0.5 rounded-full bg-purple-500/10 text-purple-400 font-bold">16:30 - 17:00</span>
-          </div>
-          <p className="text-xs text-slate-300 font-medium">Care Coordination & Transition Board</p>
-          <p className="text-[11px] text-slate-400 mt-1">Nursing supervisor & clinical social worker review</p>
-        </div>
-      </div>
-
       {/* Main Appointments Table Card */}
       <div className={`rounded-2xl border p-5 sm:p-6 shadow-xl space-y-4 ${
         isDark ? 'bg-slate-900/90 border-white/10 text-white' : 'bg-white border-slate-200 text-slate-900'
@@ -218,12 +240,14 @@ export const AppointmentsCenterView: React.FC<AppointmentsCenterViewProps> = ({
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-white/10 pb-4">
           <div>
             <h2 className="text-lg font-bold tracking-tight">Scheduled Appointments Register</h2>
-            <p className="text-xs text-slate-400 mt-0.5 font-mono">
-              Total <strong className="text-cyan-400">{filteredAppointments.length}</strong> active appointments
-            </p>
+            <div className="flex items-center gap-2 mt-1 font-mono text-xs text-slate-400">
+              <span>Active: <strong className="text-emerald-400">{activeCount}</strong></span>
+              <span>•</span>
+              <span>Closed: <strong className="text-slate-400">{closedCount}</strong></span>
+            </div>
           </div>
 
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-2 flex-wrap">
             <div className="relative">
               <Search className="w-3.5 h-3.5 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2" />
               <input
@@ -237,6 +261,20 @@ export const AppointmentsCenterView: React.FC<AppointmentsCenterViewProps> = ({
               />
             </div>
 
+            {/* Status Filter */}
+            <select
+              value={selectedStatusFilter}
+              onChange={(e) => setSelectedStatusFilter(e.target.value as any)}
+              className={`px-3 py-1.5 rounded-xl text-xs font-semibold focus:outline-none cursor-pointer border ${
+                isDark ? 'bg-slate-950 border-white/10 text-emerald-400' : 'bg-slate-50 border-slate-200 text-slate-700'
+              }`}
+            >
+              <option value="ALL">All Statuses ({appointments.length})</option>
+              <option value="CONFIRMED">Active Only ({activeCount})</option>
+              <option value="CLOSED">Closed Only ({closedCount})</option>
+            </select>
+
+            {/* Specialty Filter */}
             <select
               value={selectedDepartmentFilter}
               onChange={(e) => setSelectedDepartmentFilter(e.target.value)}
@@ -265,65 +303,107 @@ export const AppointmentsCenterView: React.FC<AppointmentsCenterViewProps> = ({
                 <th className="p-3.5 font-bold">Facility & Department</th>
                 <th className="p-3.5 font-bold">Date & Time</th>
                 <th className="p-3.5 font-bold">Reason for Visit</th>
-                <th className="p-3.5 font-bold">Alert Status</th>
+                <th className="p-3.5 font-bold">Status & Alerts</th>
+                <th className="p-3.5 font-bold text-right">Action</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-white/5 font-sans">
-              {filteredAppointments.map((apt) => (
-                <tr key={apt.id} className={`transition-colors ${isDark ? 'hover:bg-white/5' : 'hover:bg-slate-50'}`}>
-                  {/* Patient Name & Age */}
-                  <td className="p-3.5 font-semibold">
-                    <div className="flex items-center gap-2">
-                      <span className="text-white font-bold text-sm">{apt.patientName}</span>
-                      <span className="text-[10px] px-1.5 py-0.2 rounded bg-blue-500/20 text-blue-300 font-mono">
-                        {apt.age} yrs
-                      </span>
-                    </div>
-                    <span className="text-[10px] text-slate-400 font-mono block mt-0.5">{apt.id}</span>
-                  </td>
-
-                  {/* Contact Info */}
-                  <td className="p-3.5 text-xs">
-                    <div className="flex items-center gap-1.5 text-emerald-300 font-mono font-medium">
-                      <Phone className="w-3 h-3 text-emerald-400" />
-                      <span>{apt.phoneNumber}</span>
-                    </div>
-                    <div className="flex items-center gap-1.5 text-slate-400 font-mono text-[11px] mt-0.5">
-                      <Mail className="w-3 h-3 text-cyan-400" />
-                      <span>{apt.email}</span>
-                    </div>
-                  </td>
-
-                  {/* Facility & Department */}
-                  <td className="p-3.5">
-                    <div className="font-bold text-slate-200">{apt.hospitalFacility}</div>
-                    <div className="text-[11px] text-cyan-300 font-mono mt-0.5">{apt.department}</div>
-                  </td>
-
-                  {/* Date & Time */}
-                  <td className="p-3.5 font-mono whitespace-nowrap">
-                    <div className="text-white font-bold">{apt.appointmentDate}</div>
-                    <div className="text-[11px] text-blue-400 font-semibold">{apt.appointmentTime}</div>
-                  </td>
-
-                  {/* Reason for Visit */}
-                  <td className="p-3.5 text-slate-300 max-w-xs">
-                    {apt.reasonForVisit}
-                  </td>
-
-                  {/* Alert Delivery Status */}
-                  <td className="p-3.5 whitespace-nowrap">
-                    <div className="flex flex-col gap-1">
-                      <span className="inline-flex items-center gap-1 text-[10px] font-bold font-mono px-2 py-0.5 rounded bg-emerald-500/20 text-emerald-300 border border-emerald-500/30">
-                        <CheckCircle2 className="w-3 h-3 text-emerald-400" /> Email Sent
-                      </span>
-                      <span className="inline-flex items-center gap-1 text-[10px] font-bold font-mono px-2 py-0.5 rounded bg-cyan-500/20 text-cyan-300 border border-cyan-500/30">
-                        <CheckCircle2 className="w-3 h-3 text-cyan-400" /> SMS Dispatched
-                      </span>
-                    </div>
+              {filteredAppointments.length === 0 ? (
+                <tr>
+                  <td colSpan={7} className="p-8 text-center text-slate-400 text-xs">
+                    No appointments match the current search or status filter.
                   </td>
                 </tr>
-              ))}
+              ) : (
+                filteredAppointments.map((apt) => {
+                  const isClosed = apt.status === 'CLOSED' || apt.status === 'COMPLETED';
+
+                  return (
+                    <tr key={apt.id} className={`transition-colors ${isClosed ? 'opacity-65 bg-slate-950/30' : isDark ? 'hover:bg-white/5' : 'hover:bg-slate-50'}`}>
+                      {/* Patient Name & Age */}
+                      <td className="p-3.5 font-semibold">
+                        <div className="flex items-center gap-2">
+                          <span className="text-white font-bold text-sm">{apt.patientName}</span>
+                          <span className="text-[10px] px-1.5 py-0.2 rounded bg-blue-500/20 text-blue-300 font-mono">
+                            {apt.age} yrs
+                          </span>
+                        </div>
+                        <span className="text-[10px] text-slate-400 font-mono block mt-0.5">{apt.id}</span>
+                      </td>
+
+                      {/* Contact Info */}
+                      <td className="p-3.5 text-xs">
+                        <div className="flex items-center gap-1.5 text-emerald-300 font-mono font-medium">
+                          <Phone className="w-3 h-3 text-emerald-400" />
+                          <span>{apt.phoneNumber}</span>
+                        </div>
+                        <div className="flex items-center gap-1.5 text-slate-400 font-mono text-[11px] mt-0.5">
+                          <Mail className="w-3 h-3 text-cyan-400" />
+                          <span>{apt.email}</span>
+                        </div>
+                      </td>
+
+                      {/* Facility & Department */}
+                      <td className="p-3.5">
+                        <div className="font-bold text-slate-200">{apt.hospitalFacility}</div>
+                        <div className="text-[11px] text-cyan-300 font-mono mt-0.5">{apt.department}</div>
+                      </td>
+
+                      {/* Date & Time */}
+                      <td className="p-3.5 font-mono whitespace-nowrap">
+                        <div className="text-white font-bold">{apt.appointmentDate}</div>
+                        <div className="text-[11px] text-blue-400 font-semibold">{apt.appointmentTime}</div>
+                      </td>
+
+                      {/* Reason for Visit */}
+                      <td className="p-3.5 text-slate-300 max-w-xs">
+                        {apt.reasonForVisit}
+                      </td>
+
+                      {/* Status & Alerts */}
+                      <td className="p-3.5 whitespace-nowrap">
+                        {isClosed ? (
+                          <div className="flex flex-col gap-1">
+                            <span className="inline-flex items-center gap-1 text-[10px] font-bold font-mono px-2.5 py-0.5 rounded bg-slate-800 text-slate-300 border border-slate-700">
+                              <Check className="w-3 h-3 text-slate-400" /> Closed
+                            </span>
+                            <span className="text-[10px] text-slate-400 font-mono block">
+                              {apt.closeReason || 'Encounter Completed'}
+                            </span>
+                          </div>
+                        ) : (
+                          <div className="flex flex-col gap-1">
+                            <span className="inline-flex items-center gap-1 text-[10px] font-bold font-mono px-2 py-0.5 rounded bg-emerald-500/20 text-emerald-300 border border-emerald-500/30">
+                              <CheckCircle2 className="w-3 h-3 text-emerald-400" /> Email Dispatched
+                            </span>
+                            <span className="inline-flex items-center gap-1 text-[10px] font-bold font-mono px-2 py-0.5 rounded bg-cyan-500/20 text-cyan-300 border border-cyan-500/30">
+                              <CheckCircle2 className="w-3 h-3 text-cyan-400" /> SMS Dispatched
+                            </span>
+                          </div>
+                        )}
+                      </td>
+
+                      {/* Action Button */}
+                      <td className="p-3.5 text-right whitespace-nowrap">
+                        {isClosed ? (
+                          <span className="text-[10px] font-mono text-slate-500 italic">
+                            Completed ({apt.closedAt || 'Closed'})
+                          </span>
+                        ) : (
+                          <button
+                            onClick={() => setAptToClose(apt)}
+                            className="px-3 py-1.5 rounded-xl bg-red-500/10 hover:bg-red-500/20 text-red-300 border border-red-500/30 font-mono text-[11px] font-bold flex items-center gap-1.5 ml-auto transition-all cursor-pointer shadow-sm hover:scale-105"
+                            title="Close / Cancel Appointment"
+                          >
+                            <XCircle className="w-3.5 h-3.5 text-red-400" />
+                            <span>Close Appointment</span>
+                          </button>
+                        )}
+                      </td>
+                    </tr>
+                  );
+                })
+              )}
             </tbody>
           </table>
         </div>
@@ -336,6 +416,79 @@ export const AppointmentsCenterView: React.FC<AppointmentsCenterViewProps> = ({
         onBookAppointment={handleBookAppointment}
         selectedHospital={selectedHospital}
       />
+
+      {/* Close Appointment Modal */}
+      {aptToClose && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/80 backdrop-blur-md animate-fadeIn">
+          <div className={`w-full max-w-md rounded-3xl border shadow-2xl overflow-hidden p-6 space-y-5 ${
+            isDark ? 'bg-slate-900 border-white/10 text-white' : 'bg-white border-slate-200 text-slate-900'
+          }`}>
+            <div className="flex items-center justify-between border-b border-white/10 pb-3">
+              <div className="flex items-center gap-2 text-red-400">
+                <XCircle className="w-5 h-5" />
+                <h3 className="font-bold text-base text-white">Close Clinical Appointment</h3>
+              </div>
+              <button
+                onClick={() => setAptToClose(null)}
+                className="p-1 rounded-lg text-slate-400 hover:text-white hover:bg-white/10 transition-colors"
+              >
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+
+            <div className="p-3.5 rounded-2xl bg-red-500/10 border border-red-500/30 text-xs text-red-200">
+              Closing appointment <strong className="text-white font-mono">{aptToClose.id}</strong> for{' '}
+              <strong className="text-white">{aptToClose.patientName}</strong> ({aptToClose.appointmentDate} at {aptToClose.appointmentTime}).
+            </div>
+
+            <form onSubmit={handleConfirmClose} className="space-y-4">
+              <div>
+                <label className="text-xs font-bold text-slate-300 block mb-1.5">
+                  Select Closure / Completion Reason:
+                </label>
+                <select
+                  value={closeReason}
+                  onChange={(e) => setCloseReason(e.target.value)}
+                  className={`w-full px-3.5 py-2.5 rounded-xl text-xs font-semibold focus:outline-none cursor-pointer border ${
+                    isDark ? 'bg-slate-950 border-white/10 text-white' : 'bg-slate-50 border-slate-200 text-slate-900'
+                  }`}
+                >
+                  <option value="Encounter Completed Successfully">Encounter Completed Successfully</option>
+                  <option value="Patient Requested Cancellation">Patient Requested Cancellation</option>
+                  <option value="No-Show / Patient Did Not Arrive">No-Show / Patient Did Not Arrive</option>
+                  <option value="Rescheduled to Future Date">Rescheduled to Future Date</option>
+                </select>
+              </div>
+
+              <div className="p-3 rounded-xl bg-slate-950/60 border border-white/10 text-[11px] text-slate-400 space-y-1 font-mono">
+                <div className="flex items-center gap-1.5 text-emerald-400 font-bold">
+                  <Mail className="w-3.5 h-3.5" /> Automated Closure Email Alert Will Be Sent
+                </div>
+                <div className="flex items-center gap-1.5 text-cyan-400 font-bold">
+                  <Phone className="w-3.5 h-3.5" /> SMS Cancellation Receipt Will Be Sent
+                </div>
+              </div>
+
+              <div className="flex items-center justify-end gap-3 pt-2">
+                <button
+                  type="button"
+                  onClick={() => setAptToClose(null)}
+                  className="px-4 py-2 rounded-xl text-xs font-bold text-slate-400 hover:text-white transition-colors cursor-pointer"
+                >
+                  Keep Active
+                </button>
+                <button
+                  type="submit"
+                  className="px-5 py-2.5 rounded-xl bg-red-600 hover:bg-red-500 text-white font-bold text-xs shadow-lg shadow-red-600/30 transition-all cursor-pointer flex items-center gap-2"
+                >
+                  <XCircle className="w-4 h-4" />
+                  <span>Confirm & Close Appointment</span>
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

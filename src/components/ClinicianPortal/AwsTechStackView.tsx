@@ -12,6 +12,9 @@ import {
   Zap, 
   Activity, 
   ArrowLeft,
+  ArrowRight,
+  ArrowUp,
+  ArrowDown,
   Download,
   Sparkles,
   ExternalLink,
@@ -25,6 +28,8 @@ import {
   ZoomOut,
   RotateCcw,
   Maximize2,
+  Move,
+  Compass,
   X
 } from 'lucide-react';
 import { useTheme } from '../../context/ThemeContext';
@@ -148,13 +153,24 @@ export const AwsTechStackView: React.FC<AwsTechStackViewProps> = ({
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedCategory, setSelectedCategory] = useState<string>('ALL');
 
-  // Zoom & Fullscreen Lightbox State
+  // Zoom & Pan Navigation State
   const [zoomScale, setZoomScale] = useState<number>(1);
+  const [panOffset, setPanOffset] = useState<{ x: number; y: number }>({ x: 0, y: 0 });
   const [isLightboxOpen, setIsLightboxOpen] = useState<boolean>(false);
 
   const handleZoomIn = () => setZoomScale(prev => Math.min(+(prev + 0.25).toFixed(2), 3));
   const handleZoomOut = () => setZoomScale(prev => Math.max(+(prev - 0.25).toFixed(2), 0.5));
-  const handleResetZoom = () => setZoomScale(1);
+  
+  // Pan Direction Handlers
+  const handleMoveUp = () => setPanOffset(prev => ({ ...prev, y: prev.y + 80 }));
+  const handleMoveDown = () => setPanOffset(prev => ({ ...prev, y: prev.y - 80 }));
+  const handleMoveLeft = () => setPanOffset(prev => ({ ...prev, x: prev.x + 80 }));
+  const handleMoveRight = () => setPanOffset(prev => ({ ...prev, x: prev.x - 80 }));
+  
+  const handleResetAll = () => {
+    setZoomScale(1);
+    setPanOffset({ x: 0, y: 0 });
+  };
 
   const categories = ['ALL', 'Edge & Ingress', 'Voice & AI', 'IAM & Security', 'Agentic Core', 'Data & EHR', 'Observability & DR'];
 
@@ -265,7 +281,7 @@ export const AwsTechStackView: React.FC<AwsTechStackViewProps> = ({
         </div>
       </div>
 
-      {/* Local Development Architecture Diagram Banner & Interactive Zoom Card */}
+      {/* Local Development Architecture Diagram Banner & Interactive Pan/Zoom Card */}
       <div className={`p-6 rounded-2xl border space-y-4 shadow-xl ${
         isDark ? 'bg-slate-900/90 border-white/10 text-white' : 'bg-white border-slate-200 text-slate-900'
       }`}>
@@ -276,7 +292,7 @@ export const AwsTechStackView: React.FC<AwsTechStackViewProps> = ({
                 Local Development Scope
               </span>
               <span className="text-[10px] font-mono font-bold px-2 py-0.5 rounded-full bg-blue-500/20 text-blue-300 border border-blue-500/40 uppercase">
-                Interactive Zoom Engine
+                Zoom & 2D Pan Engine
               </span>
             </div>
             <h2 className="text-lg font-bold tracking-tight mt-1 flex items-center gap-2">
@@ -310,16 +326,18 @@ export const AwsTechStackView: React.FC<AwsTechStackViewProps> = ({
           </div>
         </div>
 
-        {/* Zoom Control Bar */}
-        <div className="flex items-center justify-between bg-slate-950/80 p-2.5 rounded-xl border border-white/10 text-xs font-mono">
+        {/* Zoom & Pan Control Bar */}
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 bg-slate-950/80 p-3 rounded-xl border border-white/10 text-xs font-mono">
+          {/* Zoom Controls */}
           <div className="flex items-center gap-1.5">
+            <span className="text-[10px] text-slate-400 font-bold mr-1">ZOOM:</span>
             <button
               onClick={handleZoomIn}
               className="p-1.5 rounded-lg bg-white/10 hover:bg-white/20 text-white transition-colors cursor-pointer flex items-center gap-1"
               title="Zoom In (+25%)"
             >
-              <ZoomIn className="w-4 h-4 text-emerald-400" />
-              <span className="text-[11px]">Zoom In</span>
+              <ZoomIn className="w-3.5 h-3.5 text-emerald-400" />
+              <span className="text-[11px]">In</span>
             </button>
 
             <button
@@ -327,33 +345,72 @@ export const AwsTechStackView: React.FC<AwsTechStackViewProps> = ({
               className="p-1.5 rounded-lg bg-white/10 hover:bg-white/20 text-white transition-colors cursor-pointer flex items-center gap-1"
               title="Zoom Out (-25%)"
             >
-              <ZoomOut className="w-4 h-4 text-rose-400" />
-              <span className="text-[11px]">Zoom Out</span>
+              <ZoomOut className="w-3.5 h-3.5 text-rose-400" />
+              <span className="text-[11px]">Out</span>
             </button>
 
-            <button
-              onClick={handleResetZoom}
-              className="p-1.5 rounded-lg bg-white/10 hover:bg-white/20 text-slate-300 transition-colors cursor-pointer flex items-center gap-1"
-              title="Reset Zoom (100%)"
-            >
-              <RotateCcw className="w-3.5 h-3.5 text-cyan-400" />
-              <span className="text-[11px]">Reset</span>
-            </button>
-          </div>
-
-          <div className="flex items-center gap-3">
-            <span className="text-[11px] text-slate-400">Current Scale:</span>
-            <span className="px-2.5 py-0.5 rounded-lg bg-amber-500/20 text-amber-300 font-bold border border-amber-500/40">
+            <span className="px-2 py-0.5 rounded bg-amber-500/20 text-amber-300 font-bold border border-amber-500/40 text-[11px] ml-1">
               {Math.round(zoomScale * 100)}%
             </span>
           </div>
+
+          {/* Directional 2D Pan Control Pad */}
+          <div className="flex items-center gap-1.5">
+            <span className="text-[10px] text-slate-400 font-bold mr-1">NAVIGATE:</span>
+            <button
+              onClick={handleMoveUp}
+              className="p-1.5 rounded-lg bg-white/10 hover:bg-white/20 text-cyan-300 transition-colors cursor-pointer flex items-center gap-1"
+              title="Move Up / Top"
+            >
+              <ArrowUp className="w-3.5 h-3.5" />
+              <span className="text-[10px]">Top</span>
+            </button>
+
+            <button
+              onClick={handleMoveDown}
+              className="p-1.5 rounded-lg bg-white/10 hover:bg-white/20 text-cyan-300 transition-colors cursor-pointer flex items-center gap-1"
+              title="Move Down / Front"
+            >
+              <ArrowDown className="w-3.5 h-3.5" />
+              <span className="text-[10px]">Front</span>
+            </button>
+
+            <button
+              onClick={handleMoveLeft}
+              className="p-1.5 rounded-lg bg-white/10 hover:bg-white/20 text-cyan-300 transition-colors cursor-pointer flex items-center gap-1"
+              title="Move Left"
+            >
+              <ArrowLeft className="w-3.5 h-3.5" />
+              <span className="text-[10px]">Left</span>
+            </button>
+
+            <button
+              onClick={handleMoveRight}
+              className="p-1.5 rounded-lg bg-white/10 hover:bg-white/20 text-cyan-300 transition-colors cursor-pointer flex items-center gap-1"
+              title="Move Right"
+            >
+              <ArrowRight className="w-3.5 h-3.5" />
+              <span className="text-[10px]">Right</span>
+            </button>
+
+            <button
+              onClick={handleResetAll}
+              className="p-1.5 rounded-lg bg-white/10 hover:bg-white/20 text-purple-300 transition-colors cursor-pointer flex items-center gap-1 ml-1"
+              title="Reset Zoom & Pan Position"
+            >
+              <Compass className="w-3.5 h-3.5 text-purple-400" />
+              <span className="text-[10px]">Reset</span>
+            </button>
+          </div>
         </div>
 
-        {/* High Quality Interactive Image Viewport */}
-        <div className="rounded-xl border border-white/10 overflow-auto bg-slate-950/90 p-4 shadow-inner max-h-[600px] relative transition-all">
+        {/* High Quality Interactive Image Viewport with 2D Pan & Zoom */}
+        <div className="rounded-xl border border-white/10 overflow-hidden bg-slate-950/90 p-4 shadow-inner max-h-[600px] relative transition-all">
           <div 
-            className="flex items-center justify-center transition-transform duration-200 origin-top-left"
-            style={{ transform: `scale(${zoomScale})`, width: zoomScale > 1 ? `${zoomScale * 100}%` : '100%' }}
+            className="flex items-center justify-center transition-transform duration-200 origin-center"
+            style={{ 
+              transform: `scale(${zoomScale}) translate(${panOffset.x}px, ${panOffset.y}px)` 
+            }}
           >
             <img
               src="/local_development_architecture.png"
@@ -364,11 +421,11 @@ export const AwsTechStackView: React.FC<AwsTechStackViewProps> = ({
         </div>
       </div>
 
-      {/* FULLSCREEN LIGHTBOX MODAL */}
+      {/* FULLSCREEN LIGHTBOX MODAL WITH 2D PAN & ZOOM CONTROLS */}
       {isLightboxOpen && (
         <div className="fixed inset-0 z-50 bg-slate-950/95 backdrop-blur-2xl flex flex-col p-4 sm:p-6 animate-fadeIn">
           {/* Modal Header */}
-          <div className="flex items-center justify-between bg-slate-900/80 p-4 rounded-2xl border border-white/10 mb-4 shrink-0 shadow-2xl">
+          <div className="flex items-center justify-between bg-slate-900/80 p-4 rounded-2xl border border-white/10 mb-4 shrink-0 shadow-2xl flex-wrap gap-3">
             <div className="flex items-center gap-3">
               <div className="p-2 rounded-xl bg-emerald-500/20 text-emerald-400 border border-emerald-500/30">
                 <Layers className="w-5 h-5" />
@@ -376,35 +433,46 @@ export const AwsTechStackView: React.FC<AwsTechStackViewProps> = ({
               <div>
                 <h3 className="font-extrabold text-white text-base">Local Development Architecture — Interactive Presentation Mode</h3>
                 <p className="text-xs text-slate-400 font-mono">
-                  300 DPI High-Resolution Vector Diagram • Scale: {Math.round(zoomScale * 100)}%
+                  300 DPI Vector Diagram • Scale: {Math.round(zoomScale * 100)}% • Position X: {panOffset.x}px | Y: {panOffset.y}px
                 </p>
               </div>
             </div>
 
-            {/* Modal Controls */}
-            <div className="flex items-center gap-2">
-              <button
-                onClick={handleZoomIn}
-                className="px-3 py-1.5 rounded-xl bg-white/10 hover:bg-white/20 text-white font-mono text-xs flex items-center gap-1 cursor-pointer transition-all"
-              >
-                <ZoomIn className="w-4 h-4 text-emerald-400" />
-                <span>+</span>
-              </button>
+            {/* Modal Navigation Controls */}
+            <div className="flex items-center gap-2 flex-wrap">
+              {/* Zoom Controls */}
+              <div className="flex items-center gap-1 bg-slate-950/80 p-1 rounded-xl border border-white/10 text-xs font-mono">
+                <button
+                  onClick={handleZoomIn}
+                  className="px-2.5 py-1 rounded-lg bg-white/10 hover:bg-white/20 text-emerald-400 font-bold"
+                  title="Zoom In"
+                >
+                  +
+                </button>
+                <span className="text-amber-300 font-bold px-1.5">{Math.round(zoomScale * 100)}%</span>
+                <button
+                  onClick={handleZoomOut}
+                  className="px-2.5 py-1 rounded-lg bg-white/10 hover:bg-white/20 text-rose-400 font-bold"
+                  title="Zoom Out"
+                >
+                  -
+                </button>
+              </div>
+
+              {/* Directional Pad Controls */}
+              <div className="flex items-center gap-1 bg-slate-950/80 p-1 rounded-xl border border-white/10 text-xs font-mono text-cyan-300">
+                <button onClick={handleMoveUp} className="p-1 rounded bg-white/10 hover:bg-white/20" title="Move Top"><ArrowUp className="w-3.5 h-3.5" /></button>
+                <button onClick={handleMoveDown} className="p-1 rounded bg-white/10 hover:bg-white/20" title="Move Down / Front"><ArrowDown className="w-3.5 h-3.5" /></button>
+                <button onClick={handleMoveLeft} className="p-1 rounded bg-white/10 hover:bg-white/20" title="Move Left"><ArrowLeft className="w-3.5 h-3.5" /></button>
+                <button onClick={handleMoveRight} className="p-1 rounded bg-white/10 hover:bg-white/20" title="Move Right"><ArrowRight className="w-3.5 h-3.5" /></button>
+              </div>
 
               <button
-                onClick={handleZoomOut}
-                className="px-3 py-1.5 rounded-xl bg-white/10 hover:bg-white/20 text-white font-mono text-xs flex items-center gap-1 cursor-pointer transition-all"
+                onClick={handleResetAll}
+                className="px-3 py-1.5 rounded-xl bg-purple-500/20 hover:bg-purple-500/30 text-purple-300 border border-purple-500/40 font-mono text-xs flex items-center gap-1 cursor-pointer transition-all"
               >
-                <ZoomOut className="w-4 h-4 text-rose-400" />
-                <span>-</span>
-              </button>
-
-              <button
-                onClick={handleResetZoom}
-                className="px-3 py-1.5 rounded-xl bg-white/10 hover:bg-white/20 text-slate-300 font-mono text-xs flex items-center gap-1 cursor-pointer transition-all"
-              >
-                <RotateCcw className="w-3.5 h-3.5 text-cyan-400" />
-                <span>100%</span>
+                <Compass className="w-3.5 h-3.5 text-purple-400" />
+                <span>Reset</span>
               </button>
 
               <a
@@ -427,15 +495,17 @@ export const AwsTechStackView: React.FC<AwsTechStackViewProps> = ({
           </div>
 
           {/* Modal Image Viewport */}
-          <div className="flex-1 overflow-auto bg-slate-950 p-6 rounded-2xl border border-white/10 shadow-2xl flex items-center justify-center">
+          <div className="flex-1 overflow-hidden bg-slate-950 p-6 rounded-2xl border border-white/10 shadow-2xl flex items-center justify-center relative">
             <div 
-              className="transition-transform duration-200 origin-center"
-              style={{ transform: `scale(${zoomScale})` }}
+              className="transition-transform duration-200 origin-center cursor-grab active:cursor-grabbing"
+              style={{ 
+                transform: `scale(${zoomScale}) translate(${panOffset.x}px, ${panOffset.y}px)` 
+              }}
             >
               <img
                 src="/local_development_architecture.png"
                 alt="Local Development Architecture Diagram Fullscreen"
-                className="max-w-none w-[1800px] h-auto rounded-xl shadow-2xl border border-white/10"
+                className="max-w-none w-[1800px] h-auto rounded-xl shadow-2xl border border-white/10 select-none"
               />
             </div>
           </div>

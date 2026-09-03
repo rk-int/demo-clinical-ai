@@ -156,7 +156,7 @@ export const AwsTechStackView: React.FC<AwsTechStackViewProps> = ({
   // Zoom & Pan Navigation State
   const [zoomScale, setZoomScale] = useState<number>(1);
   const [panOffset, setPanOffset] = useState<{ x: number; y: number }>({ x: 0, y: 0 });
-  const [activeModalDiagram, setActiveModalDiagram] = useState<'LOCAL' | 'AWS' | null>(null);
+  const [activeModalDiagram, setActiveModalDiagram] = useState<'LOCAL' | 'AWS' | 'LANDSCAPE' | null>(null);
 
   const handleZoomIn = () => setZoomScale(prev => Math.min(+(prev + 0.25).toFixed(2), 3));
   const handleZoomOut = () => setZoomScale(prev => Math.max(+(prev - 0.25).toFixed(2), 0.5));
@@ -172,7 +172,7 @@ export const AwsTechStackView: React.FC<AwsTechStackViewProps> = ({
     setPanOffset({ x: 0, y: 0 });
   };
 
-  const openDiagramModal = (type: 'LOCAL' | 'AWS') => {
+  const openDiagramModal = (type: 'LOCAL' | 'AWS' | 'LANDSCAPE') => {
     setZoomScale(1);
     setPanOffset({ x: 0, y: 0 });
     setActiveModalDiagram(type);
@@ -350,7 +350,7 @@ export const AwsTechStackView: React.FC<AwsTechStackViewProps> = ({
         </div>
       </div>
 
-      {/* DIAGRAM 2: ENTERPRISE HEALTHCARE AI PLATFORM ON AWS */}
+      {/* DIAGRAM 2: ENTERPRISE HEALTHCARE AI PLATFORM ON AWS (AWS CLOUD TOPOLOGY) */}
       <div className={`p-6 rounded-2xl border space-y-4 shadow-xl ${
         isDark ? 'bg-slate-900/90 border-white/10 text-white' : 'bg-white border-slate-200 text-slate-900'
       }`}>
@@ -358,25 +358,25 @@ export const AwsTechStackView: React.FC<AwsTechStackViewProps> = ({
           <div>
             <div className="flex items-center gap-2">
               <span className="text-[10px] font-mono font-bold px-2 py-0.5 rounded-full bg-cyan-500/20 text-cyan-300 border border-cyan-500/40 uppercase">
-                Enterprise Production Scope
+                AWS Cloud Topology Scope
               </span>
               <span className="text-[10px] font-mono font-bold px-2 py-0.5 rounded-full bg-purple-500/20 text-purple-300 border border-purple-500/40 uppercase">
-                10-Domain AWS Architecture
+                Managed Cloud Services
               </span>
             </div>
             <h2 className="text-lg font-bold tracking-tight mt-1 flex items-center gap-2">
               <Cloud className="w-5 h-5 text-cyan-400" />
-              <span>2. Enterprise Healthcare AI Platform on AWS (Reference Architecture)</span>
+              <span>2. Enterprise Healthcare AI Platform on AWS (AWS Cloud Topology)</span>
             </h2>
             <p className="text-xs text-slate-400 mt-0.5 font-mono">
-              HIPAA-aligned agentic RAG topology: Amplify ➔ CloudFront ➔ API Gateway ➔ Amazon Agent Core ➔ Bedrock ➔ HealthLake ➔ Multi-Region Aurora
+              Managed AWS Flow: CloudFront ➔ API Gateway ➔ Lambda/ECS ➔ Cognito / Bedrock Agents ➔ Aurora / HealthLake ➔ Guardrails ➔ CloudWatch & CloudTrail
             </p>
           </div>
 
           <div className="flex items-center gap-2 flex-wrap shrink-0">
             <a
               href="/aws_enterprise_architecture.png"
-              download="AWS_Enterprise_Healthcare_AI_Architecture.png"
+              download="AWS_Cloud_Topology_Architecture.png"
               className="px-3.5 py-2 rounded-xl bg-cyan-500 hover:bg-cyan-400 text-slate-950 font-bold text-xs flex items-center gap-1.5 cursor-pointer shadow-md transition-all hover:scale-105"
             >
               <Download className="w-4 h-4" />
@@ -402,11 +402,74 @@ export const AwsTechStackView: React.FC<AwsTechStackViewProps> = ({
           <div className="flex items-center justify-center h-full">
             <img
               src="/aws_enterprise_architecture.png"
-              alt="AWS Enterprise Healthcare AI Architecture Diagram"
+              alt="AWS Cloud Topology Architecture Diagram"
               className="w-full h-auto rounded-lg object-contain max-h-[460px] mx-auto transition-transform group-hover:scale-[1.01]"
             />
           </div>
           <div className="absolute bottom-4 right-4 bg-slate-950/90 backdrop-blur-md px-3 py-1.5 rounded-xl border border-white/10 text-[10px] font-mono text-cyan-300 flex items-center gap-1.5 shadow-lg group-hover:bg-cyan-500/20 transition-all">
+            <Maximize2 className="w-3.5 h-3.5" />
+            <span>Click to Popup Full Window</span>
+          </div>
+        </div>
+      </div>
+
+      {/* DIAGRAM 3: ENTERPRISE HEALTHCARE AI PLATFORM — COMPLETE AWS LANDSCAPE BLUEPRINT */}
+      <div className={`p-6 rounded-2xl border space-y-4 shadow-xl ${
+        isDark ? 'bg-slate-900/90 border-white/10 text-white' : 'bg-white border-slate-200 text-slate-900'
+      }`}>
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-white/10 pb-4">
+          <div>
+            <div className="flex items-center gap-2">
+              <span className="text-[10px] font-mono font-bold px-2 py-0.5 rounded-full bg-purple-500/20 text-purple-300 border border-purple-500/40 uppercase">
+                Complete Enterprise Blueprint
+              </span>
+              <span className="text-[10px] font-mono font-bold px-2 py-0.5 rounded-full bg-amber-500/20 text-amber-300 border border-amber-500/40 uppercase">
+                10-Domain AWS Landscape
+              </span>
+            </div>
+            <h2 className="text-lg font-bold tracking-tight mt-1 flex items-center gap-2">
+              <Server className="w-5 h-5 text-purple-400" />
+              <span>3. Enterprise Healthcare AI Platform — Complete AWS Landscape Blueprint</span>
+            </h2>
+            <p className="text-xs text-slate-400 mt-0.5 font-mono">
+              Comprehensive reference architecture covering all 10 AWS domains, Business Outcomes, ROI Model, Implementation Roadmap, & Resilience Foundation
+            </p>
+          </div>
+
+          <div className="flex items-center gap-2 flex-wrap shrink-0">
+            <a
+              href="/aws_complete_landscape_architecture.png"
+              download="Complete_AWS_Landscape_Architecture.png"
+              className="px-3.5 py-2 rounded-xl bg-purple-500 hover:bg-purple-400 text-slate-950 font-bold text-xs flex items-center gap-1.5 cursor-pointer shadow-md transition-all hover:scale-105"
+            >
+              <Download className="w-4 h-4" />
+              <span>Download PNG</span>
+            </a>
+
+            <button
+              onClick={() => openDiagramModal('LANDSCAPE')}
+              className="px-3.5 py-2 rounded-xl bg-amber-500 hover:bg-amber-400 text-slate-950 font-bold text-xs flex items-center gap-1.5 cursor-pointer shadow-md transition-all hover:scale-105"
+            >
+              <Maximize2 className="w-4 h-4" />
+              <span>Fullscreen Presentation</span>
+            </button>
+          </div>
+        </div>
+
+        {/* High Quality Preview Image Viewport (Clickable to Popup Full Window) */}
+        <div 
+          onClick={() => openDiagramModal('LANDSCAPE')}
+          className="rounded-xl border border-white/10 overflow-hidden bg-slate-950/90 p-4 shadow-inner max-h-[500px] relative transition-all cursor-pointer group hover:border-purple-500/50"
+          title="Click to popup full window diagram"
+        >
+          <div className="flex items-center justify-center h-full">
+            <img
+              src="/aws_complete_landscape_architecture.png"
+              alt="Complete AWS Landscape Architecture Diagram"
+              className="w-full h-auto rounded-lg object-contain max-h-[460px] mx-auto transition-transform group-hover:scale-[1.01]"
+            />
+          </div>
+          <div className="absolute bottom-4 right-4 bg-slate-950/90 backdrop-blur-md px-3 py-1.5 rounded-xl border border-white/10 text-[10px] font-mono text-purple-300 flex items-center gap-1.5 shadow-lg group-hover:bg-purple-500/20 transition-all">
             <Maximize2 className="w-3.5 h-3.5" />
             <span>Click to Popup Full Window</span>
           </div>
@@ -420,13 +483,15 @@ export const AwsTechStackView: React.FC<AwsTechStackViewProps> = ({
           <div className="flex items-center justify-between bg-slate-900/90 p-4 rounded-2xl border border-white/10 mb-4 shrink-0 shadow-2xl flex-wrap gap-3">
             <div className="flex items-center gap-3">
               <div className="p-2 rounded-xl bg-cyan-500/20 text-cyan-400 border border-cyan-500/30">
-                {activeModalDiagram === 'LOCAL' ? <Layers className="w-5 h-5" /> : <Cloud className="w-5 h-5" />}
+                {activeModalDiagram === 'LOCAL' ? <Layers className="w-5 h-5" /> : activeModalDiagram === 'AWS' ? <Cloud className="w-5 h-5" /> : <Server className="w-5 h-5" />}
               </div>
               <div>
                 <h3 className="font-extrabold text-white text-base">
                   {activeModalDiagram === 'LOCAL' 
-                    ? 'Local Development Architecture — Presentation Mode' 
-                    : 'Enterprise Healthcare AI Platform on AWS — Presentation Mode'}
+                    ? '1. Local Development Architecture — Presentation Mode' 
+                    : activeModalDiagram === 'AWS'
+                    ? '2. Enterprise Healthcare AI Platform on AWS (Cloud Topology) — Presentation Mode'
+                    : '3. Complete AWS Landscape Blueprint — Presentation Mode'}
                 </h3>
                 <p className="text-xs text-slate-400 font-mono">
                   300 DPI High-Res Vector PNG • Scale: {Math.round(zoomScale * 100)}% • Position X: {panOffset.x}px | Y: {panOffset.y}px
@@ -436,13 +501,27 @@ export const AwsTechStackView: React.FC<AwsTechStackViewProps> = ({
 
             {/* Modal Navigation Controls */}
             <div className="flex items-center gap-2 flex-wrap">
-              {/* Switch Diagram Button */}
-              <button
-                onClick={() => openDiagramModal(activeModalDiagram === 'LOCAL' ? 'AWS' : 'LOCAL')}
-                className="px-3 py-1.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-amber-300 border border-amber-500/40 font-mono text-xs font-bold flex items-center gap-1 cursor-pointer transition-all"
-              >
-                <span>Switch to {activeModalDiagram === 'LOCAL' ? 'AWS Architecture' : 'Local Architecture'}</span>
-              </button>
+              {/* Diagram Switcher Buttons */}
+              <div className="flex items-center gap-1 bg-slate-950/80 p-1 rounded-xl border border-white/10 text-xs font-mono">
+                <button
+                  onClick={() => openDiagramModal('LOCAL')}
+                  className={`px-2.5 py-1 rounded-lg transition-colors font-bold ${activeModalDiagram === 'LOCAL' ? 'bg-emerald-500 text-slate-950' : 'text-slate-300 hover:bg-white/10'}`}
+                >
+                  1. Local
+                </button>
+                <button
+                  onClick={() => openDiagramModal('AWS')}
+                  className={`px-2.5 py-1 rounded-lg transition-colors font-bold ${activeModalDiagram === 'AWS' ? 'bg-cyan-500 text-slate-950' : 'text-slate-300 hover:bg-white/10'}`}
+                >
+                  2. AWS Flow
+                </button>
+                <button
+                  onClick={() => openDiagramModal('LANDSCAPE')}
+                  className={`px-2.5 py-1 rounded-lg transition-colors font-bold ${activeModalDiagram === 'LANDSCAPE' ? 'bg-purple-500 text-slate-950' : 'text-slate-300 hover:bg-white/10'}`}
+                >
+                  3. Landscape
+                </button>
+              </div>
 
               {/* Zoom Controls */}
               <div className="flex items-center gap-1 bg-slate-950/80 p-1 rounded-xl border border-white/10 text-xs font-mono">
@@ -480,8 +559,20 @@ export const AwsTechStackView: React.FC<AwsTechStackViewProps> = ({
               </button>
 
               <a
-                href={activeModalDiagram === 'LOCAL' ? '/local_development_architecture.png' : '/aws_enterprise_architecture.png'}
-                download={activeModalDiagram === 'LOCAL' ? 'Local_Development_Architecture.png' : 'AWS_Enterprise_Healthcare_AI_Architecture.png'}
+                href={
+                  activeModalDiagram === 'LOCAL' 
+                    ? '/local_development_architecture.png' 
+                    : activeModalDiagram === 'AWS' 
+                    ? '/aws_enterprise_architecture.png' 
+                    : '/aws_complete_landscape_architecture.png'
+                }
+                download={
+                  activeModalDiagram === 'LOCAL' 
+                    ? 'Local_Development_Architecture.png' 
+                    : activeModalDiagram === 'AWS' 
+                    ? 'AWS_Cloud_Topology_Architecture.png' 
+                    : 'Complete_AWS_Landscape_Architecture.png'
+                }
                 className="px-3.5 py-1.5 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-bold text-xs flex items-center gap-1.5 cursor-pointer shadow-md transition-all ml-2"
               >
                 <Download className="w-4 h-4" />
@@ -507,8 +598,20 @@ export const AwsTechStackView: React.FC<AwsTechStackViewProps> = ({
               }}
             >
               <img
-                src={activeModalDiagram === 'LOCAL' ? '/local_development_architecture.png' : '/aws_enterprise_architecture.png'}
-                alt={activeModalDiagram === 'LOCAL' ? 'Local Development Architecture Diagram' : 'AWS Enterprise Healthcare AI Architecture Diagram'}
+                src={
+                  activeModalDiagram === 'LOCAL' 
+                    ? '/local_development_architecture.png' 
+                    : activeModalDiagram === 'AWS' 
+                    ? '/aws_enterprise_architecture.png' 
+                    : '/aws_complete_landscape_architecture.png'
+                }
+                alt={
+                  activeModalDiagram === 'LOCAL' 
+                    ? 'Local Development Architecture Diagram' 
+                    : activeModalDiagram === 'AWS' 
+                    ? 'AWS Cloud Topology Architecture Diagram' 
+                    : 'Complete AWS Landscape Architecture Diagram'
+                }
                 className="max-w-none w-[1850px] h-auto rounded-xl shadow-2xl border border-white/10 select-none"
               />
             </div>

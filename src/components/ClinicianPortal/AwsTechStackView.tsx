@@ -252,6 +252,53 @@ export const AwsTechStackView: React.FC<AwsTechStackViewProps> = ({
         </div>
       </div>
 
+      {/* Local Development Architecture Diagram Banner & High-Res Download Card */}
+      <div className={`p-6 rounded-2xl border space-y-4 shadow-xl ${
+        isDark ? 'bg-slate-900/90 border-white/10 text-white' : 'bg-white border-slate-200 text-slate-900'
+      }`}>
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-white/10 pb-4">
+          <div>
+            <div className="flex items-center gap-2">
+              <span className="text-[10px] font-mono font-bold px-2 py-0.5 rounded-full bg-emerald-500/20 text-emerald-300 border border-emerald-500/40 uppercase">
+                Local Development Scope
+              </span>
+              <span className="text-[10px] font-mono font-bold px-2 py-0.5 rounded-full bg-blue-500/20 text-blue-300 border border-blue-500/40 uppercase">
+                High-Resolution Diagram
+              </span>
+            </div>
+            <h2 className="text-lg font-bold tracking-tight mt-1 flex items-center gap-2">
+              <Layers className="w-5 h-5 text-emerald-400" />
+              <span>Local Development Architecture Diagram</span>
+            </h2>
+            <p className="text-xs text-slate-400 mt-0.5 font-mono">
+              7-layer local execution topology: React 18 UI ➔ Clinical AI Gateway ➔ Multi-Agent Dispatch ➔ Context Fusion ➔ LLM Inference ➔ Response Validator
+            </p>
+          </div>
+
+          <a
+            href="/local_development_architecture.png"
+            download="Local_Development_Architecture.png"
+            className="px-4 py-2.5 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-bold text-xs flex items-center gap-2 cursor-pointer shadow-lg shadow-emerald-500/20 transition-all hover:scale-105 shrink-0"
+          >
+            <Download className="w-4 h-4" />
+            <span>Download High-Res Architecture Diagram (PNG)</span>
+          </a>
+        </div>
+
+        {/* High Quality Preview Image Container */}
+        <div className="rounded-xl border border-white/10 overflow-hidden bg-slate-950/80 p-2 shadow-inner group relative">
+          <img
+            src="/local_development_architecture.png"
+            alt="Local Development Architecture Diagram"
+            className="w-full h-auto rounded-lg object-contain max-h-[550px] mx-auto transition-transform group-hover:scale-[1.005]"
+          />
+          <div className="absolute top-4 right-4 bg-slate-950/80 backdrop-blur-md px-3 py-1.5 rounded-xl border border-white/10 text-[10px] font-mono text-slate-300 flex items-center gap-1.5 shadow-md">
+            <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400" />
+            <span>300 DPI High-Res Vector PNG</span>
+          </div>
+        </div>
+      </div>
+
       {/* Main Table Container */}
       <div className={`rounded-2xl border p-5 sm:p-6 shadow-xl space-y-4 ${
         isDark ? 'bg-slate-900/90 border-white/10 text-white' : 'bg-white border-slate-200 text-slate-900'

@@ -20,7 +20,12 @@ import {
   CheckCircle2,
   Globe,
   HardDrive,
-  Workflow
+  Workflow,
+  ZoomIn,
+  ZoomOut,
+  RotateCcw,
+  Maximize2,
+  X
 } from 'lucide-react';
 import { useTheme } from '../../context/ThemeContext';
 import { UserProfile } from '../../types/auth.types';
@@ -143,6 +148,14 @@ export const AwsTechStackView: React.FC<AwsTechStackViewProps> = ({
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedCategory, setSelectedCategory] = useState<string>('ALL');
 
+  // Zoom & Fullscreen Lightbox State
+  const [zoomScale, setZoomScale] = useState<number>(1);
+  const [isLightboxOpen, setIsLightboxOpen] = useState<boolean>(false);
+
+  const handleZoomIn = () => setZoomScale(prev => Math.min(+(prev + 0.25).toFixed(2), 3));
+  const handleZoomOut = () => setZoomScale(prev => Math.max(+(prev - 0.25).toFixed(2), 0.5));
+  const handleResetZoom = () => setZoomScale(1);
+
   const categories = ['ALL', 'Edge & Ingress', 'Voice & AI', 'IAM & Security', 'Agentic Core', 'Data & EHR', 'Observability & DR'];
 
   const filteredDomains = AWS_TECH_STACK_DOMAINS.filter((item) => {
@@ -252,7 +265,7 @@ export const AwsTechStackView: React.FC<AwsTechStackViewProps> = ({
         </div>
       </div>
 
-      {/* Local Development Architecture Diagram Banner & High-Res Download Card */}
+      {/* Local Development Architecture Diagram Banner & Interactive Zoom Card */}
       <div className={`p-6 rounded-2xl border space-y-4 shadow-xl ${
         isDark ? 'bg-slate-900/90 border-white/10 text-white' : 'bg-white border-slate-200 text-slate-900'
       }`}>
@@ -263,7 +276,7 @@ export const AwsTechStackView: React.FC<AwsTechStackViewProps> = ({
                 Local Development Scope
               </span>
               <span className="text-[10px] font-mono font-bold px-2 py-0.5 rounded-full bg-blue-500/20 text-blue-300 border border-blue-500/40 uppercase">
-                High-Resolution Diagram
+                Interactive Zoom Engine
               </span>
             </div>
             <h2 className="text-lg font-bold tracking-tight mt-1 flex items-center gap-2">
@@ -275,134 +288,159 @@ export const AwsTechStackView: React.FC<AwsTechStackViewProps> = ({
             </p>
           </div>
 
-          <a
-            href="/local_development_architecture.png"
-            download="Local_Development_Architecture.png"
-            className="px-4 py-2.5 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-bold text-xs flex items-center gap-2 cursor-pointer shadow-lg shadow-emerald-500/20 transition-all hover:scale-105 shrink-0"
-          >
-            <Download className="w-4 h-4" />
-            <span>Download High-Res Architecture Diagram (PNG)</span>
-          </a>
+          <div className="flex items-center gap-2 flex-wrap shrink-0">
+            {/* Download PNG Button */}
+            <a
+              href="/local_development_architecture.png"
+              download="Local_Development_Architecture.png"
+              className="px-3.5 py-2 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-bold text-xs flex items-center gap-1.5 cursor-pointer shadow-md transition-all hover:scale-105"
+            >
+              <Download className="w-4 h-4" />
+              <span>Download PNG</span>
+            </a>
+
+            {/* Presentation Mode / Fullscreen Lightbox Button */}
+            <button
+              onClick={() => setIsLightboxOpen(true)}
+              className="px-3.5 py-2 rounded-xl bg-blue-600 hover:bg-blue-500 text-white font-bold text-xs flex items-center gap-1.5 cursor-pointer shadow-md transition-all hover:scale-105"
+            >
+              <Maximize2 className="w-4 h-4" />
+              <span>Fullscreen Presentation</span>
+            </button>
+          </div>
         </div>
 
-        {/* High Quality Preview Image Container */}
-        <div className="rounded-xl border border-white/10 overflow-hidden bg-slate-950/80 p-2 shadow-inner group relative">
-          <img
-            src="/local_development_architecture.png"
-            alt="Local Development Architecture Diagram"
-            className="w-full h-auto rounded-lg object-contain max-h-[550px] mx-auto transition-transform group-hover:scale-[1.005]"
-          />
-          <div className="absolute top-4 right-4 bg-slate-950/80 backdrop-blur-md px-3 py-1.5 rounded-xl border border-white/10 text-[10px] font-mono text-slate-300 flex items-center gap-1.5 shadow-md">
-            <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400" />
-            <span>300 DPI High-Res Vector PNG</span>
+        {/* Zoom Control Bar */}
+        <div className="flex items-center justify-between bg-slate-950/80 p-2.5 rounded-xl border border-white/10 text-xs font-mono">
+          <div className="flex items-center gap-1.5">
+            <button
+              onClick={handleZoomIn}
+              className="p-1.5 rounded-lg bg-white/10 hover:bg-white/20 text-white transition-colors cursor-pointer flex items-center gap-1"
+              title="Zoom In (+25%)"
+            >
+              <ZoomIn className="w-4 h-4 text-emerald-400" />
+              <span className="text-[11px]">Zoom In</span>
+            </button>
+
+            <button
+              onClick={handleZoomOut}
+              className="p-1.5 rounded-lg bg-white/10 hover:bg-white/20 text-white transition-colors cursor-pointer flex items-center gap-1"
+              title="Zoom Out (-25%)"
+            >
+              <ZoomOut className="w-4 h-4 text-rose-400" />
+              <span className="text-[11px]">Zoom Out</span>
+            </button>
+
+            <button
+              onClick={handleResetZoom}
+              className="p-1.5 rounded-lg bg-white/10 hover:bg-white/20 text-slate-300 transition-colors cursor-pointer flex items-center gap-1"
+              title="Reset Zoom (100%)"
+            >
+              <RotateCcw className="w-3.5 h-3.5 text-cyan-400" />
+              <span className="text-[11px]">Reset</span>
+            </button>
+          </div>
+
+          <div className="flex items-center gap-3">
+            <span className="text-[11px] text-slate-400">Current Scale:</span>
+            <span className="px-2.5 py-0.5 rounded-lg bg-amber-500/20 text-amber-300 font-bold border border-amber-500/40">
+              {Math.round(zoomScale * 100)}%
+            </span>
+          </div>
+        </div>
+
+        {/* High Quality Interactive Image Viewport */}
+        <div className="rounded-xl border border-white/10 overflow-auto bg-slate-950/90 p-4 shadow-inner max-h-[600px] relative transition-all">
+          <div 
+            className="flex items-center justify-center transition-transform duration-200 origin-top-left"
+            style={{ transform: `scale(${zoomScale})`, width: zoomScale > 1 ? `${zoomScale * 100}%` : '100%' }}
+          >
+            <img
+              src="/local_development_architecture.png"
+              alt="Local Development Architecture Diagram"
+              className="w-full h-auto rounded-lg object-contain shadow-2xl mx-auto"
+            />
           </div>
         </div>
       </div>
 
-      {/* Main Table Container */}
-      <div className={`rounded-2xl border p-5 sm:p-6 shadow-xl space-y-4 ${
-        isDark ? 'bg-slate-900/90 border-white/10 text-white' : 'bg-white border-slate-200 text-slate-900'
-      }`}>
-        {/* Table Header Controls */}
-        <div className="flex flex-col md:flex-row md:items-center justify-between gap-3 border-b border-white/10 pb-4">
-          <div>
-            <h2 className="text-lg font-bold tracking-tight flex items-center gap-2">
-              <span>Full AWS Services Tech Stack Matrix</span>
-              <span className="text-xs px-2 py-0.5 rounded-full bg-amber-500/20 text-amber-300 font-mono">
-                {filteredDomains.length} Domains
-              </span>
-            </h2>
-            <p className="text-xs text-slate-400 mt-0.5 font-mono">
-              Component-by-component comparison: Local React/Express vs AWS Cloud Production Stack
-            </p>
-          </div>
-
-          <div className="flex items-center gap-2 flex-wrap">
-            {/* Search Box */}
-            <div className="relative">
-              <Search className="w-3.5 h-3.5 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2" />
-              <input
-                type="text"
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-                placeholder="Search AWS service, domain..."
-                className={`pl-8 pr-3 py-1.5 rounded-xl text-xs focus:outline-none transition-colors border ${
-                  isDark ? 'bg-slate-950 border-white/10 text-white focus:border-amber-500' : 'bg-slate-50 border-slate-200 text-slate-900'
-                }`}
-              />
+      {/* FULLSCREEN LIGHTBOX MODAL */}
+      {isLightboxOpen && (
+        <div className="fixed inset-0 z-50 bg-slate-950/95 backdrop-blur-2xl flex flex-col p-4 sm:p-6 animate-fadeIn">
+          {/* Modal Header */}
+          <div className="flex items-center justify-between bg-slate-900/80 p-4 rounded-2xl border border-white/10 mb-4 shrink-0 shadow-2xl">
+            <div className="flex items-center gap-3">
+              <div className="p-2 rounded-xl bg-emerald-500/20 text-emerald-400 border border-emerald-500/30">
+                <Layers className="w-5 h-5" />
+              </div>
+              <div>
+                <h3 className="font-extrabold text-white text-base">Local Development Architecture — Interactive Presentation Mode</h3>
+                <p className="text-xs text-slate-400 font-mono">
+                  300 DPI High-Resolution Vector Diagram • Scale: {Math.round(zoomScale * 100)}%
+                </p>
+              </div>
             </div>
 
-            {/* Category Filter */}
-            <select
-              value={selectedCategory}
-              onChange={(e) => setSelectedCategory(e.target.value)}
-              className={`px-3 py-1.5 rounded-xl text-xs font-semibold focus:outline-none cursor-pointer border ${
-                isDark ? 'bg-slate-950 border-white/10 text-amber-400' : 'bg-slate-50 border-slate-200 text-slate-700'
-              }`}
+            {/* Modal Controls */}
+            <div className="flex items-center gap-2">
+              <button
+                onClick={handleZoomIn}
+                className="px-3 py-1.5 rounded-xl bg-white/10 hover:bg-white/20 text-white font-mono text-xs flex items-center gap-1 cursor-pointer transition-all"
+              >
+                <ZoomIn className="w-4 h-4 text-emerald-400" />
+                <span>+</span>
+              </button>
+
+              <button
+                onClick={handleZoomOut}
+                className="px-3 py-1.5 rounded-xl bg-white/10 hover:bg-white/20 text-white font-mono text-xs flex items-center gap-1 cursor-pointer transition-all"
+              >
+                <ZoomOut className="w-4 h-4 text-rose-400" />
+                <span>-</span>
+              </button>
+
+              <button
+                onClick={handleResetZoom}
+                className="px-3 py-1.5 rounded-xl bg-white/10 hover:bg-white/20 text-slate-300 font-mono text-xs flex items-center gap-1 cursor-pointer transition-all"
+              >
+                <RotateCcw className="w-3.5 h-3.5 text-cyan-400" />
+                <span>100%</span>
+              </button>
+
+              <a
+                href="/local_development_architecture.png"
+                download="Local_Development_Architecture.png"
+                className="px-3.5 py-1.5 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-bold text-xs flex items-center gap-1.5 cursor-pointer shadow-md transition-all ml-2"
+              >
+                <Download className="w-4 h-4" />
+                <span>PNG</span>
+              </a>
+
+              <button
+                onClick={() => setIsLightboxOpen(false)}
+                className="p-2 rounded-xl bg-rose-500/20 hover:bg-rose-500/30 text-rose-300 border border-rose-500/40 cursor-pointer transition-all ml-2"
+                title="Close Presentation Mode"
+              >
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+          </div>
+
+          {/* Modal Image Viewport */}
+          <div className="flex-1 overflow-auto bg-slate-950 p-6 rounded-2xl border border-white/10 shadow-2xl flex items-center justify-center">
+            <div 
+              className="transition-transform duration-200 origin-center"
+              style={{ transform: `scale(${zoomScale})` }}
             >
-              {categories.map(cat => (
-                <option key={cat} value={cat}>{cat}</option>
-              ))}
-            </select>
+              <img
+                src="/local_development_architecture.png"
+                alt="Local Development Architecture Diagram Fullscreen"
+                className="max-w-none w-[1800px] h-auto rounded-xl shadow-2xl border border-white/10"
+              />
+            </div>
           </div>
         </div>
-
-        {/* Tech Stack Table */}
-        <div className="overflow-x-auto rounded-xl border border-white/10">
-          <table className="w-full text-left text-xs">
-            <thead>
-              <tr className={`border-b font-mono uppercase tracking-wider text-[11px] ${
-                isDark ? 'bg-slate-950/80 border-white/10 text-slate-400' : 'bg-slate-100 border-slate-200 text-slate-600'
-              }`}>
-                <th className="p-3.5 font-bold w-1/5">Architecture Domain</th>
-                <th className="p-3.5 font-bold w-1/4">Current Local Prototype</th>
-                <th className="p-3.5 font-bold w-1/4">Target AWS Tech Stack (Production)</th>
-                <th className="p-3.5 font-bold w-3/10">Architectural Role & Capabilities</th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-white/5 font-sans">
-              {filteredDomains.map((item) => (
-                <tr key={item.domainId} className={`transition-colors ${isDark ? 'hover:bg-white/5' : 'hover:bg-slate-50'}`}>
-                  {/* Domain Name */}
-                  <td className="p-3.5 font-semibold align-top">
-                    <span className="text-white font-bold text-xs block">{item.domainName}</span>
-                    <span className="text-[10px] px-2 py-0.2 rounded bg-slate-800 text-slate-300 font-mono inline-block mt-1">
-                      {item.category}
-                    </span>
-                  </td>
-
-                  {/* Local Prototype */}
-                  <td className="p-3.5 align-top text-slate-300 font-mono text-[11px] bg-slate-950/40">
-                    {item.localPrototype}
-                  </td>
-
-                  {/* Target AWS Tech Stack */}
-                  <td className="p-3.5 align-top bg-amber-500/5">
-                    <div className="font-mono font-bold text-amber-300 text-xs mb-1.5">
-                      {item.awsTechStack}
-                    </div>
-                    <div className="flex flex-wrap gap-1">
-                      {item.awsServices.map((svc) => (
-                        <span 
-                          key={svc} 
-                          className="text-[9px] font-mono px-1.5 py-0.2 rounded bg-amber-500/20 text-amber-200 border border-amber-500/30"
-                        >
-                          {svc}
-                        </span>
-                      ))}
-                    </div>
-                  </td>
-
-                  {/* Architectural Role & Capabilities */}
-                  <td className="p-3.5 align-top text-slate-300 leading-relaxed text-xs">
-                    {item.purposeRole}
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-      </div>
+      )}
     </div>
   );
 };

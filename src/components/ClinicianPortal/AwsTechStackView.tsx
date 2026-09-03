@@ -156,7 +156,7 @@ export const AwsTechStackView: React.FC<AwsTechStackViewProps> = ({
   // Zoom & Pan Navigation State
   const [zoomScale, setZoomScale] = useState<number>(1);
   const [panOffset, setPanOffset] = useState<{ x: number; y: number }>({ x: 0, y: 0 });
-  const [isLightboxOpen, setIsLightboxOpen] = useState<boolean>(false);
+  const [activeModalDiagram, setActiveModalDiagram] = useState<'LOCAL' | 'AWS' | null>(null);
 
   const handleZoomIn = () => setZoomScale(prev => Math.min(+(prev + 0.25).toFixed(2), 3));
   const handleZoomOut = () => setZoomScale(prev => Math.max(+(prev - 0.25).toFixed(2), 0.5));
@@ -170,6 +170,12 @@ export const AwsTechStackView: React.FC<AwsTechStackViewProps> = ({
   const handleResetAll = () => {
     setZoomScale(1);
     setPanOffset({ x: 0, y: 0 });
+  };
+
+  const openDiagramModal = (type: 'LOCAL' | 'AWS') => {
+    setZoomScale(1);
+    setPanOffset({ x: 0, y: 0 });
+    setActiveModalDiagram(type);
   };
 
   const categories = ['ALL', 'Edge & Ingress', 'Voice & AI', 'IAM & Security', 'Agentic Core', 'Data & EHR', 'Observability & DR'];
@@ -281,7 +287,7 @@ export const AwsTechStackView: React.FC<AwsTechStackViewProps> = ({
         </div>
       </div>
 
-      {/* Local Development Architecture Diagram Banner & Interactive Pan/Zoom Card */}
+      {/* DIAGRAM 1: LOCAL DEVELOPMENT ARCHITECTURE */}
       <div className={`p-6 rounded-2xl border space-y-4 shadow-xl ${
         isDark ? 'bg-slate-900/90 border-white/10 text-white' : 'bg-white border-slate-200 text-slate-900'
       }`}>
@@ -292,12 +298,12 @@ export const AwsTechStackView: React.FC<AwsTechStackViewProps> = ({
                 Local Development Scope
               </span>
               <span className="text-[10px] font-mono font-bold px-2 py-0.5 rounded-full bg-blue-500/20 text-blue-300 border border-blue-500/40 uppercase">
-                Zoom & 2D Pan Engine
+                Click Image to Expand
               </span>
             </div>
             <h2 className="text-lg font-bold tracking-tight mt-1 flex items-center gap-2">
               <Layers className="w-5 h-5 text-emerald-400" />
-              <span>Local Development Architecture Diagram</span>
+              <span>1. Local Development Architecture Diagram</span>
             </h2>
             <p className="text-xs text-slate-400 mt-0.5 font-mono">
               7-layer local execution topology: React 18 UI ➔ Clinical AI Gateway ➔ Multi-Agent Dispatch ➔ Context Fusion ➔ LLM Inference ➔ Response Validator
@@ -305,7 +311,6 @@ export const AwsTechStackView: React.FC<AwsTechStackViewProps> = ({
           </div>
 
           <div className="flex items-center gap-2 flex-wrap shrink-0">
-            {/* Download PNG Button */}
             <a
               href="/local_development_architecture.png"
               download="Local_Development_Architecture.png"
@@ -315,9 +320,8 @@ export const AwsTechStackView: React.FC<AwsTechStackViewProps> = ({
               <span>Download PNG</span>
             </a>
 
-            {/* Presentation Mode / Fullscreen Lightbox Button */}
             <button
-              onClick={() => setIsLightboxOpen(true)}
+              onClick={() => openDiagramModal('LOCAL')}
               className="px-3.5 py-2 rounded-xl bg-blue-600 hover:bg-blue-500 text-white font-bold text-xs flex items-center gap-1.5 cursor-pointer shadow-md transition-all hover:scale-105"
             >
               <Maximize2 className="w-4 h-4" />
@@ -326,120 +330,120 @@ export const AwsTechStackView: React.FC<AwsTechStackViewProps> = ({
           </div>
         </div>
 
-        {/* Zoom & Pan Control Bar */}
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 bg-slate-950/80 p-3 rounded-xl border border-white/10 text-xs font-mono">
-          {/* Zoom Controls */}
-          <div className="flex items-center gap-1.5">
-            <span className="text-[10px] text-slate-400 font-bold mr-1">ZOOM:</span>
-            <button
-              onClick={handleZoomIn}
-              className="p-1.5 rounded-lg bg-white/10 hover:bg-white/20 text-white transition-colors cursor-pointer flex items-center gap-1"
-              title="Zoom In (+25%)"
-            >
-              <ZoomIn className="w-3.5 h-3.5 text-emerald-400" />
-              <span className="text-[11px]">In</span>
-            </button>
-
-            <button
-              onClick={handleZoomOut}
-              className="p-1.5 rounded-lg bg-white/10 hover:bg-white/20 text-white transition-colors cursor-pointer flex items-center gap-1"
-              title="Zoom Out (-25%)"
-            >
-              <ZoomOut className="w-3.5 h-3.5 text-rose-400" />
-              <span className="text-[11px]">Out</span>
-            </button>
-
-            <span className="px-2 py-0.5 rounded bg-amber-500/20 text-amber-300 font-bold border border-amber-500/40 text-[11px] ml-1">
-              {Math.round(zoomScale * 100)}%
-            </span>
-          </div>
-
-          {/* Directional 2D Pan Control Pad */}
-          <div className="flex items-center gap-1.5">
-            <span className="text-[10px] text-slate-400 font-bold mr-1">NAVIGATE:</span>
-            <button
-              onClick={handleMoveUp}
-              className="p-1.5 rounded-lg bg-white/10 hover:bg-white/20 text-cyan-300 transition-colors cursor-pointer flex items-center gap-1"
-              title="Move Up / Top"
-            >
-              <ArrowUp className="w-3.5 h-3.5" />
-              <span className="text-[10px]">Top</span>
-            </button>
-
-            <button
-              onClick={handleMoveDown}
-              className="p-1.5 rounded-lg bg-white/10 hover:bg-white/20 text-cyan-300 transition-colors cursor-pointer flex items-center gap-1"
-              title="Move Down / Front"
-            >
-              <ArrowDown className="w-3.5 h-3.5" />
-              <span className="text-[10px]">Front</span>
-            </button>
-
-            <button
-              onClick={handleMoveLeft}
-              className="p-1.5 rounded-lg bg-white/10 hover:bg-white/20 text-cyan-300 transition-colors cursor-pointer flex items-center gap-1"
-              title="Move Left"
-            >
-              <ArrowLeft className="w-3.5 h-3.5" />
-              <span className="text-[10px]">Left</span>
-            </button>
-
-            <button
-              onClick={handleMoveRight}
-              className="p-1.5 rounded-lg bg-white/10 hover:bg-white/20 text-cyan-300 transition-colors cursor-pointer flex items-center gap-1"
-              title="Move Right"
-            >
-              <ArrowRight className="w-3.5 h-3.5" />
-              <span className="text-[10px]">Right</span>
-            </button>
-
-            <button
-              onClick={handleResetAll}
-              className="p-1.5 rounded-lg bg-white/10 hover:bg-white/20 text-purple-300 transition-colors cursor-pointer flex items-center gap-1 ml-1"
-              title="Reset Zoom & Pan Position"
-            >
-              <Compass className="w-3.5 h-3.5 text-purple-400" />
-              <span className="text-[10px]">Reset</span>
-            </button>
-          </div>
-        </div>
-
-        {/* High Quality Interactive Image Viewport with 2D Pan & Zoom */}
-        <div className="rounded-xl border border-white/10 overflow-hidden bg-slate-950/90 p-4 shadow-inner max-h-[600px] relative transition-all">
-          <div 
-            className="flex items-center justify-center transition-transform duration-200 origin-center"
-            style={{ 
-              transform: `scale(${zoomScale}) translate(${panOffset.x}px, ${panOffset.y}px)` 
-            }}
-          >
+        {/* High Quality Preview Image Viewport (Clickable to Popup Full Window) */}
+        <div 
+          onClick={() => openDiagramModal('LOCAL')}
+          className="rounded-xl border border-white/10 overflow-hidden bg-slate-950/90 p-4 shadow-inner max-h-[500px] relative transition-all cursor-pointer group hover:border-emerald-500/50"
+          title="Click to popup full window diagram"
+        >
+          <div className="flex items-center justify-center h-full">
             <img
               src="/local_development_architecture.png"
               alt="Local Development Architecture Diagram"
-              className="w-full h-auto rounded-lg object-contain shadow-2xl mx-auto"
+              className="w-full h-auto rounded-lg object-contain max-h-[460px] mx-auto transition-transform group-hover:scale-[1.01]"
             />
+          </div>
+          <div className="absolute bottom-4 right-4 bg-slate-950/90 backdrop-blur-md px-3 py-1.5 rounded-xl border border-white/10 text-[10px] font-mono text-emerald-300 flex items-center gap-1.5 shadow-lg group-hover:bg-emerald-500/20 transition-all">
+            <Maximize2 className="w-3.5 h-3.5" />
+            <span>Click to Popup Full Window</span>
           </div>
         </div>
       </div>
 
-      {/* FULLSCREEN LIGHTBOX MODAL WITH 2D PAN & ZOOM CONTROLS */}
-      {isLightboxOpen && (
+      {/* DIAGRAM 2: ENTERPRISE HEALTHCARE AI PLATFORM ON AWS */}
+      <div className={`p-6 rounded-2xl border space-y-4 shadow-xl ${
+        isDark ? 'bg-slate-900/90 border-white/10 text-white' : 'bg-white border-slate-200 text-slate-900'
+      }`}>
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-white/10 pb-4">
+          <div>
+            <div className="flex items-center gap-2">
+              <span className="text-[10px] font-mono font-bold px-2 py-0.5 rounded-full bg-cyan-500/20 text-cyan-300 border border-cyan-500/40 uppercase">
+                Enterprise Production Scope
+              </span>
+              <span className="text-[10px] font-mono font-bold px-2 py-0.5 rounded-full bg-purple-500/20 text-purple-300 border border-purple-500/40 uppercase">
+                10-Domain AWS Architecture
+              </span>
+            </div>
+            <h2 className="text-lg font-bold tracking-tight mt-1 flex items-center gap-2">
+              <Cloud className="w-5 h-5 text-cyan-400" />
+              <span>2. Enterprise Healthcare AI Platform on AWS (Reference Architecture)</span>
+            </h2>
+            <p className="text-xs text-slate-400 mt-0.5 font-mono">
+              HIPAA-aligned agentic RAG topology: Amplify ➔ CloudFront ➔ API Gateway ➔ Amazon Agent Core ➔ Bedrock ➔ HealthLake ➔ Multi-Region Aurora
+            </p>
+          </div>
+
+          <div className="flex items-center gap-2 flex-wrap shrink-0">
+            <a
+              href="/aws_enterprise_architecture.png"
+              download="AWS_Enterprise_Healthcare_AI_Architecture.png"
+              className="px-3.5 py-2 rounded-xl bg-cyan-500 hover:bg-cyan-400 text-slate-950 font-bold text-xs flex items-center gap-1.5 cursor-pointer shadow-md transition-all hover:scale-105"
+            >
+              <Download className="w-4 h-4" />
+              <span>Download PNG</span>
+            </a>
+
+            <button
+              onClick={() => openDiagramModal('AWS')}
+              className="px-3.5 py-2 rounded-xl bg-purple-600 hover:bg-purple-500 text-white font-bold text-xs flex items-center gap-1.5 cursor-pointer shadow-md transition-all hover:scale-105"
+            >
+              <Maximize2 className="w-4 h-4" />
+              <span>Fullscreen Presentation</span>
+            </button>
+          </div>
+        </div>
+
+        {/* High Quality Preview Image Viewport (Clickable to Popup Full Window) */}
+        <div 
+          onClick={() => openDiagramModal('AWS')}
+          className="rounded-xl border border-white/10 overflow-hidden bg-slate-950/90 p-4 shadow-inner max-h-[500px] relative transition-all cursor-pointer group hover:border-cyan-500/50"
+          title="Click to popup full window diagram"
+        >
+          <div className="flex items-center justify-center h-full">
+            <img
+              src="/aws_enterprise_architecture.png"
+              alt="AWS Enterprise Healthcare AI Architecture Diagram"
+              className="w-full h-auto rounded-lg object-contain max-h-[460px] mx-auto transition-transform group-hover:scale-[1.01]"
+            />
+          </div>
+          <div className="absolute bottom-4 right-4 bg-slate-950/90 backdrop-blur-md px-3 py-1.5 rounded-xl border border-white/10 text-[10px] font-mono text-cyan-300 flex items-center gap-1.5 shadow-lg group-hover:bg-cyan-500/20 transition-all">
+            <Maximize2 className="w-3.5 h-3.5" />
+            <span>Click to Popup Full Window</span>
+          </div>
+        </div>
+      </div>
+
+      {/* FULLSCREEN POPUP LIGHTBOX MODAL WITH 2D PAN & ZOOM CONTROLS */}
+      {activeModalDiagram && (
         <div className="fixed inset-0 z-50 bg-slate-950/95 backdrop-blur-2xl flex flex-col p-4 sm:p-6 animate-fadeIn">
           {/* Modal Header */}
-          <div className="flex items-center justify-between bg-slate-900/80 p-4 rounded-2xl border border-white/10 mb-4 shrink-0 shadow-2xl flex-wrap gap-3">
+          <div className="flex items-center justify-between bg-slate-900/90 p-4 rounded-2xl border border-white/10 mb-4 shrink-0 shadow-2xl flex-wrap gap-3">
             <div className="flex items-center gap-3">
-              <div className="p-2 rounded-xl bg-emerald-500/20 text-emerald-400 border border-emerald-500/30">
-                <Layers className="w-5 h-5" />
+              <div className="p-2 rounded-xl bg-cyan-500/20 text-cyan-400 border border-cyan-500/30">
+                {activeModalDiagram === 'LOCAL' ? <Layers className="w-5 h-5" /> : <Cloud className="w-5 h-5" />}
               </div>
               <div>
-                <h3 className="font-extrabold text-white text-base">Local Development Architecture — Interactive Presentation Mode</h3>
+                <h3 className="font-extrabold text-white text-base">
+                  {activeModalDiagram === 'LOCAL' 
+                    ? 'Local Development Architecture — Presentation Mode' 
+                    : 'Enterprise Healthcare AI Platform on AWS — Presentation Mode'}
+                </h3>
                 <p className="text-xs text-slate-400 font-mono">
-                  300 DPI Vector Diagram • Scale: {Math.round(zoomScale * 100)}% • Position X: {panOffset.x}px | Y: {panOffset.y}px
+                  300 DPI High-Res Vector PNG • Scale: {Math.round(zoomScale * 100)}% • Position X: {panOffset.x}px | Y: {panOffset.y}px
                 </p>
               </div>
             </div>
 
             {/* Modal Navigation Controls */}
             <div className="flex items-center gap-2 flex-wrap">
+              {/* Switch Diagram Button */}
+              <button
+                onClick={() => openDiagramModal(activeModalDiagram === 'LOCAL' ? 'AWS' : 'LOCAL')}
+                className="px-3 py-1.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-amber-300 border border-amber-500/40 font-mono text-xs font-bold flex items-center gap-1 cursor-pointer transition-all"
+              >
+                <span>Switch to {activeModalDiagram === 'LOCAL' ? 'AWS Architecture' : 'Local Architecture'}</span>
+              </button>
+
               {/* Zoom Controls */}
               <div className="flex items-center gap-1 bg-slate-950/80 p-1 rounded-xl border border-white/10 text-xs font-mono">
                 <button
@@ -461,10 +465,10 @@ export const AwsTechStackView: React.FC<AwsTechStackViewProps> = ({
 
               {/* Directional Pad Controls */}
               <div className="flex items-center gap-1 bg-slate-950/80 p-1 rounded-xl border border-white/10 text-xs font-mono text-cyan-300">
-                <button onClick={handleMoveUp} className="p-1 rounded bg-white/10 hover:bg-white/20" title="Move Top"><ArrowUp className="w-3.5 h-3.5" /></button>
-                <button onClick={handleMoveDown} className="p-1 rounded bg-white/10 hover:bg-white/20" title="Move Down / Front"><ArrowDown className="w-3.5 h-3.5" /></button>
-                <button onClick={handleMoveLeft} className="p-1 rounded bg-white/10 hover:bg-white/20" title="Move Left"><ArrowLeft className="w-3.5 h-3.5" /></button>
-                <button onClick={handleMoveRight} className="p-1 rounded bg-white/10 hover:bg-white/20" title="Move Right"><ArrowRight className="w-3.5 h-3.5" /></button>
+                <button onClick={handleMoveUp} className="p-1.5 rounded bg-white/10 hover:bg-white/20" title="Move Top"><ArrowUp className="w-3.5 h-3.5" /></button>
+                <button onClick={handleMoveDown} className="p-1.5 rounded bg-white/10 hover:bg-white/20" title="Move Down / Front"><ArrowDown className="w-3.5 h-3.5" /></button>
+                <button onClick={handleMoveLeft} className="p-1.5 rounded bg-white/10 hover:bg-white/20" title="Move Left"><ArrowLeft className="w-3.5 h-3.5" /></button>
+                <button onClick={handleMoveRight} className="p-1.5 rounded bg-white/10 hover:bg-white/20" title="Move Right"><ArrowRight className="w-3.5 h-3.5" /></button>
               </div>
 
               <button
@@ -476,18 +480,18 @@ export const AwsTechStackView: React.FC<AwsTechStackViewProps> = ({
               </button>
 
               <a
-                href="/local_development_architecture.png"
-                download="Local_Development_Architecture.png"
+                href={activeModalDiagram === 'LOCAL' ? '/local_development_architecture.png' : '/aws_enterprise_architecture.png'}
+                download={activeModalDiagram === 'LOCAL' ? 'Local_Development_Architecture.png' : 'AWS_Enterprise_Healthcare_AI_Architecture.png'}
                 className="px-3.5 py-1.5 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-bold text-xs flex items-center gap-1.5 cursor-pointer shadow-md transition-all ml-2"
               >
                 <Download className="w-4 h-4" />
-                <span>PNG</span>
+                <span>Download PNG</span>
               </a>
 
               <button
-                onClick={() => setIsLightboxOpen(false)}
+                onClick={() => setActiveModalDiagram(null)}
                 className="p-2 rounded-xl bg-rose-500/20 hover:bg-rose-500/30 text-rose-300 border border-rose-500/40 cursor-pointer transition-all ml-2"
-                title="Close Presentation Mode"
+                title="Close Full Window Modal"
               >
                 <X className="w-5 h-5" />
               </button>
@@ -503,14 +507,119 @@ export const AwsTechStackView: React.FC<AwsTechStackViewProps> = ({
               }}
             >
               <img
-                src="/local_development_architecture.png"
-                alt="Local Development Architecture Diagram Fullscreen"
-                className="max-w-none w-[1800px] h-auto rounded-xl shadow-2xl border border-white/10 select-none"
+                src={activeModalDiagram === 'LOCAL' ? '/local_development_architecture.png' : '/aws_enterprise_architecture.png'}
+                alt={activeModalDiagram === 'LOCAL' ? 'Local Development Architecture Diagram' : 'AWS Enterprise Healthcare AI Architecture Diagram'}
+                className="max-w-none w-[1850px] h-auto rounded-xl shadow-2xl border border-white/10 select-none"
               />
             </div>
           </div>
         </div>
       )}
+
+      {/* Main Table Container */}
+      <div className={`rounded-2xl border p-5 sm:p-6 shadow-xl space-y-4 ${
+        isDark ? 'bg-slate-900/90 border-white/10 text-white' : 'bg-white border-slate-200 text-slate-900'
+      }`}>
+        {/* Table Header Controls */}
+        <div className="flex flex-col md:flex-row md:items-center justify-between gap-3 border-b border-white/10 pb-4">
+          <div>
+            <h2 className="text-lg font-bold tracking-tight flex items-center gap-2">
+              <span>Full AWS Services Tech Stack Matrix</span>
+              <span className="text-xs px-2 py-0.5 rounded-full bg-amber-500/20 text-amber-300 font-mono">
+                {filteredDomains.length} Domains
+              </span>
+            </h2>
+            <p className="text-xs text-slate-400 mt-0.5 font-mono">
+              Component-by-component comparison: Local React/Express vs AWS Cloud Production Stack
+            </p>
+          </div>
+
+          <div className="flex items-center gap-2 flex-wrap">
+            {/* Search Box */}
+            <div className="relative">
+              <Search className="w-3.5 h-3.5 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2" />
+              <input
+                type="text"
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                placeholder="Search AWS service, domain..."
+                className={`pl-8 pr-3 py-1.5 rounded-xl text-xs focus:outline-none transition-colors border ${
+                  isDark ? 'bg-slate-950 border-white/10 text-white focus:border-amber-500' : 'bg-slate-50 border-slate-200 text-slate-900'
+                }`}
+              />
+            </div>
+
+            {/* Category Filter */}
+            <select
+              value={selectedCategory}
+              onChange={(e) => setSelectedCategory(e.target.value)}
+              className={`px-3 py-1.5 rounded-xl text-xs font-semibold focus:outline-none cursor-pointer border ${
+                isDark ? 'bg-slate-950 border-white/10 text-amber-400' : 'bg-slate-50 border-slate-200 text-slate-700'
+              }`}
+            >
+              {categories.map(cat => (
+                <option key={cat} value={cat}>{cat}</option>
+              ))}
+            </select>
+          </div>
+        </div>
+
+        {/* Tech Stack Table */}
+        <div className="overflow-x-auto rounded-xl border border-white/10">
+          <table className="w-full text-left text-xs">
+            <thead>
+              <tr className={`border-b font-mono uppercase tracking-wider text-[11px] ${
+                isDark ? 'bg-slate-950/80 border-white/10 text-slate-400' : 'bg-slate-100 border-slate-200 text-slate-600'
+              }`}>
+                <th className="p-3.5 font-bold w-1/5">Architecture Domain</th>
+                <th className="p-3.5 font-bold w-1/4">Current Local Prototype</th>
+                <th className="p-3.5 font-bold w-1/4">Target AWS Tech Stack (Production)</th>
+                <th className="p-3.5 font-bold w-3/10">Architectural Role & Capabilities</th>
+              </tr>
+            </thead>
+            <tbody className="divide-y divide-white/5 font-sans">
+              {filteredDomains.map((item) => (
+                <tr key={item.domainId} className={`transition-colors ${isDark ? 'hover:bg-white/5' : 'hover:bg-slate-50'}`}>
+                  {/* Domain Name */}
+                  <td className="p-3.5 font-semibold align-top">
+                    <span className="text-white font-bold text-xs block">{item.domainName}</span>
+                    <span className="text-[10px] px-2 py-0.2 rounded bg-slate-800 text-slate-300 font-mono inline-block mt-1">
+                      {item.category}
+                    </span>
+                  </td>
+
+                  {/* Local Prototype */}
+                  <td className="p-3.5 align-top text-slate-300 font-mono text-[11px] bg-slate-950/40">
+                    {item.localPrototype}
+                  </td>
+
+                  {/* Target AWS Tech Stack */}
+                  <td className="p-3.5 align-top bg-amber-500/5">
+                    <div className="font-mono font-bold text-amber-300 text-xs mb-1.5">
+                      {item.awsTechStack}
+                    </div>
+                    <div className="flex flex-wrap gap-1">
+                      {item.awsServices.map((svc) => (
+                        <span 
+                          key={svc} 
+                          className="text-[9px] font-mono px-1.5 py-0.2 rounded bg-amber-500/20 text-amber-200 border border-amber-500/30"
+                        >
+                          {svc}
+                        </span>
+                      ))}
+                    </div>
+                  </td>
+
+                  {/* Architectural Role & Capabilities */}
+                  <td className="p-3.5 align-top text-slate-300 leading-relaxed text-xs">
+                    {item.purposeRole}
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      </div>
     </div>
   );
 };

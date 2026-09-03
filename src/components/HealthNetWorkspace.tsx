@@ -59,7 +59,8 @@ import { getUserAvatarUrl } from '../utils/patientAvatar';
 import { AuditComplianceCenterView } from './ClinicianPortal/AuditComplianceCenterView';
 import { AppointmentsCenterView } from './ClinicianPortal/AppointmentsCenterView';
 import { ExecutiveDashboardView } from './ClinicianPortal/ExecutiveDashboardView';
-import { FileUp, GitBranch, Scale, Database as DatabaseIcon } from 'lucide-react';
+import { AwsTechStackView } from './ClinicianPortal/AwsTechStackView';
+import { FileUp, GitBranch, Scale, Database as DatabaseIcon, Server } from 'lucide-react';
 import { HospitalNetworkSelector } from './HospitalNetworkSelector';
 import { NETWORK_HOSPITALS, HospitalFacility } from '../data/hospitalNetwork';
 
@@ -81,6 +82,7 @@ export type WorkspaceTab =
   | 'AGENT_MONITOR' 
   | 'AUDIT_CENTER'
   | 'EXECUTIVE_DASHBOARD'
+  | 'AWS_TECH_STACK'
   | 'SETTINGS';
 
 interface HealthNetWorkspaceProps {
@@ -554,6 +556,21 @@ export const HealthNetWorkspace: React.FC<HealthNetWorkspaceProps> = ({
                   <div className="flex items-center justify-between w-full">
                     <span>Audit & Compliance</span>
                     <span className="text-[9px] px-1.5 py-0.2 rounded bg-emerald-500/20 text-emerald-300 font-mono">Admin</span>
+                  </div>
+                </button>
+
+                <button
+                  onClick={() => setActiveTab('AWS_TECH_STACK')}
+                  className={`w-full flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-xs font-semibold transition-all cursor-pointer ${
+                    activeTab === 'AWS_TECH_STACK'
+                      ? 'bg-blue-600 text-white shadow-lg shadow-blue-600/30'
+                      : 'text-slate-300 hover:bg-white/10 hover:text-white'
+                  }`}
+                >
+                  <Server className="w-4 h-4 text-amber-400" />
+                  <div className="flex items-center justify-between w-full">
+                    <span>Tech Stack</span>
+                    <span className="text-[9px] px-1.5 py-0.2 rounded bg-amber-500/20 text-amber-300 font-mono">Admin</span>
                   </div>
                 </button>
               </>
@@ -1395,32 +1412,62 @@ export const HealthNetWorkspace: React.FC<HealthNetWorkspaceProps> = ({
 
               {/* Tile 7: Audit & Compliance Center (Portal Admin) */}
               {isAdmin && (
-                <div
-                  onClick={() => setActiveTab('AUDIT_CENTER')}
-                  className={`p-5 rounded-2xl border transition-all hover:scale-[1.01] hover:shadow-xl cursor-pointer group relative overflow-hidden flex items-center justify-between ${
-                    isDark 
-                      ? 'bg-slate-900/70 border-white/10 hover:border-emerald-500/50' 
-                      : 'bg-white border-slate-200 hover:border-emerald-300 shadow-sm'
-                  }`}
-                >
-                  <div className="flex items-center gap-4 z-10">
-                    <div className="w-12 h-12 rounded-2xl bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 flex items-center justify-center shrink-0 group-hover:scale-110 transition-transform">
-                      <ShieldCheck className="w-6 h-6" />
-                    </div>
-                    <div>
-                      <div className="flex items-center gap-2">
-                        <h3 className="text-sm font-extrabold group-hover:text-emerald-400 transition-colors">Audit & Compliance</h3>
-                        <span className="text-[9px] px-1.5 py-0.2 rounded font-mono bg-emerald-500/20 text-emerald-300">Admin</span>
+                <>
+                  <div
+                    onClick={() => setActiveTab('AUDIT_CENTER')}
+                    className={`p-5 rounded-2xl border transition-all hover:scale-[1.01] hover:shadow-xl cursor-pointer group relative overflow-hidden flex items-center justify-between ${
+                      isDark 
+                        ? 'bg-slate-900/70 border-white/10 hover:border-emerald-500/50' 
+                        : 'bg-white border-slate-200 hover:border-emerald-300 shadow-sm'
+                    }`}
+                  >
+                    <div className="flex items-center gap-4 z-10">
+                      <div className="w-12 h-12 rounded-2xl bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 flex items-center justify-center shrink-0 group-hover:scale-110 transition-transform">
+                        <ShieldCheck className="w-6 h-6" />
                       </div>
-                      <p className="text-xs text-slate-400 mt-0.5">HIPAA/GDPR access logs, approvals & policy audit</p>
+                      <div>
+                        <div className="flex items-center gap-2">
+                          <h3 className="text-sm font-extrabold group-hover:text-emerald-400 transition-colors">Audit & Compliance</h3>
+                          <span className="text-[9px] px-1.5 py-0.2 rounded font-mono bg-emerald-500/20 text-emerald-300">Admin</span>
+                        </div>
+                        <p className="text-xs text-slate-400 mt-0.5">HIPAA/GDPR access logs, approvals & policy audit</p>
+                      </div>
+                    </div>
+                    <ChevronRight className="w-5 h-5 text-slate-400 group-hover:text-emerald-400 group-hover:translate-x-1 transition-all z-10" />
+                    {/* Background Watermark */}
+                    <div className="absolute right-3 -bottom-2 text-slate-800/10 dark:text-white/5 pointer-events-none">
+                      <ShieldCheck className="w-24 h-24" />
                     </div>
                   </div>
-                  <ChevronRight className="w-5 h-5 text-slate-400 group-hover:text-emerald-400 group-hover:translate-x-1 transition-all z-10" />
-                  {/* Background Watermark */}
-                  <div className="absolute right-3 -bottom-2 text-slate-800/10 dark:text-white/5 pointer-events-none">
-                    <ShieldCheck className="w-24 h-24" />
+
+                  {/* Tile 8: Enterprise AWS Tech Stack (Portal Admin) */}
+                  <div
+                    onClick={() => setActiveTab('AWS_TECH_STACK')}
+                    className={`p-5 rounded-2xl border transition-all hover:scale-[1.01] hover:shadow-xl cursor-pointer group relative overflow-hidden flex items-center justify-between ${
+                      isDark 
+                        ? 'bg-slate-900/70 border-white/10 hover:border-amber-500/50' 
+                        : 'bg-white border-slate-200 hover:border-amber-300 shadow-sm'
+                    }`}
+                  >
+                    <div className="flex items-center gap-4 z-10">
+                      <div className="w-12 h-12 rounded-2xl bg-amber-500/10 border border-amber-500/20 text-amber-400 flex items-center justify-center shrink-0 group-hover:scale-110 transition-transform">
+                        <Server className="w-6 h-6" />
+                      </div>
+                      <div>
+                        <div className="flex items-center gap-2">
+                          <h3 className="text-sm font-extrabold group-hover:text-amber-400 transition-colors">AWS Tech Stack</h3>
+                          <span className="text-[9px] px-1.5 py-0.2 rounded font-mono bg-amber-500/20 text-amber-300">Admin</span>
+                        </div>
+                        <p className="text-xs text-slate-400 mt-0.5">Full 10-domain AWS cloud reference architecture</p>
+                      </div>
+                    </div>
+                    <ChevronRight className="w-5 h-5 text-slate-400 group-hover:text-amber-400 group-hover:translate-x-1 transition-all z-10" />
+                    {/* Background Watermark */}
+                    <div className="absolute right-3 -bottom-2 text-slate-800/10 dark:text-white/5 pointer-events-none">
+                      <Server className="w-24 h-24" />
+                    </div>
                   </div>
-                </div>
+                </>
               )}
 
             </div>
@@ -1802,6 +1849,21 @@ export const HealthNetWorkspace: React.FC<HealthNetWorkspaceProps> = ({
               onGoBack={handleGoBack}
             />
           </div>
+        )}
+
+        {/* ========================================================================= */}
+        {/* TAB 11: AWS ENTERPRISE TECH STACK (PORTAL ADMIN ONLY)                    */}
+        {/* ========================================================================= */}
+        {activeTab === 'AWS_TECH_STACK' && (
+          !isAdmin ? renderRestrictedAdminBanner('Enterprise AWS Tech Stack Architecture') : (
+            <div className="flex-1 overflow-y-auto p-6">
+              <AwsTechStackView
+                currentUser={currentUser}
+                purposeOfUse={purposeOfUse}
+                onGoBack={handleGoBack}
+              />
+            </div>
+          )
         )}
 
         {/* ========================================================================= */}

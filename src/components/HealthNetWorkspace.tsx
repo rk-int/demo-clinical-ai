@@ -55,7 +55,7 @@ import { HomeMetricDetailsPanel, MetricCategory } from './ClinicianPortal/HomeMe
 import { ClinicalReportsCenterView } from './ClinicianPortal/ClinicalReportsCenterView';
 import { RegisterNewPatientModal } from './ClinicianPortal/RegisterNewPatientModal';
 import { ExportZipModal } from './ExportZipModal';
-import { getUserAvatarUrl } from '../utils/patientAvatar';
+import { getUserAvatarUrl, getPatientAvatarUrl } from '../utils/patientAvatar';
 import { AuditComplianceCenterView } from './ClinicianPortal/AuditComplianceCenterView';
 import { AppointmentsCenterView } from './ClinicianPortal/AppointmentsCenterView';
 import { ExecutiveDashboardView } from './ClinicianPortal/ExecutiveDashboardView';
@@ -159,8 +159,8 @@ export const HealthNetWorkspace: React.FC<HealthNetWorkspaceProps> = ({
           onSelectPatient(found.id);
         }
       }
-    } else if (selectedPatient) {
-      setQaAttachedPatient(selectedPatient);
+    } else {
+      setQaAttachedPatient(null);
     }
     setActiveTab('AI_ASSISTANT');
   };
@@ -289,7 +289,7 @@ export const HealthNetWorkspace: React.FC<HealthNetWorkspaceProps> = ({
               </div>
               <div>
                 <div className="font-extrabold text-base tracking-tight text-white flex items-center gap-1.5">
-                  HealthNet <span className="text-cyan-400">AI</span>
+                  Clinic <span className="text-cyan-400">AI</span>
                 </div>
                 <p className="text-[10px] text-slate-400 font-medium">Clinical Assistant</p>
               </div>
@@ -597,9 +597,11 @@ export const HealthNetWorkspace: React.FC<HealthNetWorkspaceProps> = ({
             className="p-3 rounded-2xl bg-white/5 hover:bg-white/10 border border-white/10 transition-all cursor-pointer flex items-center justify-between group"
           >
             <div className="flex items-center gap-2.5 min-w-0">
-              <div className="w-9 h-9 rounded-xl bg-blue-500/20 text-blue-400 border border-blue-500/30 flex items-center justify-center shrink-0">
-                <User className="w-5 h-5" />
-              </div>
+              <img
+                src={currentUser.avatarUrl || getUserAvatarUrl(currentUser)}
+                alt={currentUser.name}
+                className="w-9 h-9 rounded-full object-cover shrink-0 border border-blue-500/50 shadow-md ring-2 ring-blue-500/30"
+              />
               <div className="min-w-0">
                 <p className="text-xs font-bold text-white truncate group-hover:text-cyan-300 transition-colors">
                   {currentUser.name}
@@ -634,7 +636,7 @@ export const HealthNetWorkspace: React.FC<HealthNetWorkspaceProps> = ({
       <div className="flex-1 flex flex-col min-w-0 overflow-hidden">
         
         {/* Top Header Bar */}
-        <header className={`h-16 px-6 border-b flex items-center justify-between gap-4 transition-colors z-20 ${
+        <header className={`h-16 px-6 border-b flex items-center justify-between gap-4 transition-colors relative z-40 ${
           isDark 
             ? 'bg-[#0B1120]/90 border-white/10 backdrop-blur-xl' 
             : 'bg-white border-slate-200 shadow-sm'
@@ -817,21 +819,6 @@ export const HealthNetWorkspace: React.FC<HealthNetWorkspaceProps> = ({
               </button>
             )}
 
-
-            {/* Direct Header Sign Out & Return Button */}
-            <button
-              onClick={onSignOut}
-              className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl border text-xs font-bold transition-all cursor-pointer shadow-sm active:scale-95 ${
-                isDark 
-                  ? 'bg-rose-500/15 hover:bg-rose-500/25 text-rose-300 hover:text-white border-rose-500/30' 
-                  : 'bg-rose-50 hover:bg-rose-100 text-rose-700 border-rose-200'
-              }`}
-              title="Sign Out of workspace and return to Hospital World"
-            >
-              <LogOut className="w-3.5 h-3.5 text-rose-400" />
-              <span className="hidden sm:inline">Sign Out & Return</span>
-            </button>
-
             {/* User Profile Pill */}
             <div className="relative">
               <button
@@ -842,9 +829,11 @@ export const HealthNetWorkspace: React.FC<HealthNetWorkspaceProps> = ({
                     : 'bg-slate-100 border-slate-200 hover:bg-slate-200 text-slate-900'
                 }`}
               >
-                <div className="w-7 h-7 rounded-lg bg-blue-500/20 text-blue-400 border border-blue-500/30 flex items-center justify-center shrink-0">
-                  <User className="w-4 h-4 text-blue-400" />
-                </div>
+                <img
+                  src={currentUser.avatarUrl || getUserAvatarUrl(currentUser)}
+                  alt={currentUser.name}
+                  className="w-7 h-7 rounded-full object-cover shrink-0 border border-blue-500/50 shadow-sm ring-1 ring-blue-500/30"
+                />
                 <div className="text-left hidden sm:block">
                   <p className="text-xs font-bold leading-tight truncate max-w-[130px]">{currentUser.name}</p>
                   <p className="text-[10px] text-slate-400 leading-none">{roleInfo.tag}</p>
@@ -960,13 +949,6 @@ export const HealthNetWorkspace: React.FC<HealthNetWorkspaceProps> = ({
                   </div>
                 </div>
               </div>
-
-              {/* Multi-Hospital Network Selector */}
-              <HospitalNetworkSelector
-                selectedHospitalId={selectedHospital.id}
-                onSelectHospital={setSelectedHospital}
-                isDark={isDark}
-              />
             </div>
 
             {/* Multi-Hospital Network Status Overview Bar */}
@@ -1507,9 +1489,11 @@ export const HealthNetWorkspace: React.FC<HealthNetWorkspaceProps> = ({
                       }`}
                     >
                       <div className="flex items-center gap-3">
-                        <div className="w-10 h-10 rounded-full bg-gradient-to-tr from-slate-700 to-slate-800 text-white flex items-center justify-center font-bold text-xs shadow">
-                          {patient.fullName.split(' ').map(n => n[0]).join('')}
-                        </div>
+                        <img
+                          src={patient.avatarUrl || getPatientAvatarUrl(patient)}
+                          alt={patient.fullName}
+                          className="w-10 h-10 rounded-full object-cover shrink-0 border border-blue-500/40 shadow"
+                        />
                         <div>
                           <h4 className="text-xs font-bold">{patient.fullName}</h4>
                           <p className="text-[11px] text-slate-400 font-mono">
@@ -1607,12 +1591,25 @@ export const HealthNetWorkspace: React.FC<HealthNetWorkspaceProps> = ({
             <KnowledgeQAView
               currentUser={currentUser}
               purposeOfUse={purposeOfUse}
-              patient={qaAttachedPatient || selectedPatient || undefined}
+              patient={qaAttachedPatient || undefined}
               patients={patients}
               onSelectPatient={(id) => {
-                onSelectPatient(id);
-                const p = patients.find(pat => pat.id === id);
-                if (p) setQaAttachedPatient(p);
+                const isAssigned = 
+                  currentUser.role === 'AUDITOR' || 
+                  currentUser.role === 'ADMINISTRATOR' || 
+                  currentUser.role === 'PORTAL_ADMIN' || 
+                  purposeOfUse === 'EMERGENCY_OVERRIDE' || 
+                  (currentUser.assignedPatientIds && currentUser.assignedPatientIds.includes(id));
+                
+                if (isAssigned) {
+                  onSelectPatient(id);
+                  const p = patients.find(pat => pat.id === id);
+                  if (p) setQaAttachedPatient(p);
+                  setPatientViewMode('360');
+                  setActiveTab('PATIENTS');
+                } else {
+                  setQaAttachedPatient(null);
+                }
               }}
               initialQuery={qaPrefilledQuery}
               onSendToNote={() => setActiveTab('WORKFLOW')}

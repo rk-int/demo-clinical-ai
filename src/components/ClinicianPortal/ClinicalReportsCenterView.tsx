@@ -36,6 +36,7 @@ import {
   getRoleBadgeStyle 
 } from '../../data/syntheticTeamNotes';
 import { SYNTHETIC_PATIENTS } from '../../data/syntheticFhirData';
+import { getUserAvatarUrl, getPatientAvatarUrl } from '../../utils/patientAvatar';
 
 interface ClinicalReportsCenterViewProps {
   currentUser: UserProfile;
@@ -361,10 +362,24 @@ export const ClinicalReportsCenterView: React.FC<ClinicalReportsCenterViewProps>
                         )}
                       </div>
 
-                      <div className="text-xs text-slate-300 mt-1 flex flex-wrap items-center gap-x-3 gap-y-0.5">
-                        <span>Patient: <strong className="text-white">{report.patientName}</strong> ({report.patientId})</span>
+                      <div className="text-xs text-slate-300 mt-1 flex flex-wrap items-center gap-x-3 gap-y-1">
+                        <span className="inline-flex items-center gap-1.5">
+                          <img
+                            src={getPatientAvatarUrl({ fullName: report.patientName })}
+                            alt={report.patientName}
+                            className="w-4 h-4 rounded-full object-cover border border-cyan-400/50"
+                          />
+                          <span>Patient: <strong className="text-white">{report.patientName}</strong> ({report.patientId})</span>
+                        </span>
                         <span>•</span>
-                        <span>Author: <strong className="text-slate-200">{report.authorName}</strong> ({report.authorDepartment})</span>
+                        <span className="inline-flex items-center gap-1.5">
+                          <img
+                            src={getUserAvatarUrl(report.authorName)}
+                            alt={report.authorName}
+                            className="w-4 h-4 rounded-full object-cover border border-blue-400/50"
+                          />
+                          <span>Author: <strong className="text-slate-200">{report.authorName}</strong> ({report.authorDepartment})</span>
+                        </span>
                         <span>•</span>
                         <span className="font-mono text-slate-400">{new Date(report.timestamp).toLocaleString()}</span>
                       </div>

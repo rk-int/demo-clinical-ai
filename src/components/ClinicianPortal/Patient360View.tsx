@@ -357,7 +357,11 @@ export const Patient360View: React.FC<Patient360ViewProps> = ({
             {/* Current user session banner */}
             <div className="p-3 rounded-xl bg-blue-500/10 border border-blue-500/30 text-blue-200 text-xs flex flex-col sm:flex-row sm:items-center justify-between gap-2">
               <div className="flex items-center gap-2">
-                <UserCheck className="w-4 h-4 text-blue-400 shrink-0" />
+                <img
+                  src={getUserAvatarUrl(currentUser)}
+                  alt={currentUser.name}
+                  className="w-6 h-6 rounded-full object-cover shrink-0 border border-blue-400/50 shadow-sm"
+                />
                 <span>
                   Logged in as <strong className="text-white">{currentUser.name}</strong> ({currentUser.role.replace(/_/g, ' ')}) • Viewing notes contributed by all disciplines who treated this patient.
                 </span>
@@ -543,7 +547,14 @@ export const Patient360View: React.FC<Patient360ViewProps> = ({
                           </div>
 
                           <div className="text-xs text-slate-300 mt-1 flex flex-wrap items-center gap-x-3 gap-y-0.5">
-                            <span>Author: <strong className="text-white">{note.authorName}</strong></span>
+                            <span className="inline-flex items-center gap-1.5">
+                              <img
+                                src={getUserAvatarUrl(note.authorName)}
+                                alt={note.authorName}
+                                className="w-5 h-5 rounded-full object-cover shrink-0 border border-cyan-400/50 shadow-sm"
+                              />
+                              <span>Author: <strong className="text-white">{note.authorName}</strong></span>
+                            </span>
                             <span>•</span>
                             <span>Dept: <strong className="text-slate-200">{note.authorDepartment}</strong></span>
                             <span>•</span>

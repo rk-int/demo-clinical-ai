@@ -66,32 +66,43 @@ export const LandingPage: React.FC<LandingPageProps> = ({
             </span>
           </h1>
 
-          {/* Quick Action CTAs (Hidden when not logged in since top Navbar Sign In exists) */}
-          {currentUser && (
-            <div className="flex flex-wrap items-center justify-center gap-3 pt-2">
-              <button
-                onClick={() => onEnterClinicianPortal(currentUser)}
-                className="px-7 py-3.5 rounded-2xl bg-blue-600 hover:bg-blue-500 active:scale-[0.99] text-white font-extrabold text-sm shadow-xl shadow-blue-600/30 transition-all flex items-center gap-2.5 cursor-pointer hover:scale-105"
-              >
-                <LogIn className="w-4 h-4" />
-                <span>Enter Clinical Workspace</span>
-                <ArrowRight className="w-4 h-4 ml-0.5" />
-              </button>
-
-              {/* Direct Export ZIP Source Code Download Link (Portal Admin Only) */}
-              {currentUser.role === 'PORTAL_ADMIN' && (
-                <a
-                  href="/api/export/zip"
-                  download="healthnet-clinical-ai-v1.zip"
-                  className="px-5 py-3.5 rounded-2xl bg-slate-900/80 hover:bg-slate-800/90 active:scale-[0.99] text-cyan-300 hover:text-cyan-200 border border-cyan-500/30 hover:border-cyan-500/60 font-semibold text-sm shadow-xl backdrop-blur-xl transition-all flex items-center gap-2 cursor-pointer"
-                  title="Download clean repository source code archive"
+          {/* Quick Action CTAs */}
+          <div className="flex flex-wrap items-center justify-center gap-3 pt-2">
+            {currentUser ? (
+              <>
+                <button
+                  onClick={() => onEnterClinicianPortal(currentUser)}
+                  className="px-7 py-3.5 rounded-2xl bg-blue-600 hover:bg-blue-500 active:scale-[0.99] text-white font-extrabold text-sm shadow-xl shadow-blue-600/30 transition-all flex items-center gap-2.5 cursor-pointer hover:scale-105"
                 >
-                  <Download className="w-4 h-4 text-cyan-400" />
-                  <span>Export Source ZIP (v1.0)</span>
-                </a>
-              )}
-            </div>
-          )}
+                  <LogIn className="w-4 h-4" />
+                  <span>Enter Clinical Workspace</span>
+                  <ArrowRight className="w-4 h-4 ml-0.5" />
+                </button>
+
+                {onOpenSignInModal && (
+                  <button
+                    onClick={onOpenSignInModal}
+                    className="px-5 py-3.5 rounded-2xl bg-slate-900/80 hover:bg-slate-800/90 active:scale-[0.99] text-cyan-300 hover:text-cyan-200 border border-cyan-500/30 hover:border-cyan-500/60 font-semibold text-sm shadow-xl backdrop-blur-xl transition-all flex items-center gap-2 cursor-pointer"
+                  >
+                    <UserCheck className="w-4 h-4 text-cyan-400" />
+                    <span>Switch Account / Role</span>
+                  </button>
+                )}
+
+                {currentUser.role === 'PORTAL_ADMIN' && (
+                  <a
+                    href="/api/export/zip"
+                    download="healthnet-clinical-ai-v1.zip"
+                    className="px-5 py-3.5 rounded-2xl bg-slate-900/80 hover:bg-slate-800/90 active:scale-[0.99] text-cyan-300 hover:text-cyan-200 border border-cyan-500/30 hover:border-cyan-500/60 font-semibold text-sm shadow-xl backdrop-blur-xl transition-all flex items-center gap-2 cursor-pointer"
+                    title="Download clean repository source code archive"
+                  >
+                    <Download className="w-4 h-4 text-cyan-400" />
+                    <span>Export Source ZIP (v1.0)</span>
+                  </a>
+                )}
+              </>
+            ) : null}
+          </div>
         </section>
 
         {/* ========================================================================= */}

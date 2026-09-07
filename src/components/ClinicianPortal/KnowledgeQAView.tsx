@@ -43,9 +43,20 @@ import {
 import { UserProfile, PurposeOfUse, EvidenceItem, AgentContract, SyntheticPatient } from '../../types';
 import { APPROVED_GUIDELINES } from '../../data/approvedKnowledge';
 import { SYNTHETIC_PATIENTS } from '../../data/syntheticFhirData';
-import { getPatientAvatarUrl } from '../../utils/patientAvatar';
+import { getPatientAvatarUrl, getUserAvatarUrl } from '../../utils/patientAvatar';
 import { VerticalPatientSearchFlowCanvas } from '../AgentOperations/VerticalPatientSearchFlowCanvas';
 import { ClinicalMarkdownRenderer } from './ClinicalMarkdownRenderer';
+import { validateInputGuardrails } from '../../lib/guardrails';
+
+export interface TokenMetrics {
+  inputTokens: number;
+  outputTokens: number;
+  totalTokens: number;
+  dailyLimit: number;
+  dailyUsed: number;
+  dailyRemaining: number;
+  percentUsed: number;
+}
 
 interface ChatMessage {
   id: string;
@@ -59,6 +70,10 @@ interface ChatMessage {
   usedModel?: string;
   modelExecutionStatus?: 'PRIMARY' | 'FALLBACK' | 'LOCAL_ENGINE';
   preGuardrails?: {
+    sentToLlm?: string[];
+    hiddenFromLlm?: string[];
+    blockedInfo?: string[];
+    suggestedPrompts?: string[];
     promptInjectionCheck: { status: string; rule: string };
     dlpPhiTokenization: { status: string; redactedCount: number };
     abacConsentValidation: { status: string; consentStatus: string };
@@ -75,6 +90,7 @@ interface ChatMessage {
     guidelinesDb?: { chunksRetrieved: number; latencyMs: number; engine: string };
     totalLatencyMs: number;
   };
+  tokenMetrics?: TokenMetrics;
   trace?: AgentContract | null;
 }
 
@@ -152,6 +168,62 @@ interface KnowledgeQAViewProps {
   onBack?: () => void;
 }
 
+const calculateCumulativeTokenMetrics = (
+  msg: ChatMessage,
+  allMessages: ChatMessage[]
+): TokenMetrics => {
+  const dailyLimit = 100000;
+  let runningTotalUsed = 450; // Initial base usage balance for user today
+  let msgInput = 0;
+  let msgOutput = 0;
+  let msgTotal = 0;
+
+  for (const m of allMessages) {
+    if (m.sender === 'assistant') {
+      const input = m.tokenMetrics?.inputTokens ?? Math.max(120, Math.ceil((m.text?.length || 100) * 0.45));
+      const output = m.tokenMetrics?.outputTokens ?? Math.max(45, Math.ceil((m.text?.length || 100) * 0.35));
+      const total = input + output;
+
+      runningTotalUsed += total;
+
+      if (m.id === msg.id) {
+        msgInput = input;
+        msgOutput = output;
+        msgTotal = total;
+        break;
+      }
+    }
+  }
+
+  if (msgTotal === 0) {
+    if (msg.tokenMetrics) {
+      msgInput = msg.tokenMetrics.inputTokens;
+      msgOutput = msg.tokenMetrics.outputTokens;
+      msgTotal = msg.tokenMetrics.totalTokens;
+      if (msg.tokenMetrics.dailyUsed > 0) {
+        runningTotalUsed = msg.tokenMetrics.dailyUsed;
+      }
+    } else {
+      msgInput = Math.max(120, Math.ceil((msg.text?.length || 100) * 0.45));
+      msgOutput = Math.max(45, Math.ceil((msg.text?.length || 100) * 0.35));
+      msgTotal = msgInput + msgOutput;
+    }
+  }
+
+  const dailyRemaining = Math.max(0, dailyLimit - runningTotalUsed);
+  const percentUsed = Number(((runningTotalUsed / dailyLimit) * 100).toFixed(2));
+
+  return {
+    inputTokens: msgInput,
+    outputTokens: msgOutput,
+    totalTokens: msgTotal,
+    dailyLimit,
+    dailyUsed: runningTotalUsed,
+    dailyRemaining,
+    percentUsed,
+  };
+};
+
 export const KnowledgeQAView: React.FC<KnowledgeQAViewProps> = ({
   currentUser,
   purposeOfUse,
@@ -181,6 +253,7 @@ export const KnowledgeQAView: React.FC<KnowledgeQAViewProps> = ({
   // Requirement 1 & 4: Zero-Trust Blank Default
   // Do NOT display any patient information by default. It starts strictly null/blank.
   const [attachedPatient, setAttachedPatient] = useState<SyntheticPatient | null>(patient || null);
+  const [attachmentError, setAttachmentError] = useState<string | null>(null);
   
   // Patient Autocomplete & Search Input State
   const [patientSearchInput, setPatientSearchInput] = useState('');
@@ -237,9 +310,22 @@ export const KnowledgeQAView: React.FC<KnowledgeQAViewProps> = ({
   // Sync attached patient when patient prop changes (e.g., from Ask AI buttons)
   useEffect(() => {
     if (patient) {
-      setAttachedPatient(patient);
+      const isAssigned = 
+        currentUser.role === 'AUDITOR' || 
+        currentUser.role === 'ADMINISTRATOR' || 
+        currentUser.role === 'PORTAL_ADMIN' || 
+        purposeOfUse === 'EMERGENCY_OVERRIDE' || 
+        (currentUser.assignedPatientIds && currentUser.assignedPatientIds.includes(patient.id));
+
+      if (isAssigned) {
+        setAttachedPatient(patient);
+        setAttachmentError(null);
+      } else {
+        setAttachedPatient(null);
+        setAttachmentError(`Access Denied (ABAC): Patient ${patient.fullName} (${patient.id}) is not within active clinical assignment for ${currentUser.name}. Patient attachment blocked.`);
+      }
     }
-  }, [patient]);
+  }, [patient, currentUser, purposeOfUse]);
 
   // Sync initial query when initialQuery prop changes
   useEffect(() => {
@@ -275,18 +361,29 @@ export const KnowledgeQAView: React.FC<KnowledgeQAViewProps> = ({
     );
   }, [patients, patientSearchInput]);
 
-  // Selection Handler: Attaches ONLY patient details to the window; does NOT automatically expand the live agent flow
+  // Selection Handler: Checks ABAC assignment before attaching patient details
   const handleSelectPatient = (selected: SyntheticPatient) => {
+    const isAssigned = 
+      currentUser.role === 'AUDITOR' || 
+      currentUser.role === 'ADMINISTRATOR' || 
+      currentUser.role === 'PORTAL_ADMIN' || 
+      purposeOfUse === 'EMERGENCY_OVERRIDE' || 
+      (currentUser.assignedPatientIds && currentUser.assignedPatientIds.includes(selected.id));
+
+    if (!isAssigned) {
+      setAttachmentError(`Access Denied (ABAC): Patient ${selected.fullName} (${selected.id}) is not within active clinical assignment for ${currentUser.name}. Patient attachment blocked.`);
+      setAttachedPatient(null);
+      setShowPatientDropdown(false);
+      return;
+    }
+
+    setAttachmentError(null);
     setAttachedPatient(selected);
     setPatientSearchInput('');
     setShowPatientDropdown(false);
     
-    // Explicit user requirement: when patient is searched & attached, do NOT display live agent flow automatically. Keep collapsed.
+    // Keep live flow collapsed by default per user requirement
     setShowLiveFlow(false);
-
-    if (onSelectPatient) {
-      onSelectPatient(selected.id);
-    }
   };
 
   // Explicit Search Execution on clicking "Search" button or pressing Enter
@@ -317,6 +414,7 @@ export const KnowledgeQAView: React.FC<KnowledgeQAViewProps> = ({
 
   const handleUnattachPatient = () => {
     setAttachedPatient(null);
+    setAttachmentError(null);
     setPatientSearchInput('');
     setShowLiveFlow(false);
   };
@@ -326,30 +424,94 @@ export const KnowledgeQAView: React.FC<KnowledgeQAViewProps> = ({
       title: 'HFpEF SGLT2 Renal Threshold', 
       query: 'What is the guideline recommendation for Empagliflozin SGLT2 inhibitor initiation in HFpEF patients with eGFR 38?',
       specialty: 'CARDIOLOGY',
-      suggestedPatientId: 'PT-1002' // Sunita Reddy
+      suggestedPatientId: 'PT-1002' // Sunita Reddy (Assigned to Dr. Sunita Sharma)
     },
     { 
       title: 'Inpatient Hypoglycemia Protocol', 
       query: 'What is the step-by-step Rule of 15 protocol for treating acute hypoglycemia in conscious adult inpatients?',
       specialty: 'ENDOCRINOLOGY',
-      suggestedPatientId: 'PT-1001' // Ananya Sen
+      suggestedPatientId: 'PT-1005' // Varun Deshmukh (Assigned to Dr. Sunita Sharma)
     },
     { 
       title: 'COPD Exacerbation Antibiotics', 
       query: 'When should antibiotics be initiated for an acute COPD exacerbation according to hospital guidelines?',
       specialty: 'PULMONOLOGY',
-      suggestedPatientId: 'PT-1003' // Marcus Vance
+      suggestedPatientId: 'PT-1003' // Madhavan Venkatesh (Assigned to Dr. Sunita Sharma)
     },
     { 
       title: 'Severe Sepsis Fluid Resuscitation', 
       query: 'What is the recommended 3-hour crystalloid bolus volume for septic shock?',
       specialty: 'CRITICAL_CARE',
-      suggestedPatientId: 'PT-1000' // Rajesh Sharma
+      suggestedPatientId: 'PT-1006' // Priyanka Chopra (Assigned to Dr. Sunita Sharma)
     },
   ];
 
   const handleSendMessage = async (queryToSend = inputText, targetPatient = attachedPatient) => {
     if (!queryToSend.trim()) return;
+
+    // Check ABAC assignment if targetPatient is attached
+    if (targetPatient) {
+      const isAssigned = 
+        currentUser.role === 'AUDITOR' || 
+        currentUser.role === 'ADMINISTRATOR' || 
+        currentUser.role === 'PORTAL_ADMIN' || 
+        purposeOfUse === 'EMERGENCY_OVERRIDE' || 
+        (currentUser.assignedPatientIds && currentUser.assignedPatientIds.includes(targetPatient.id));
+
+      if (!isAssigned) {
+        const userMsgId = `MSG-USR-${Date.now()}`;
+        const newUserMsg: ChatMessage = {
+          id: userMsgId,
+          sender: 'user',
+          timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+          text: queryToSend,
+          attachedPatient: targetPatient,
+        };
+
+        const assistantMsgId = `MSG-AST-${Date.now()}`;
+        const errorAssistantMsg: ChatMessage = {
+          id: assistantMsgId,
+          sender: 'assistant',
+          timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+          text: `[SECURITY GUARDRAIL / GATEWAY INTERCEPTION] Access Denied (ABAC): Patient ${targetPatient.id} (${targetPatient.fullName}) is not within active clinical assignment for ${currentUser.name}.`,
+          attachedPatient: targetPatient,
+          usedModel: selectedModel,
+        };
+
+        setMessages(prev => [...prev, newUserMsg, errorAssistantMsg]);
+        setInputText('');
+        setAttachedPatient(null);
+        setAttachmentError(`Access Denied (ABAC): Patient ${targetPatient.fullName} (${targetPatient.id}) is not within active clinical assignment for ${currentUser.name}. Attachment blocked.`);
+        return;
+      }
+    }
+
+    // Client-side Input Guardrail Check for Prompt Injection & Sensitive PHI Exposure
+    const guardCheck = validateInputGuardrails(queryToSend, { actor: currentUser, purposeOfUse, patients, attachedPatient: targetPatient });
+    if (!guardCheck.passed) {
+      const userMsgId = `MSG-USR-${Date.now()}`;
+      const newUserMsg: ChatMessage = {
+        id: userMsgId,
+        sender: 'user',
+        timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+        text: queryToSend,
+        attachedPatient: targetPatient,
+      };
+
+      const assistantMsgId = `MSG-AST-${Date.now()}`;
+      const errorAssistantMsg: ChatMessage = {
+        id: assistantMsgId,
+        sender: 'assistant',
+        timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+        text: `[SECURITY GUARDRAIL / GATEWAY INTERCEPTION] ${guardCheck.blockReason}`,
+        attachedPatient: targetPatient,
+        usedModel: selectedModel,
+      };
+
+      setMessages(prev => [...prev, newUserMsg, errorAssistantMsg]);
+      setInputText('');
+      return;
+    }
 
     const userMsgId = `MSG-USR-${Date.now()}`;
     const newUserMsg: ChatMessage = {
@@ -413,6 +575,7 @@ export const KnowledgeQAView: React.FC<KnowledgeQAViewProps> = ({
           preGuardrails: data.preGuardrails,
           postGuardrails: data.postGuardrails,
           databaseMetrics: data.databaseMetrics,
+          tokenMetrics: data.tokenMetrics,
           trace: data.trace,
         };
         setMessages(prev => [...prev, newAssistantMsg]);
@@ -471,7 +634,7 @@ export const KnowledgeQAView: React.FC<KnowledgeQAViewProps> = ({
       {/* ========================================================================= */}
       {/* 1) HEADER & PATIENT RETRIEVAL AUTO-POPULATE BAR                           */}
       {/* ========================================================================= */}
-      <div className="relative z-50 bg-white/5 backdrop-blur-2xl border border-white/10 rounded-3xl p-5 shadow-2xl space-y-4">
+      <div className="relative z-10 bg-white/5 backdrop-blur-2xl border border-white/10 rounded-3xl p-5 shadow-2xl space-y-4">
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
           <div className="space-y-1">
             <div className="flex items-center gap-2.5 flex-wrap">
@@ -509,9 +672,37 @@ export const KnowledgeQAView: React.FC<KnowledgeQAViewProps> = ({
         {/* PATIENT SEARCH & AUTO-POPULATE (BLANK DEFAULT BY MANDATE)                 */}
         {/* ========================================================================= */}
         <div className="pt-3 border-t border-white/10">
+          {attachmentError && (
+            <div className="mb-3 p-4 rounded-2xl bg-rose-950/90 border border-rose-500/60 backdrop-blur-md flex items-start justify-between gap-3 text-rose-200 shadow-2xl animate-fadeIn">
+              <div className="flex items-start gap-3">
+                <ShieldAlert className="w-5 h-5 text-rose-400 shrink-0 mt-0.5" />
+                <div>
+                  <div className="font-bold text-xs text-rose-300 flex items-center gap-2">
+                    <span>Clinical Governance & ABAC Access Control Interception</span>
+                    <span className="text-[10px] px-2 py-0.5 rounded bg-rose-500/20 text-rose-300 font-mono border border-rose-500/40">
+                      ATTACHMENT DENIED
+                    </span>
+                  </div>
+                  <p className="text-xs text-rose-100 mt-1 font-mono">
+                    {attachmentError}
+                  </p>
+                  <p className="text-[11px] text-rose-300/80 mt-1">
+                    LoggedIn Clinicians can only attach patients assigned to their active roster (or require Purpose of Use set to EMERGENCY_OVERRIDE).
+                  </p>
+                </div>
+              </div>
+              <button
+                onClick={() => setAttachmentError(null)}
+                className="p-1 text-rose-400 hover:text-white rounded-lg hover:bg-rose-900/50 cursor-pointer"
+              >
+                <X className="w-4 h-4" />
+              </button>
+            </div>
+          )}
+
           {!attachedPatient ? (
             /* Blank Default State: Prompt to search and auto-populate */
-            <div className="relative z-50" ref={searchDropdownRef}>
+            <div className="relative z-20" ref={searchDropdownRef}>
               <div className="p-4 rounded-2xl bg-slate-900/70 border border-white/10 backdrop-blur-md flex flex-col sm:flex-row sm:items-center justify-between gap-3">
                 <div className="flex items-center gap-3">
                   <div className="w-10 h-10 rounded-2xl bg-white/5 border border-white/10 flex items-center justify-center text-slate-400 shrink-0">
@@ -695,10 +886,10 @@ export const KnowledgeQAView: React.FC<KnowledgeQAViewProps> = ({
       {/* ========================================================================= */}
       {/* 2) GEMINI MODEL SELECTION & INFERENCE CONTROLS BAR                        */}
       {/* ========================================================================= */}
-      <div className="relative z-30 bg-slate-900/90 backdrop-blur-2xl border border-white/10 rounded-2xl p-3 shadow-xl flex flex-wrap items-center justify-between gap-3">
+      <div className="relative z-10 bg-slate-900/90 backdrop-blur-2xl border border-white/10 rounded-2xl p-3 shadow-xl flex flex-wrap items-center justify-between gap-3">
         <div className="flex items-center gap-3 flex-wrap">
           {/* Gemini Model Dropdown Selector */}
-          <div className="relative z-40" ref={modelDropdownRef}>
+          <div className="relative z-20" ref={modelDropdownRef}>
             <div className="text-[10px] font-mono text-slate-400 uppercase tracking-wider mb-1 flex items-center gap-1">
               <Sparkles className="w-3 h-3 text-cyan-400" />
               <span>Gemini Foundation Model:</span>
@@ -720,7 +911,7 @@ export const KnowledgeQAView: React.FC<KnowledgeQAViewProps> = ({
 
             {/* Model Dropdown Menu */}
             {isModelSelectorOpen && (
-              <div className="absolute left-0 top-full mt-2 w-84 bg-slate-950/98 backdrop-blur-2xl border border-cyan-500/50 rounded-2xl shadow-[0_20px_50px_rgba(0,0,0,0.95)] z-50 p-2 space-y-1 divide-y divide-white/5 animate-in fade-in zoom-in-95 duration-150">
+              <div className="absolute left-0 top-full mt-2 w-84 bg-slate-950/98 backdrop-blur-2xl border border-cyan-500/50 rounded-2xl shadow-[0_20px_50px_rgba(0,0,0,0.95)] z-30 p-2 space-y-1 divide-y divide-white/5 animate-in fade-in zoom-in-95 duration-150">
                 <div className="px-3 py-2 text-[11px] font-mono text-slate-400 flex items-center justify-between">
                   <span>Available Gemini Models</span>
                   <span className="text-[10px] text-emerald-400 flex items-center gap-1">
@@ -865,7 +1056,7 @@ export const KnowledgeQAView: React.FC<KnowledgeQAViewProps> = ({
       {/* ========================================================================= */}
       {/* 3) CHATGPT-STYLE CONVERSATIONAL FEED & STICKY INPUT BAR                   */}
       {/* ========================================================================= */}
-      <div className="relative z-10 bg-white/5 backdrop-blur-2xl border border-white/10 rounded-3xl p-6 shadow-2xl min-h-[460px] flex flex-col justify-between space-y-6">
+      <div className="relative z-0 bg-white/5 backdrop-blur-2xl border border-white/10 rounded-3xl p-6 shadow-2xl min-h-[460px] flex flex-col justify-between space-y-6">
         {/* Welcome Screen / Empty Chat Prompting Area */}
         {messages.length === 0 && (
           <div className="py-10 flex flex-col items-center justify-center text-center space-y-6 max-w-2xl mx-auto my-auto">
@@ -944,9 +1135,11 @@ export const KnowledgeQAView: React.FC<KnowledgeQAViewProps> = ({
                       </div>
                     </div>
 
-                    <div className="w-8 h-8 rounded-xl bg-blue-600 flex items-center justify-center text-white text-xs font-bold shrink-0 border border-white/20">
-                      {currentUser.name.slice(0, 2).toUpperCase()}
-                    </div>
+                    <img
+                      src={currentUser.avatarUrl || getUserAvatarUrl(currentUser)}
+                      alt={currentUser.name}
+                      className="w-8 h-8 rounded-xl object-cover shrink-0 border border-white/30 shadow-md ring-1 ring-blue-400/40"
+                    />
                   </div>
                 )}
 
@@ -1033,8 +1226,9 @@ export const KnowledgeQAView: React.FC<KnowledgeQAViewProps> = ({
                             </span>
                             <ul className="space-y-1 text-slate-300 list-disc list-inside">
                               <li><strong>Prompt Injection / Jailbreak Filter:</strong> If the input contained system prompt bypass phrases (e.g. <em>"ignore instructions"</em>, <em>"system prompt"</em>, <em>"DAN mode"</em>, <em>"disregard hipaa"</em>).</li>
-                              <li><strong>Patient Consent Restriction:</strong> If the attached patient's HIPAA consent is <code>EXPIRED</code> or <code>REVOKED</code> (e.g., James Thornton or Michael Chang).</li>
+                              <li><strong>Patient Consent Restriction:</strong> If the attached patient's HIPAA consent is <code>EXPIRED</code> or <code>REVOKED</code> (e.g., Jayesh Trivedi or Manish Changrani).</li>
                               <li><strong>ABAC Assignment Rule:</strong> If the clinician is not assigned to this patient and Purpose of Use is not <code>EMERGENCY_OVERRIDE</code>.</li>
+                              <li><strong>Sensitive PHI / PII Input Filter:</strong> If the input prompt contains unmasked patient names, SSNs, MRNs, phone numbers, or dates of birth transmitted directly in raw text.</li>
                             </ul>
                           </div>
 
@@ -1066,6 +1260,65 @@ export const KnowledgeQAView: React.FC<KnowledgeQAViewProps> = ({
                         </div>
                       )}
 
+                      {/* Token Consumption Telemetry Card (Displayed before Pre & Post Guardrails Audit Summary) */}
+                      {(() => {
+                        const metrics = calculateCumulativeTokenMetrics(msg, messages);
+                        return (
+                          <div className="p-3.5 rounded-2xl bg-indigo-950/50 border border-indigo-500/30 text-xs font-mono backdrop-blur-xl shadow-lg space-y-2.5">
+                            <div className="flex items-center justify-between gap-2 flex-wrap text-slate-200">
+                              <div className="flex items-center gap-2 font-bold text-indigo-300 text-xs">
+                                <Zap className="w-4 h-4 text-amber-400 animate-pulse" />
+                                <span>LLM Token Usage Telemetry</span>
+                              </div>
+                              <span className="text-[10px] font-mono px-2 py-0.5 rounded-full bg-indigo-500/20 text-indigo-300 border border-indigo-500/40">
+                                {metrics.percentUsed}% Daily Limit Used
+                              </span>
+                            </div>
+
+                            <div className="grid grid-cols-2 sm:grid-cols-5 gap-2 text-[11px]">
+                              <div className="p-2.5 rounded-xl bg-black/40 border border-amber-500/20 space-y-1">
+                                <span className="text-slate-400 block text-[10px] font-sans">Total Tokens consumed:</span>
+                                <span className="font-bold text-amber-300 text-sm block">{metrics.totalTokens.toLocaleString()}</span>
+                              </div>
+
+                              <div className="p-2.5 rounded-xl bg-black/40 border border-cyan-500/20 space-y-1">
+                                <span className="text-slate-400 block text-[10px] font-sans">Input Tokens:</span>
+                                <span className="font-bold text-cyan-300 text-sm block">{metrics.inputTokens.toLocaleString()}</span>
+                              </div>
+
+                              <div className="p-2.5 rounded-xl bg-black/40 border border-purple-500/20 space-y-1">
+                                <span className="text-slate-400 block text-[10px] font-sans">Output Tokens:</span>
+                                <span className="font-bold text-purple-300 text-sm block">{metrics.outputTokens.toLocaleString()}</span>
+                              </div>
+
+                              <div className="p-2.5 rounded-xl bg-black/40 border border-blue-500/20 space-y-1">
+                                <span className="text-slate-400 block text-[10px] font-sans">Token limit :</span>
+                                <span className="font-bold text-blue-300 text-sm block">{metrics.dailyLimit.toLocaleString()}</span>
+                              </div>
+
+                              <div className="p-2.5 rounded-xl bg-black/40 border border-emerald-500/20 space-y-1 col-span-2 sm:col-span-1">
+                                <span className="text-slate-400 block text-[10px] font-sans">Tokens left:</span>
+                                <span className="font-bold text-emerald-300 text-sm block">{metrics.dailyRemaining.toLocaleString()}</span>
+                              </div>
+                            </div>
+
+                            {/* Daily Usage Progress Bar */}
+                            <div className="space-y-1 pt-0.5">
+                              <div className="flex justify-between text-[10px] text-slate-400 font-sans">
+                                <span>User Daily Consumption</span>
+                                <span>{metrics.dailyUsed.toLocaleString()} / {metrics.dailyLimit.toLocaleString()} tokens</span>
+                              </div>
+                              <div className="h-1.5 w-full bg-slate-800/80 rounded-full overflow-hidden">
+                                <div 
+                                  className="h-full bg-gradient-to-r from-emerald-500 via-indigo-500 to-amber-500 rounded-full transition-all duration-500"
+                                  style={{ width: `${Math.min(100, Math.max(2, metrics.percentUsed))}%` }}
+                                />
+                              </div>
+                            </div>
+                          </div>
+                        );
+                      })()}
+
                       {/* Pre & Post Guardrails Audit Summary */}
                       {msg.preGuardrails && msg.postGuardrails && (
                         <div className="rounded-2xl border border-emerald-500/30 bg-[#040e08] overflow-hidden">
@@ -1086,11 +1339,11 @@ export const KnowledgeQAView: React.FC<KnowledgeQAViewProps> = ({
                           </button>
 
                           {expandedGuardrailMsgId === msg.id && (
-                            <div className="p-4 border-t border-emerald-500/20 space-y-3 text-xs font-mono">
+                            <div className="p-4 border-t border-emerald-500/20 space-y-4 text-xs font-mono">
                               <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-                                {/* Pre-Guardrails */}
+                                {/* Pre-Guardrails Status */}
                                 <div className="space-y-1.5 p-3 rounded-xl bg-black/40 border border-white/10">
-                                  <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Pre-Execution Guardrails (Input & DLP)</span>
+                                  <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider block">Pre-Execution Guardrails (Input & DLP)</span>
                                   <div className="text-slate-300 flex items-center justify-between text-[11px]">
                                     <span>• Prompt Injection Defense</span>
                                     <span className="text-emerald-400 font-semibold">{msg.preGuardrails.promptInjectionCheck.status}</span>
@@ -1109,9 +1362,9 @@ export const KnowledgeQAView: React.FC<KnowledgeQAViewProps> = ({
                                   </div>
                                 </div>
 
-                                {/* Post-Guardrails */}
+                                {/* Post-Guardrails Status */}
                                 <div className="space-y-1.5 p-3 rounded-xl bg-black/40 border border-white/10">
-                                  <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Post-Execution Guardrails (Groundedness & Output)</span>
+                                  <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider block">Post-Execution Guardrails (Groundedness & Output)</span>
                                   <div className="text-slate-300 flex items-center justify-between text-[11px]">
                                     <span>• Claim-to-Chunk Match</span>
                                     <span className="text-emerald-400 font-semibold">{msg.postGuardrails.citationClaimToChunk.status}</span>
@@ -1130,6 +1383,67 @@ export const KnowledgeQAView: React.FC<KnowledgeQAViewProps> = ({
                                   </div>
                                 </div>
                               </div>
+
+                              {/* Telemetry Detail Cards: What Was Sent vs What Was Hidden */}
+                              <div className="grid grid-cols-1 md:grid-cols-2 gap-3 pt-1">
+                                {/* 📤 What Information Was Sent to LLM */}
+                                <div className="space-y-1.5 p-3 rounded-xl bg-emerald-950/30 border border-emerald-500/30">
+                                  <span className="text-[10.5px] font-bold text-emerald-300 uppercase tracking-wider flex items-center gap-1.5">
+                                    <Send className="w-3 h-3 text-emerald-400" />
+                                    <span>📤 Information Sent to LLM (De-Identified)</span>
+                                  </span>
+                                  <ul className="space-y-1 text-[11px] text-emerald-100 list-disc list-inside">
+                                    {(msg.preGuardrails.sentToLlm || [
+                                      'De-identified demographics (Age & Gender)',
+                                      'Active clinical conditions & problem list',
+                                      'Current medication regimen & dosages',
+                                      'Recent laboratory & vital parameters',
+                                      'Retrieved RAG evidence guideline chunks'
+                                    ]).map((item, idx) => (
+                                      <li key={idx} className="truncate">{item}</li>
+                                    ))}
+                                  </ul>
+                                </div>
+
+                                {/* 🛡️ What Information Was Hidden / Redacted */}
+                                <div className="space-y-1.5 p-3 rounded-xl bg-cyan-950/30 border border-cyan-500/30">
+                                  <span className="text-[10.5px] font-bold text-cyan-300 uppercase tracking-wider flex items-center gap-1.5">
+                                    <Lock className="w-3 h-3 text-cyan-400" />
+                                    <span>🛡️ Information Hidden / Redacted by DLP</span>
+                                  </span>
+                                  <ul className="space-y-1 text-[11px] text-cyan-100 list-disc list-inside">
+                                    {(msg.preGuardrails.hiddenFromLlm || [
+                                      'Patient Full Name -> Masked to [REDACTED_PATIENT_NAME]',
+                                      'Medical Record Number (MRN) -> Masked to [REDACTED_MRN]',
+                                      'Room & Bed Location -> Masked to [REDACTED_LOCATION]',
+                                      'Direct Identifiers & Contact Details -> Excluded by DLP'
+                                    ]).map((item, idx) => (
+                                      <li key={idx} className="truncate">{item}</li>
+                                    ))}
+                                  </ul>
+                                </div>
+                              </div>
+
+                              {/* 💡 Suggested Prompts for LLM */}
+                              {msg.preGuardrails.suggestedPrompts && msg.preGuardrails.suggestedPrompts.length > 0 && (
+                                <div className="p-3 rounded-xl bg-slate-900/90 border border-cyan-500/30 space-y-2">
+                                  <span className="text-[10.5px] font-bold text-cyan-300 uppercase tracking-wider flex items-center gap-1.5">
+                                    <Sparkles className="w-3.5 h-3.5 text-cyan-400" />
+                                    <span>💡 Suggested Clinical Prompts for LLM:</span>
+                                  </span>
+                                  <div className="flex flex-wrap gap-2 pt-0.5 font-sans">
+                                    {msg.preGuardrails.suggestedPrompts.map((sPrompt, pIdx) => (
+                                      <button
+                                        key={pIdx}
+                                        onClick={() => handleSendMessage(sPrompt)}
+                                        className="px-2.5 py-1 rounded-lg bg-cyan-500/15 hover:bg-cyan-500/30 border border-cyan-500/40 text-cyan-200 hover:text-white text-[11px] font-medium transition-all cursor-pointer shadow-sm text-left"
+                                      >
+                                        {sPrompt}
+                                      </button>
+                                    ))}
+                                  </div>
+                                </div>
+                              )}
                             </div>
                           )}
                         </div>
@@ -1258,7 +1572,7 @@ export const KnowledgeQAView: React.FC<KnowledgeQAViewProps> = ({
                 <button
                   key={sIdx}
                   type="button"
-                  onClick={() => setInputText(suggestion)}
+                  onClick={() => handleSendMessage(suggestion)}
                   className="px-2.5 py-1 rounded-lg bg-cyan-500/10 hover:bg-cyan-500/20 border border-cyan-500/30 text-cyan-200 hover:text-white whitespace-nowrap transition-all cursor-pointer text-[10.5px] font-sans"
                 >
                   {suggestion}

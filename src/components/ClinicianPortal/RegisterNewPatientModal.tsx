@@ -171,7 +171,7 @@ export const RegisterNewPatientModal: React.FC<RegisterNewPatientModalProps> = (
 
   // Dynamic Raw Text Generator for all 5 document categories
   const dynamicRawText = useMemo(() => {
-    const name = newPatientName.trim() || 'Eleanor Vance';
+    const name = newPatientName.trim() || 'Sunita Reddy';
     const upr = newPatientUprId.trim() || 'UPR-2026-NRH-992014';
     const age = newPatientAge || 62;
     const gender = newPatientGender === 'FEMALE' ? 'female' : newPatientGender === 'MALE' ? 'male' : 'individual';
@@ -267,7 +267,7 @@ INTERPRETATION:
 
   // Dynamic JSON Generator for all 5 document categories
   const dynamicParsedJson = useMemo(() => {
-    const name = newPatientName.trim() || 'Eleanor Vance';
+    const name = newPatientName.trim() || 'Sunita Reddy';
     const upr = newPatientUprId.trim() || 'UPR-2026-NRH-992014';
     const age = Number(newPatientAge) || 62;
     const gender = newPatientGender;
@@ -1066,7 +1066,7 @@ INTERPRETATION:
                 value={newPatientName}
                 onChange={(e) => setNewPatientName(e.target.value)}
                 className="w-full bg-slate-950 border border-white/10 rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-cyan-400 transition-colors"
-                placeholder="e.g. Eleanor Vance"
+                placeholder="e.g. Sunita Reddy"
               />
             </div>
 

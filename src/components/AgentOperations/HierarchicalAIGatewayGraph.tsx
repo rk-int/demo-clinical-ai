@@ -123,7 +123,7 @@ export const HierarchicalAIGatewayGraph: React.FC<HierarchicalAIGatewayGraphProp
     return 'Complete';
   };
 
-  const patientName = patient?.fullName || 'Eleanor Vance';
+  const patientName = patient?.fullName || 'Sunita Reddy';
   const patientMrn = patient?.mrn || 'MRN-849201';
 
   const nodes: Record<string, GatewayNodeDef> = {

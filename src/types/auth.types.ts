@@ -25,4 +25,5 @@ export interface UserProfile {
   assignedPatientIds: string[];
   mfaVerified: boolean;
   avatarUrl?: string;
+  email?: string;
 }

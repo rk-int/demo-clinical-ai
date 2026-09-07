@@ -25,6 +25,7 @@ import { useTheme } from '../../context/ThemeContext';
 import { HospitalFacility, NETWORK_HOSPITALS } from '../../data/hospitalNetwork';
 import { SyntheticPatient } from '../../types';
 import { BookAppointmentModal, AppointmentData } from './BookAppointmentModal';
+import { getPatientAvatarUrl } from '../../utils/patientAvatar';
 
 interface AppointmentsCenterViewProps {
   selectedHospital?: HospitalFacility;
@@ -67,7 +68,7 @@ const INITIAL_APPOINTMENTS: AppointmentData[] = [
   },
   {
     id: 'APT-100883',
-    patientName: 'Marcus Vance',
+    patientName: 'Madhavan Venkatesh',
     age: '71',
     phoneNumber: '(555) 456-7890',
     email: 'marcus.vance@healthnet-patient.org',
@@ -322,13 +323,22 @@ export const AppointmentsCenterView: React.FC<AppointmentsCenterViewProps> = ({
                     <tr key={apt.id} className={`transition-colors ${isClosed ? 'opacity-65 bg-slate-950/30' : isDark ? 'hover:bg-white/5' : 'hover:bg-slate-50'}`}>
                       {/* Patient Name & Age */}
                       <td className="p-3.5 font-semibold">
-                        <div className="flex items-center gap-2">
-                          <span className="text-white font-bold text-sm">{apt.patientName}</span>
-                          <span className="text-[10px] px-1.5 py-0.2 rounded bg-blue-500/20 text-blue-300 font-mono">
-                            {apt.age} yrs
-                          </span>
+                        <div className="flex items-center gap-2.5">
+                          <img
+                            src={getPatientAvatarUrl({ fullName: apt.patientName })}
+                            alt={apt.patientName}
+                            className="w-8 h-8 rounded-full object-cover border border-cyan-400/50 shadow-sm shrink-0"
+                          />
+                          <div>
+                            <div className="flex items-center gap-2">
+                              <span className="text-white font-bold text-sm">{apt.patientName}</span>
+                              <span className="text-[10px] px-1.5 py-0.2 rounded bg-blue-500/20 text-blue-300 font-mono">
+                                {apt.age} yrs
+                              </span>
+                            </div>
+                            <span className="text-[10px] text-slate-400 font-mono block mt-0.5">{apt.id}</span>
+                          </div>
                         </div>
-                        <span className="text-[10px] text-slate-400 font-mono block mt-0.5">{apt.id}</span>
                       </td>
 
                       {/* Contact Info */}

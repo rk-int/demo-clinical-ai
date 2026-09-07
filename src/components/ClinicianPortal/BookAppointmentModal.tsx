@@ -17,6 +17,7 @@ import {
 } from 'lucide-react';
 import { useTheme } from '../../context/ThemeContext';
 import { NETWORK_HOSPITALS, HospitalFacility } from '../../data/hospitalNetwork';
+import { getPatientAvatarUrl } from '../../utils/patientAvatar';
 
 export interface AppointmentData {
   id: string;
@@ -140,12 +141,19 @@ export const BookAppointmentModal: React.FC<BookAppointmentModalProps> = ({
               <CheckCircle2 className="w-8 h-8 stroke-[2.5]" />
             </div>
 
-            <div>
+            <div className="space-y-2">
               <h3 className="text-xl font-extrabold text-emerald-400">Appointment Booked & Confirmed!</h3>
-              <p className="text-xs text-slate-300 mt-1">
-                Encounter reserved for <strong className="text-white">{bookedConfirmation.patientName}</strong> on{' '}
-                <span className="text-cyan-300 font-bold">{bookedConfirmation.appointmentDate} at {bookedConfirmation.appointmentTime}</span>
-              </p>
+              <div className="flex items-center justify-center gap-2 mt-1">
+                <img
+                  src={getPatientAvatarUrl({ fullName: bookedConfirmation.patientName })}
+                  alt={bookedConfirmation.patientName}
+                  className="w-8 h-8 rounded-full object-cover border border-cyan-400/50 shadow-md shrink-0"
+                />
+                <p className="text-xs text-slate-300">
+                  Encounter reserved for <strong className="text-white">{bookedConfirmation.patientName}</strong> on{' '}
+                  <span className="text-cyan-300 font-bold">{bookedConfirmation.appointmentDate} at {bookedConfirmation.appointmentTime}</span>
+                </p>
+              </div>
             </div>
 
             {/* Notification Delivery Badges */}
@@ -209,7 +217,7 @@ export const BookAppointmentModal: React.FC<BookAppointmentModalProps> = ({
                   required
                   value={patientName}
                   onChange={(e) => setPatientName(e.target.value)}
-                  placeholder="e.g. John Smith"
+                  placeholder="e.g. Rajesh Sharma"
                   className={`w-full px-3.5 py-2.5 rounded-xl text-xs font-semibold focus:outline-none border ${
                     isDark ? 'bg-slate-950 border-white/10 text-white focus:border-blue-500' : 'bg-slate-50 border-slate-200 text-slate-900'
                   }`}

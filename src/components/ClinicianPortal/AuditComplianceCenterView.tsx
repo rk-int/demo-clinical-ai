@@ -28,6 +28,7 @@ import {
 import { UserProfile, PurposeOfUse, SyntheticPatient } from '../../types';
 import { useTheme } from '../../context/ThemeContext';
 import { NETWORK_HOSPITALS, HospitalFacility } from '../../data/hospitalNetwork';
+import { getUserAvatarUrl } from '../../utils/patientAvatar';
 
 type AuditSubTab = 'ACCESS_LOGS' | 'DATA_ACCESS' | 'APPROVALS' | 'SYSTEM_EVENTS' | 'POLICY_VIOLATIONS';
 
@@ -107,11 +108,13 @@ export const AuditComplianceCenterView: React.FC<AuditComplianceCenterViewProps>
       patients.forEach((p, idx) => {
         const hospFacility = hospitalList.find((h) => h.code === p.hospitalSite || h.id === p.hospitalSite) || hospitalList[1];
         
+        const assignedDoc = DEMO_USERS.find(u => u.id === p.assignedPhysicianId)?.name || currentUser.name || 'Attending MD';
+
         // 1. Patient Record View Log
         logCounter++;
         logs.push({
           id: `LOG-${logCounter}`,
-          user: p.assignedPhysicianId || currentUser.name || 'Dr. John Smith',
+          user: assignedDoc,
           userRole: 'Attending Physician',
           action: 'View Record',
           actionType: 'VIEW',
@@ -130,7 +133,7 @@ export const AuditComplianceCenterView: React.FC<AuditComplianceCenterViewProps>
         logCounter++;
         logs.push({
           id: `LOG-${logCounter}`,
-          user: currentUser.name || 'Dr. John Smith',
+          user: currentUser.name || assignedDoc,
           userRole: currentUser.role === 'PORTAL_ADMIN' ? 'Portal Admin / MD' : 'Attending MD',
           action: 'AI Query',
           actionType: 'QUERY',
@@ -149,7 +152,7 @@ export const AuditComplianceCenterView: React.FC<AuditComplianceCenterViewProps>
         logCounter++;
         logs.push({
           id: `LOG-${logCounter}`,
-          user: currentUser.name || 'Dr. John Smith',
+          user: currentUser.name || assignedDoc,
           userRole: 'Attending MD',
           action: 'Generate Summary',
           actionType: 'SUMMARY',
@@ -168,7 +171,7 @@ export const AuditComplianceCenterView: React.FC<AuditComplianceCenterViewProps>
         logCounter++;
         logs.push({
           id: `LOG-${logCounter}`,
-          user: p.assignedPhysicianId || 'Dr. John Smith',
+          user: assignedDoc,
           userRole: 'Attending MD',
           action: 'Approve',
           actionType: 'APPROVE',
@@ -319,7 +322,7 @@ export const AuditComplianceCenterView: React.FC<AuditComplianceCenterViewProps>
 
     const newLog: DynamicAuditEntry = {
       id: `LOG-${Date.now().toString().slice(-4)}`,
-      user: currentUser.name || 'Dr. John Smith',
+      user: currentUser.name || 'Attending MD',
       userRole: currentUser.role === 'PORTAL_ADMIN' ? 'Portal Admin' : 'Attending MD',
       action: chosen.action,
       actionType: chosen.actionType,
@@ -678,19 +681,28 @@ export const AuditComplianceCenterView: React.FC<AuditComplianceCenterViewProps>
                     >
                       {/* User */}
                       <td className="p-3.5 font-semibold">
-                        <div className="flex items-center gap-2">
-                          <span className="text-white font-bold">{log.user}</span>
-                          {log.userRole.includes('MD') || log.userRole.includes('Physician') ? (
-                            <span className="text-[10px] px-1.5 py-0.2 rounded bg-blue-500/20 text-blue-300 font-mono">
-                              MD
-                            </span>
-                          ) : log.userRole.includes('Admin') ? (
-                            <span className="text-[10px] px-1.5 py-0.2 rounded bg-emerald-500/20 text-emerald-300 font-mono">
-                              ADMIN
-                            </span>
-                          ) : null}
+                        <div className="flex items-center gap-2.5">
+                          <img
+                            src={getUserAvatarUrl(log.user)}
+                            alt={log.user}
+                            className="w-7 h-7 rounded-full object-cover shrink-0 border border-blue-500/40 shadow-sm"
+                          />
+                          <div>
+                            <div className="flex items-center gap-2">
+                              <span className="text-white font-bold">{log.user}</span>
+                              {log.userRole.includes('MD') || log.userRole.includes('Physician') ? (
+                                <span className="text-[10px] px-1.5 py-0.2 rounded bg-blue-500/20 text-blue-300 font-mono">
+                                  MD
+                                </span>
+                              ) : log.userRole.includes('Admin') ? (
+                                <span className="text-[10px] px-1.5 py-0.2 rounded bg-emerald-500/20 text-emerald-300 font-mono">
+                                  ADMIN
+                                </span>
+                              ) : null}
+                            </div>
+                            <span className="text-[10px] text-slate-400 block font-mono mt-0.5">{log.userRole}</span>
+                          </div>
                         </div>
-                        <span className="text-[10px] text-slate-400 block font-mono mt-0.5">{log.userRole}</span>
                       </td>
 
                       {/* Action */}

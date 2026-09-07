@@ -1,13 +1,13 @@
 import { ClinicalTeamNote, UserRole } from '../types';
 
 export const INITIAL_TEAM_NOTES: ClinicalTeamNote[] = [
-  // Notes for PT-1002 / pat-1 (Rajan Verma / Eleanor Vance)
+  // Notes for PT-1002 / pat-1 (Rajan Verma / Sunita Reddy)
   {
     id: 'NOTE-DOC-001',
     patientId: 'PT-1002',
     patientName: 'Rajan Verma',
     authorId: 'usr-doc-01',
-    authorName: 'Dr. Marcus Vance, MD',
+    authorName: 'Dr. Madhavan Venkatesh, MD',
     authorRole: 'DOCTOR',
     authorDepartment: 'Inpatient Cardiology',
     noteType: 'DOCTOR_PROGRESS_NOTE',
@@ -127,7 +127,7 @@ export const INITIAL_TEAM_NOTES: ClinicalTeamNote[] = [
     patientId: 'PT-1002',
     patientName: 'Rajan Verma',
     authorId: 'usr-admin-01',
-    authorName: 'Alex Rivera, MBA',
+    authorName: 'Aakash Roy, MBA',
     authorRole: 'ADMINISTRATOR',
     authorDepartment: 'Hospital Clinical Quality & Compliance',
     noteType: 'ADMIN_REVIEW',
@@ -156,7 +156,7 @@ export const INITIAL_TEAM_NOTES: ClinicalTeamNote[] = [
     patientId: 'PT-1002',
     patientName: 'Rajan Verma',
     authorId: 'usr-portal-01',
-    authorName: 'Taylor Reed, CISSP',
+    authorName: 'Tushar Ranade, CISSP',
     authorRole: 'PORTAL_ADMIN',
     authorDepartment: 'System Security & Interoperability Infrastructure',
     noteType: 'PORTAL_AUDIT',
@@ -181,13 +181,13 @@ export const INITIAL_TEAM_NOTES: ClinicalTeamNote[] = [
     signatureHash: 'sha256:1234567890abcdef1234567890abcdef1'
   },
 
-  // Notes for PT-1001 (Eleanor Vance)
+  // Notes for PT-1001 (Sunita Reddy)
   {
     id: 'NOTE-DOC-002',
     patientId: 'PT-1001',
-    patientName: 'Eleanor Vance',
+    patientName: 'Sunita Reddy',
     authorId: 'usr-doc-01',
-    authorName: 'Dr. Marcus Vance, MD',
+    authorName: 'Dr. Madhavan Venkatesh, MD',
     authorRole: 'DOCTOR',
     authorDepartment: 'Inpatient Cardiology',
     noteType: 'DOCTOR_PROGRESS_NOTE',
@@ -211,7 +211,7 @@ export const INITIAL_TEAM_NOTES: ClinicalTeamNote[] = [
   {
     id: 'NOTE-NURSE-002',
     patientId: 'PT-1001',
-    patientName: 'Eleanor Vance',
+    patientName: 'Sunita Reddy',
     authorId: 'usr-nurse-01',
     authorName: 'Pooja Patel, BSN, RN',
     authorRole: 'NURSE',
@@ -237,7 +237,7 @@ export const INITIAL_TEAM_NOTES: ClinicalTeamNote[] = [
   {
     id: 'NOTE-SPEC-002',
     patientId: 'PT-1001',
-    patientName: 'Eleanor Vance',
+    patientName: 'Sunita Reddy',
     authorId: 'usr-spec-01',
     authorName: 'Dr. Priya Patel, MD, FACC',
     authorRole: 'SPECIALIST',
@@ -263,7 +263,7 @@ export const INITIAL_TEAM_NOTES: ClinicalTeamNote[] = [
   {
     id: 'NOTE-CARE-002',
     patientId: 'PT-1001',
-    patientName: 'Eleanor Vance',
+    patientName: 'Sunita Reddy',
     authorId: 'usr-coord-01',
     authorName: 'Arjun Patel, MSW, CCM',
     authorRole: 'CARE_COORDINATOR',

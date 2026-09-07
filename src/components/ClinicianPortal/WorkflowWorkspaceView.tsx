@@ -41,6 +41,7 @@ import {
 import { SYNTHETIC_PATIENTS } from '../../data/syntheticFhirData';
 import { LiveAgenticWorkflowGraph } from '../AgentOperations/LiveAgenticWorkflowGraph';
 import { addTeamNote } from '../../data/syntheticTeamNotes';
+import { getUserAvatarUrl, getPatientAvatarUrl } from '../../utils/patientAvatar';
 
 interface WorkflowWorkspaceViewProps {
   currentUser: UserProfile;
@@ -456,9 +457,13 @@ export const WorkflowWorkspaceView: React.FC<WorkflowWorkspaceViewProps> = ({
           </div>
 
           <div className="flex items-center gap-2">
-            <span className="text-xs px-3 py-1.5 rounded-xl bg-white/5 backdrop-blur-xl border border-white/10 text-slate-300 font-mono flex items-center gap-1.5">
-              <ShieldCheck className="w-3.5 h-3.5 text-emerald-400" />
-              Role: <strong className="text-white">{currentUser.name}</strong> ({currentUser.role})
+            <span className="text-xs px-3 py-1.5 rounded-xl bg-white/5 backdrop-blur-xl border border-white/10 text-slate-300 font-mono flex items-center gap-2">
+              <img
+                src={currentUser.avatarUrl || getUserAvatarUrl(currentUser)}
+                alt={currentUser.name}
+                className="w-5 h-5 rounded-full object-cover border border-cyan-400/50"
+              />
+              <span>Role: <strong className="text-white">{currentUser.name}</strong> ({currentUser.role})</span>
             </span>
           </div>
         </div>

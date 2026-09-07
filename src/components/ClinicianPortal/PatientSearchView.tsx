@@ -94,7 +94,7 @@ export const PatientSearchView: React.FC<PatientSearchViewProps> = ({
   const [isRegisteredBoxExpanded, setIsRegisteredBoxExpanded] = useState<boolean>(true);
 
   // 7) Modal Form State & Historical Records Radio Button
-  const [newPatientName, setNewPatientName] = useState('Eleanor Vance');
+  const [newPatientName, setNewPatientName] = useState('Sunita Reddy');
   const [newPatientUprId, setNewPatientUprId] = useState('UPR-2026-NRH-992014');
   const [newPatientAge, setNewPatientAge] = useState(62);
   const [newPatientGender, setNewPatientGender] = useState<'MALE' | 'FEMALE' | 'OTHER'>('FEMALE');
@@ -119,7 +119,7 @@ export const PatientSearchView: React.FC<PatientSearchViewProps> = ({
     TEXT_PDF: {
       fileName: 'Discharge_Summary_NorthRiver_Transfer.pdf',
       rawText: `CLINICAL DISCHARGE SUMMARY & TRANSFER RECORD
-Patient: Eleanor Vance | DOB: 1964-05-18 | UPR: UPR-2026-NRH-992014
+Patient: Sunita Reddy | DOB: 1964-05-18 | UPR: UPR-2026-NRH-992014
 Source Facility: North River Community Hospital -> Transfer to Metro St. Jude
 Attending: Dr. Vikram Malhotra, MD
 
@@ -873,7 +873,7 @@ IMPRESSION & FINDINGS:
               <div>
                 <h3 className="text-lg font-bold text-white">No Matching Patient Records Found</h3>
                 <p className="text-xs text-slate-300 mt-1 max-w-md mx-auto">
-                  No patient matches the search query <span className="text-cyan-300 font-mono">"{searchTerm}"</span>. Try searching with a different name (e.g., "Elena", "John", "Jane", "Marcus") or browse the entire cohort.
+                  No patient matches the search query <span className="text-cyan-300 font-mono">"{searchTerm}"</span>. Try searching with a different name (e.g., "Sunita", "Rajesh", "Ananya", "Madhavan") or browse the entire cohort.
                 </p>
               </div>
               <div className="flex items-center justify-center gap-3 pt-2">
@@ -1566,10 +1566,10 @@ IMPRESSION & FINDINGS:
             </div>
             <div className="flex flex-wrap items-center justify-center gap-2">
               {[
-                { name: 'Sunita Reddy', query: 'Elena' },
-                { name: 'Rajesh Sharma', query: 'John' },
-                { name: 'Ananya Sen', query: 'Jane' },
-                { name: 'Marcus Vance', query: 'Marcus' },
+                { name: 'Sunita Reddy', query: 'Sunita' },
+                { name: 'Rajesh Sharma', query: 'Rajesh' },
+                { name: 'Ananya Sen', query: 'Ananya' },
+                { name: 'Madhavan Venkatesh', query: 'Madhavan' },
                 { name: 'Ramesh Kumar', query: 'Robert' },
                 { name: 'Heart Failure', query: 'Heart' },
                 { name: 'North River Transfer', query: 'North River' }

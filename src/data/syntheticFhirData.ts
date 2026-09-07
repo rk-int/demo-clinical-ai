@@ -136,7 +136,7 @@ export const SYNTHETIC_PATIENTS: SyntheticPatient[] = [
     birthDate: '1962-09-04',
     age: 62,
     gender: 'FEMALE',
-    assignedPhysicianId: 'usr-doc-01',
+    assignedPhysicianId: 'usr-doc-02',
     hospitalSite: 'City Hospital – Main Campus',
     roomBed: 'Internal Medicine 3W - Bed 308',
     consentStatus: 'ACTIVE_CONSENT',
@@ -1209,6 +1209,9 @@ export const SYNTHETIC_PATIENTS: SyntheticPatient[] = [
 ];
 
 export const DEMO_USERS = [
+  // ==========================================
+  // DOCTORS (DOCTOR / PHYSICIAN)
+  // ==========================================
   {
     id: 'usr-doc-01',
     name: 'Dr. Sunita Sharma, MD',
@@ -1221,27 +1224,42 @@ export const DEMO_USERS = [
     avatarUrl: 'https://images.unsplash.com/photo-1559839734-2b71ea197ec2?auto=format&fit=crop&q=80&w=256&h=256',
   },
   {
-    id: 'usr-spec-01',
-    name: 'Dr. Ananya Rao, MD',
-    role: 'SPECIALIST' as const,
-    department: 'Clinical Specialist & Surgical Consult',
-    hospitalSite: 'North River Community Hospital',
-    licenseNumber: 'MD-CA-449102',
-    assignedPatientIds: ['PT-1004', 'PT-1008'],
+    id: 'usr-doc-02',
+    name: 'Dr. Vikram Malhotra, MD',
+    role: 'DOCTOR' as const,
+    department: 'Attending Physician & Internal Medicine',
+    hospitalSite: 'Metro St. Jude Academic Medical Center',
+    licenseNumber: 'MD-CA-882104',
+    assignedPatientIds: ['PT-1000', 'PT-1001', 'PT-1004'],
+    mfaVerified: true,
+    avatarUrl: 'https://images.unsplash.com/photo-1622253692010-333f2da6031d?auto=format&fit=crop&q=80&w=256&h=256',
+  },
+  {
+    id: 'usr-doc-03',
+    name: 'Dr. Shalini Kapoor, MD',
+    role: 'DOCTOR' as const,
+    department: 'Lead Hospitalist & Clinical Cardiology',
+    hospitalSite: 'City Hospital – Main Campus',
+    licenseNumber: 'MD-CA-771203',
+    assignedPatientIds: ['PT-1003', 'PT-1005'],
     mfaVerified: true,
     avatarUrl: 'https://images.unsplash.com/photo-1594824813566-78a932757271?auto=format&fit=crop&q=80&w=256&h=256',
   },
   {
-    id: 'usr-coord-01',
-    name: 'Arjun Patel, MSW',
-    role: 'CARE_COORDINATOR' as const,
-    department: 'Transitional Care & Discharge Navigation',
-    hospitalSite: 'Metro St. Jude Academic Medical Center',
-    licenseNumber: 'LCSW-CA-338192',
-    assignedPatientIds: ['PT-1002', 'PT-1005', 'PT-1010'],
+    id: 'usr-doc-04',
+    name: 'Dr. Rohan Deshmukh, MD',
+    role: 'PHYSICIAN' as const,
+    department: 'Intensive Care & Pulmonology Attending',
+    hospitalSite: 'North River Community Hospital',
+    licenseNumber: 'MD-CA-661092',
+    assignedPatientIds: ['PT-1007', 'PT-1009'],
     mfaVerified: true,
-    avatarUrl: 'https://images.unsplash.com/photo-1537368910025-700350fe46c7?auto=format&fit=crop&q=80&w=256&h=256',
+    avatarUrl: 'https://images.unsplash.com/photo-1612349317150-e413f6a5b16d?auto=format&fit=crop&q=80&w=256&h=256',
   },
+
+  // ==========================================
+  // NURSES (NURSE)
+  // ==========================================
   {
     id: 'usr-rn-01',
     name: 'Priya Nair, RN, BSN',
@@ -1254,6 +1272,106 @@ export const DEMO_USERS = [
     avatarUrl: 'https://images.unsplash.com/photo-1582750433449-648ed127bb54?auto=format&fit=crop&q=80&w=256&h=256',
   },
   {
+    id: 'usr-rn-02',
+    name: 'Neha Joshi, RN, MSN',
+    role: 'NURSE' as const,
+    department: 'ICU Charge Nurse & Critical Care',
+    hospitalSite: 'City Hospital – Main Campus',
+    licenseNumber: 'RN-CA-882190',
+    assignedPatientIds: ['PT-1000', 'PT-1004'],
+    mfaVerified: true,
+    avatarUrl: 'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?auto=format&fit=crop&q=80&w=256&h=256',
+  },
+  {
+    id: 'usr-rn-03',
+    name: 'Amitabh Sen, RN',
+    role: 'NURSE' as const,
+    department: 'Emergency Triage & Trauma Nurse',
+    hospitalSite: 'North River Community Hospital',
+    licenseNumber: 'RN-CA-551029',
+    assignedPatientIds: ['PT-1006', 'PT-1008'],
+    mfaVerified: true,
+    avatarUrl: 'https://images.unsplash.com/photo-1537368910025-700350fe46c7?auto=format&fit=crop&q=80&w=256&h=256',
+  },
+
+  // ==========================================
+  // SPECIALISTS (SPECIALIST)
+  // ==========================================
+  {
+    id: 'usr-spec-01',
+    name: 'Dr. Ananya Rao, MD',
+    role: 'SPECIALIST' as const,
+    department: 'Clinical Specialist & Surgical Consult',
+    hospitalSite: 'North River Community Hospital',
+    licenseNumber: 'MD-CA-449102',
+    assignedPatientIds: ['PT-1004', 'PT-1008'],
+    mfaVerified: true,
+    avatarUrl: 'https://images.unsplash.com/photo-1594824813566-78a932757271?auto=format&fit=crop&q=80&w=256&h=256',
+  },
+  {
+    id: 'usr-spec-02',
+    name: 'Dr. Suresh Menon, MD',
+    role: 'SPECIALIST' as const,
+    department: 'Nephrology & Renal Transplant Specialist',
+    hospitalSite: 'Metro St. Jude Academic Medical Center',
+    licenseNumber: 'MD-CA-339108',
+    assignedPatientIds: ['PT-1002', 'PT-1005'],
+    mfaVerified: true,
+    avatarUrl: 'https://images.unsplash.com/photo-1537368910025-700350fe46c7?auto=format&fit=crop&q=80&w=256&h=256',
+  },
+  {
+    id: 'usr-spec-03',
+    name: 'Dr. Meera Agarwal, MD',
+    role: 'SPECIALIST' as const,
+    department: 'Pulmonary & Respiratory Care Specialist',
+    hospitalSite: 'City Hospital – Main Campus',
+    licenseNumber: 'MD-CA-220198',
+    assignedPatientIds: ['PT-1001', 'PT-1003'],
+    mfaVerified: true,
+    avatarUrl: 'https://images.unsplash.com/photo-1559839734-2b71ea197ec2?auto=format&fit=crop&q=80&w=256&h=256',
+  },
+
+  // ==========================================
+  // CARE COORDINATORS (CARE_COORDINATOR)
+  // ==========================================
+  {
+    id: 'usr-coord-01',
+    name: 'Arjun Patel, MSW',
+    role: 'CARE_COORDINATOR' as const,
+    department: 'Transitional Care & Discharge Navigation',
+    hospitalSite: 'Metro St. Jude Academic Medical Center',
+    licenseNumber: 'LCSW-CA-338192',
+    assignedPatientIds: ['PT-1002', 'PT-1005', 'PT-1010'],
+    mfaVerified: true,
+    avatarUrl: 'https://images.unsplash.com/photo-1537368910025-700350fe46c7?auto=format&fit=crop&q=80&w=256&h=256',
+  },
+  {
+    id: 'usr-coord-02',
+    name: 'Deepa Saxena, LCSW',
+    role: 'CARE_COORDINATOR' as const,
+    department: 'Social Work & Patient Advocacy Manager',
+    hospitalSite: 'City Hospital – Main Campus',
+    licenseNumber: 'LCSW-CA-449201',
+    assignedPatientIds: ['PT-1000', 'PT-1003'],
+    mfaVerified: true,
+    avatarUrl: 'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?auto=format&fit=crop&q=80&w=256&h=256',
+  },
+  {
+    id: 'usr-coord-03',
+    name: 'Rajiv Khanna, MSW',
+    role: 'CARE_COORDINATOR' as const,
+    department: 'Post-Acute Care & Outreach Coordinator',
+    hospitalSite: 'North River Community Hospital',
+    licenseNumber: 'LCSW-CA-550192',
+    assignedPatientIds: ['PT-1004', 'PT-1006'],
+    mfaVerified: true,
+    avatarUrl: 'https://images.unsplash.com/photo-1560250097-0b93528c311a?auto=format&fit=crop&q=80&w=256&h=256',
+  },
+
+  // ==========================================
+  // CLINICIANS (CLINICIAN)
+  // ==========================================
+  {
     id: 'usr-admin-01',
     name: 'Dr. Rajesh Iyer, MD',
     role: 'CLINICIAN' as const,
@@ -1264,6 +1382,32 @@ export const DEMO_USERS = [
     mfaVerified: true,
     avatarUrl: 'https://images.unsplash.com/photo-1622253692010-333f2da6031d?auto=format&fit=crop&q=80&w=256&h=256',
   },
+  {
+    id: 'usr-clinician-02',
+    name: 'Dr. Pooja Chawla, DO',
+    role: 'CLINICIAN' as const,
+    department: 'Primary Care & Outpatient Clinician',
+    hospitalSite: 'City Hospital – Main Campus',
+    licenseNumber: 'DO-CA-778901',
+    assignedPatientIds: ['PT-1000', 'PT-1001'],
+    mfaVerified: true,
+    avatarUrl: 'https://images.unsplash.com/photo-1559839734-2b71ea197ec2?auto=format&fit=crop&q=80&w=256&h=256',
+  },
+  {
+    id: 'usr-clinician-03',
+    name: 'Dr. Alok Verma, MD',
+    role: 'CLINICIAN' as const,
+    department: 'Family Medicine & Ambulatory Care',
+    hospitalSite: 'North River Community Hospital',
+    licenseNumber: 'MD-CA-665412',
+    assignedPatientIds: ['PT-1003', 'PT-1004'],
+    mfaVerified: true,
+    avatarUrl: 'https://images.unsplash.com/photo-1612349317150-e413f6a5b16d?auto=format&fit=crop&q=80&w=256&h=256',
+  },
+
+  // ==========================================
+  // PORTAL ADMINS & AUDITORS (PORTAL_ADMIN / AUDITOR)
+  // ==========================================
   {
     id: 'usr-portal-admin-01',
     name: 'Dr. Kavita Verma, PhD',
@@ -1285,5 +1429,16 @@ export const DEMO_USERS = [
     assignedPatientIds: [],
     mfaVerified: true,
     avatarUrl: 'https://images.unsplash.com/photo-1560250097-0b93528c311a?auto=format&fit=crop&q=80&w=256&h=256',
+  },
+  {
+    id: 'usr-portal-admin-02',
+    name: 'Vikramaditya Roy, CISSP',
+    role: 'PORTAL_ADMIN' as const,
+    department: 'Chief Security Officer & System Super Admin',
+    hospitalSite: 'Enterprise Health Intelligence Network',
+    licenseNumber: 'CISO-9902',
+    assignedPatientIds: ['PT-1000', 'PT-1001', 'PT-1002'],
+    mfaVerified: true,
+    avatarUrl: 'https://images.unsplash.com/photo-1537368910025-700350fe46c7?auto=format&fit=crop&q=80&w=256&h=256',
   }
 ];

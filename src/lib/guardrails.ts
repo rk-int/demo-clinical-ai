@@ -23,7 +23,100 @@ const INJECTION_PATTERNS = [
   /javascript:/i,
 ];
 
-export function validateInputGuardrails(prompt: string, context?: { actor?: UserProfile; purposeOfUse?: PurposeOfUse }): GuardrailCheckResult {
+export function detectSensitivePhiInPrompt(
+  prompt: string,
+  patients?: SyntheticPatient[],
+  attachedPatient?: SyntheticPatient | null
+): { hasSensitivePhi: boolean; details?: string; type?: string } {
+  if (!prompt) return { hasSensitivePhi: false };
+
+  // 1. SSN Pattern Check
+  if (/\b\d{3}[- ]?\d{2}[- ]?\d{4}\b/.test(prompt) || /\b(ssn|social security number)\b/i.test(prompt)) {
+    return {
+      hasSensitivePhi: true,
+      type: 'RAW_SSN_EXPOSURE',
+      details: 'Unmasked Social Security Number (SSN) detected in prompt text.'
+    };
+  }
+
+  // 2. MRN Pattern Check
+  if (/\bMRN[-:\s]*\d{4,8}\b/i.test(prompt) || /\bMRN[-:\s]*90\d{3}\b/i.test(prompt)) {
+    return {
+      hasSensitivePhi: true,
+      type: 'RAW_MRN_EXPOSURE',
+      details: 'Unmasked Medical Record Number (MRN) detected in prompt text.'
+    };
+  }
+
+  // 3. Phone Number Check
+  if (/\b(\+\d{1,3}[-.\s]?)?\(?\d{3}\)?[-.\s]?\d{3}[-.\s]?\d{4}\b/.test(prompt)) {
+    return {
+      hasSensitivePhi: true,
+      type: 'RAW_PHONE_EXPOSURE',
+      details: 'Unmasked telephone/contact number detected in prompt text.'
+    };
+  }
+
+  // 4. Date of Birth (DOB) Check
+  if (/\b(DOB|Date of Birth)[:\s]*\d{1,2}[\/-]\d{1,2}[\/-]\d{2,4}\b/i.test(prompt)) {
+    return {
+      hasSensitivePhi: true,
+      type: 'RAW_DOB_EXPOSURE',
+      details: 'Unmasked Date of Birth (DOB) identifier detected in prompt text.'
+    };
+  }
+
+  // 5. Patient Full Name Check against synthetic patient directory
+  const sensitiveNames = [
+    'Rajesh Sharma', 'Ananya Sen', 'Sunita Reddy', 'Madhavan Venkatesh', 
+    'Jayesh Trivedi', 'Varun Deshmukh', 'Priyanka Chopra', 'Manish Changrani', 
+    'Meera Patel', 'Siddharth Malhotra', 'Nisha Kapoor', 'Vikram Joshi', 
+    'Anita Desai', 'Rahul Bose', 'Tanvi Shah', 'Arjun Kapoor'
+  ];
+
+  if (patients && patients.length > 0) {
+    for (const p of patients) {
+      if (p.fullName && !sensitiveNames.includes(p.fullName)) {
+        sensitiveNames.push(p.fullName);
+      }
+    }
+  }
+
+  for (const name of sensitiveNames) {
+    if (name && name.length > 3) {
+      // If name matches the attached patient's full name, allow referencing attached patient
+      if (attachedPatient && attachedPatient.fullName && name.toLowerCase() === attachedPatient.fullName.toLowerCase()) {
+        continue;
+      }
+
+      const escaped = name.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+      const regex = new RegExp(`\\b${escaped}\\b`, 'i');
+      if (regex.test(prompt)) {
+        return {
+          hasSensitivePhi: true,
+          type: 'UNMASKED_PATIENT_NAME_EXPOSURE',
+          details: `Unmasked sensitive patient full name ("${name}") detected in prompt text.`
+        };
+      }
+    }
+  }
+
+  // 6. Explicit Patient PHI phrases
+  if (/\bpatient\s+(ssn|mrn|phone|address|dob)[:\s]+/i.test(prompt)) {
+    return {
+      hasSensitivePhi: true,
+      type: 'RAW_PHI_PHRASE_EXPOSURE',
+      details: 'Explicit patient PHI/PII descriptor phrase detected in prompt text.'
+    };
+  }
+
+  return { hasSensitivePhi: false };
+}
+
+export function validateInputGuardrails(
+  prompt: string, 
+  context?: { actor?: UserProfile; purposeOfUse?: PurposeOfUse; patients?: SyntheticPatient[]; attachedPatient?: SyntheticPatient | null }
+): GuardrailCheckResult {
   if (!prompt || prompt.trim().length === 0) {
     return { passed: false, blockReason: 'Input prompt is empty.' };
   }
@@ -46,6 +139,25 @@ export function validateInputGuardrails(prompt: string, context?: { actor?: User
         guardrailEvent: event
       };
     }
+  }
+
+  // 2. Sensitive PHI / PII Exposure Check
+  const phiCheck = detectSensitivePhiInPrompt(prompt, context?.patients, context?.attachedPatient);
+  if (phiCheck.hasSensitivePhi) {
+    const event: GuardrailEvent = {
+      id: `GR-${Date.now()}-${Math.floor(Math.random() * 1000)}`,
+      timestamp: new Date().toISOString(),
+      type: 'UNAUTHORIZED_ACCESS',
+      severity: 'CRITICAL',
+      description: `Sensitive PHI/PII Leak Guardrail Violation: ${phiCheck.details}`,
+      actionTaken: 'BLOCKED',
+      details: { rawPromptSample: prompt.substring(0, 80) + '...', phiType: phiCheck.type }
+    };
+    return {
+      passed: false,
+      blockReason: `Clinical Governance & Security Guardrail Interception: Sensitive raw PHI/PII detected in prompt (${phiCheck.details}). Patient identifiers cannot be transmitted directly in prompt strings.`,
+      guardrailEvent: event
+    };
   }
 
   return { passed: true, sanitizedInput: prompt.trim() };

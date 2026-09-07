@@ -16,7 +16,7 @@ export const NotificationsView: React.FC = () => {
           isDark ? 'bg-amber-950/20 border-amber-500/30 text-amber-200' : 'bg-amber-50 border-amber-200 text-amber-800'
         }`}>
           <AlertTriangle className="w-4 h-4 text-amber-400 shrink-0" />
-          <span>Biomarker alert: Eleanor Vance potassium 5.8 mEq/L exceeds high threshold.</span>
+          <span>Biomarker alert: Sunita Reddy potassium 5.8 mEq/L exceeds high threshold.</span>
         </div>
       </div>
     </div>

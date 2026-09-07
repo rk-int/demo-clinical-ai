@@ -26,7 +26,7 @@ import {
 } from 'lucide-react';
 import { SyntheticPatient, UserProfile, PurposeOfUse } from '../../types';
 import { SYNTHETIC_PATIENTS } from '../../data/syntheticFhirData';
-import { getUserAvatarUrl } from '../../utils/patientAvatar';
+import { getUserAvatarUrl, getPatientAvatarUrl } from '../../utils/patientAvatar';
 
 export type MetricCategory = 'PATIENTS_SEEN' | 'PENDING_APPROVALS' | 'ALERTS' | 'TASKS';
 
@@ -123,7 +123,7 @@ export const HomeMetricDetailsPanel: React.FC<HomeMetricDetailsPanelProps> = ({
     {
       id: 'APP-102',
       patientId: patients[1]?.id || 'pat-2',
-      patientName: patients[1]?.fullName || 'Eleanor Vance',
+      patientName: patients[1]?.fullName || 'Sunita Reddy',
       mrn: patients[1]?.mrn || 'MRN-88319',
       title: 'High-Dose Atorvastatin (80mg) Titration & Lipid Panel Order',
       type: 'MEDICATION',
@@ -165,7 +165,7 @@ export const HomeMetricDetailsPanel: React.FC<HomeMetricDetailsPanelProps> = ({
     {
       id: 'APP-105',
       patientId: patients[4]?.id || 'pat-5',
-      patientName: patients[4]?.fullName || 'David Kim',
+      patientName: patients[4]?.fullName || 'Deepak Kumar',
       mrn: patients[4]?.mrn || 'MRN-54918',
       title: 'Digital HIPAA Research Data De-Identification & Secondary Use Consent',
       type: 'CONSENT',
@@ -207,7 +207,7 @@ export const HomeMetricDetailsPanel: React.FC<HomeMetricDetailsPanelProps> = ({
     {
       id: 'APP-108',
       patientId: patients[1]?.id || 'pat-2',
-      patientName: patients[1]?.fullName || 'Eleanor Vance',
+      patientName: patients[1]?.fullName || 'Sunita Reddy',
       mrn: patients[1]?.mrn || 'MRN-88319',
       title: 'Home Telehealth Blood Pressure & Weight Cellular Monitor Dispense',
       type: 'ORDER',
@@ -238,7 +238,7 @@ export const HomeMetricDetailsPanel: React.FC<HomeMetricDetailsPanelProps> = ({
     {
       id: 'ALT-202',
       patientId: patients[1]?.id || 'pat-2',
-      patientName: patients[1]?.fullName || 'Eleanor Vance',
+      patientName: patients[1]?.fullName || 'Sunita Reddy',
       mrn: patients[1]?.mrn || 'MRN-88319',
       severity: 'CRITICAL',
       category: 'DRUG_INTERACTION',
@@ -251,7 +251,7 @@ export const HomeMetricDetailsPanel: React.FC<HomeMetricDetailsPanelProps> = ({
     {
       id: 'ALT-203',
       patientId: patients[4]?.id || 'pat-5',
-      patientName: patients[4]?.fullName || 'David Kim',
+      patientName: patients[4]?.fullName || 'Deepak Kumar',
       mrn: patients[4]?.mrn || 'MRN-54918',
       severity: 'WARNING',
       category: 'EARLY_WARNING',
@@ -306,7 +306,7 @@ export const HomeMetricDetailsPanel: React.FC<HomeMetricDetailsPanelProps> = ({
     {
       id: 'TSK-302',
       patientId: patients[1]?.id || 'pat-2',
-      patientName: patients[1]?.fullName || 'Eleanor Vance',
+      patientName: patients[1]?.fullName || 'Sunita Reddy',
       mrn: patients[1]?.mrn || 'MRN-88319',
       title: 'Review morning 12-lead ECG and telemetry strip recording for QT prolongation',
       dueTime: 'Today by 2:00 PM',
@@ -343,14 +343,14 @@ export const HomeMetricDetailsPanel: React.FC<HomeMetricDetailsPanelProps> = ({
     {
       id: 'TSK-305',
       patientId: patients[4]?.id || 'pat-5',
-      patientName: patients[4]?.fullName || 'David Kim',
+      patientName: patients[4]?.fullName || 'Deepak Kumar',
       mrn: patients[4]?.mrn || 'MRN-54918',
       title: 'Pre-procedure anesthesia clearance review for scheduled diagnostic endoscopy',
       dueTime: 'Tomorrow at 8:00 AM',
       priority: 'MEDIUM',
       category: 'REVIEW',
       completed: true,
-      assignedTo: 'Dr. Marcus Vance, MD',
+      assignedTo: 'Dr. Madhavan Venkatesh, MD',
       completedAt: '09:15 AM Today',
     },
   ]);
@@ -461,7 +461,7 @@ export const HomeMetricDetailsPanel: React.FC<HomeMetricDetailsPanelProps> = ({
       location: 'Cardiology Ward 4B • Bed 12',
       chiefComplaint: 'Post-PCI acute coronary syndrome recovery & dual antiplatelet review',
       vitals: { bp: '128/82', hr: '74 bpm', spo2: '98%', temp: '98.4°F' },
-      attendingDoctor: 'Dr. Marcus Vance, MD',
+      attendingDoctor: 'Dr. Madhavan Venkatesh, MD',
       diagnosis: 'Acute Coronary Syndrome (STEMI)',
       riskLevel: 'MODERATE',
     },
@@ -483,7 +483,7 @@ export const HomeMetricDetailsPanel: React.FC<HomeMetricDetailsPanelProps> = ({
       location: 'Electrophysiology Suite • Bed 3',
       chiefComplaint: 'Paroxysmal Atrial Fibrillation with palpitations & dizziness',
       vitals: { bp: '142/90', hr: '104 bpm', spo2: '97%', temp: '98.2°F' },
-      attendingDoctor: 'Dr. Marcus Vance, MD',
+      attendingDoctor: 'Dr. Madhavan Venkatesh, MD',
       diagnosis: 'Paroxysmal Atrial Fibrillation (AFib)',
       riskLevel: 'HIGH',
     },
@@ -494,7 +494,7 @@ export const HomeMetricDetailsPanel: React.FC<HomeMetricDetailsPanelProps> = ({
       location: 'Outpatient Care Center • Room 108',
       chiefComplaint: 'Essential Hypertension & Type 2 Diabetes routine surveillance',
       vitals: { bp: '138/88', hr: '78 bpm', spo2: '99%', temp: '98.5°F' },
-      attendingDoctor: 'Dr. Marcus Vance, MD',
+      attendingDoctor: 'Dr. Madhavan Venkatesh, MD',
       diagnosis: 'Hypertension & T2 Diabetes Mellitus',
       riskLevel: 'LOW',
     },
@@ -516,7 +516,7 @@ export const HomeMetricDetailsPanel: React.FC<HomeMetricDetailsPanelProps> = ({
       location: 'Vascular Medicine • Room 204',
       chiefComplaint: 'Deep Vein Thrombosis anticoagulation titration & lower extremity ultrasound review',
       vitals: { bp: '126/80', hr: '72 bpm', spo2: '98%', temp: '98.3°F' },
-      attendingDoctor: 'Dr. Marcus Vance, MD',
+      attendingDoctor: 'Dr. Madhavan Venkatesh, MD',
       diagnosis: 'Deep Vein Thrombosis (DVT)',
       riskLevel: 'MODERATE',
     },
@@ -677,9 +677,11 @@ export const HomeMetricDetailsPanel: React.FC<HomeMetricDetailsPanelProps> = ({
                   >
                     {/* Patient Core Identity */}
                     <div className="flex items-start gap-3.5 min-w-[240px]">
-                      <div className="w-11 h-11 rounded-2xl bg-gradient-to-tr from-blue-600 to-indigo-600 text-white flex items-center justify-center font-black text-sm shadow-md shrink-0">
-                        {item.patient.fullName.split(' ').map(n => n[0]).join('')}
-                      </div>
+                      <img
+                        src={item.patient.avatarUrl || getPatientAvatarUrl(item.patient)}
+                        alt={item.patient.fullName}
+                        className="w-11 h-11 rounded-2xl object-cover border-2 border-cyan-400/50 shadow-md shrink-0"
+                      />
                       <div className="space-y-0.5">
                         <div className="flex items-center gap-2 flex-wrap">
                           <h4 className="text-sm font-extrabold text-white">{item.patient.fullName}</h4>
@@ -893,30 +895,30 @@ export const HomeMetricDetailsPanel: React.FC<HomeMetricDetailsPanelProps> = ({
                 </button>
               ))}
             </div>
-            <span className="text-xs text-slate-400">
-              Role Authorized: <strong>{currentUser.name}</strong> ({currentUser.role})
+            <span className="text-xs text-slate-400 inline-flex items-center gap-1.5">
+              <img
+                src={currentUser.avatarUrl || getUserAvatarUrl(currentUser)}
+                alt={currentUser.name}
+                className="w-4 h-4 rounded-full object-cover border border-cyan-400/50"
+              />
+              <span>Role Authorized: <strong>{currentUser.name}</strong> ({currentUser.role})</span>
             </span>
           </div>
 
           <div className="space-y-3">
             {approvals
               .filter(item => {
-                if (filterSubtype === 'PENDING') return item.status === 'PENDING';
-                if (filterSubtype === 'APPROVED') return item.status === 'APPROVED';
-                if (filterSubtype === 'MEDICATION') return item.type === 'MEDICATION';
-                if (filterSubtype === 'DISCHARGE') return item.type === 'DISCHARGE';
-                return true;
+                if (filterSubtype === 'ALL') return true;
+                return item.type === filterSubtype;
               })
               .map(item => (
                 <div
                   key={item.id}
-                  className={`p-4 rounded-2xl border transition-all flex flex-col md:flex-row md:items-center justify-between gap-4 ${
-                    item.status === 'APPROVED' 
-                      ? 'bg-emerald-950/20 border-emerald-500/30' 
-                      : item.status === 'REJECTED'
-                      ? 'bg-rose-950/20 border-rose-500/30'
-                      : isDark
-                      ? 'bg-slate-800/60 border-white/10 hover:border-purple-500/40'
+                  className={`p-4 rounded-2xl border transition-all flex flex-col md:flex-row md:items-center justify-between gap-4 shadow-md ${
+                    item.status === 'APPROVED' ? 'bg-emerald-950/20 border-emerald-500/30' :
+                    item.status === 'REJECTED' ? 'bg-rose-950/20 border-rose-500/30 opacity-75' :
+                    isDark
+                      ? 'bg-slate-900/90 border-white/10 hover:border-purple-500/40 hover:bg-slate-900'
                       : 'bg-slate-50 border-slate-200 hover:border-purple-300'
                   }`}
                 >
@@ -932,8 +934,13 @@ export const HomeMetricDetailsPanel: React.FC<HomeMetricDetailsPanelProps> = ({
                       <span className="text-[10px] px-2 py-0.5 rounded-full bg-white/10 text-slate-300 font-mono">
                         {item.type}
                       </span>
-                      <span className="text-xs font-bold text-slate-300">
-                        Patient: <button onClick={() => onOpenPatient360(item.patientId)} className="text-cyan-400 hover:underline cursor-pointer font-bold">{item.patientName}</button> ({item.mrn})
+                      <span className="text-xs font-bold text-slate-300 inline-flex items-center gap-1.5">
+                        <img
+                          src={getPatientAvatarUrl({ fullName: item.patientName })}
+                          alt={item.patientName}
+                          className="w-4 h-4 rounded-full object-cover border border-cyan-400/50"
+                        />
+                        <span>Patient: <button onClick={() => onOpenPatient360(item.patientId)} className="text-cyan-400 hover:underline cursor-pointer font-bold">{item.patientName}</button> ({item.mrn})</span>
                       </span>
                       <span className="text-[11px] text-slate-400">• {item.requestedTime}</span>
                     </div>
@@ -964,13 +971,17 @@ export const HomeMetricDetailsPanel: React.FC<HomeMetricDetailsPanelProps> = ({
                           onClick={() => handleApprove(item.id)}
                           className="px-4 py-2 rounded-xl bg-purple-600 hover:bg-purple-500 text-white text-xs font-bold transition-all shadow-lg shadow-purple-600/30 flex items-center gap-1.5 cursor-pointer"
                         >
-                          <Check className="w-4 h-4" />
+                          <CheckCircle2 className="w-4 h-4" />
                           <span>Approve & Sign</span>
                         </button>
                       </>
                     ) : item.status === 'APPROVED' ? (
                       <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 font-bold text-xs">
-                        <CheckCircle2 className="w-4 h-4" />
+                        <img
+                          src={getUserAvatarUrl(item.approvedBy || currentUser.name)}
+                          alt={item.approvedBy || currentUser.name}
+                          className="w-4 h-4 rounded-full object-cover border border-emerald-400/50"
+                        />
                         <span>Signed by {item.approvedBy || currentUser.name}</span>
                       </div>
                     ) : (
@@ -1050,8 +1061,13 @@ export const HomeMetricDetailsPanel: React.FC<HomeMetricDetailsPanelProps> = ({
                         }`}>
                           {alert.severity}
                         </span>
-                        <span className="text-xs font-bold text-slate-200">
-                          Patient: <button onClick={() => onOpenPatient360(alert.patientId)} className="text-cyan-400 hover:underline cursor-pointer font-bold">{alert.patientName}</button> ({alert.mrn})
+                        <span className="text-xs font-bold text-slate-200 inline-flex items-center gap-1.5">
+                          <img
+                            src={getPatientAvatarUrl({ fullName: alert.patientName })}
+                            alt={alert.patientName}
+                            className="w-4 h-4 rounded-full object-cover border border-cyan-400/50"
+                          />
+                          <span>Patient: <button onClick={() => onOpenPatient360(alert.patientId)} className="text-cyan-400 hover:underline cursor-pointer font-bold">{alert.patientName}</button> ({alert.mrn})</span>
                         </span>
                         <span className="text-[11px] text-slate-400">• {alert.timestamp}</span>
                       </div>
@@ -1109,8 +1125,13 @@ export const HomeMetricDetailsPanel: React.FC<HomeMetricDetailsPanelProps> = ({
         <div className="space-y-4">
           <div className="flex flex-col sm:flex-row items-center justify-between gap-3">
             <div className="flex items-center gap-2">
-              <span className="text-xs font-bold text-slate-300">
-                Assigned to: <span className="text-emerald-400 font-semibold">{currentUser.name}</span>
+              <span className="text-xs font-bold text-slate-300 inline-flex items-center gap-1.5">
+                <img
+                  src={currentUser.avatarUrl || getUserAvatarUrl(currentUser)}
+                  alt={currentUser.name}
+                  className="w-5 h-5 rounded-full object-cover border border-emerald-400/50"
+                />
+                <span>Assigned to: <span className="text-emerald-400 font-semibold">{currentUser.name}</span></span>
               </span>
               <span className="text-xs text-slate-500">•</span>
               <span className="text-xs text-slate-400 font-mono">
@@ -1151,8 +1172,13 @@ export const HomeMetricDetailsPanel: React.FC<HomeMetricDetailsPanelProps> = ({
                     </p>
                     <div className="flex items-center gap-2 mt-1 text-[11px] text-slate-400 flex-wrap">
                       {task.patientName && (
-                        <span className="font-semibold text-cyan-400">
-                          {task.patientName} ({task.mrn})
+                        <span className="font-semibold text-cyan-400 inline-flex items-center gap-1.5">
+                          <img
+                            src={getPatientAvatarUrl({ fullName: task.patientName })}
+                            alt={task.patientName}
+                            className="w-4 h-4 rounded-full object-cover border border-cyan-400/50"
+                          />
+                          <span>{task.patientName} ({task.mrn})</span>
                         </span>
                       )}
                       <span className="text-slate-600">•</span>

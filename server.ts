@@ -530,7 +530,7 @@ Always conclude with a brief disclaimer noting that final clinical decisions req
           agentVersion: '3.2.0',
           traceId: `TR-ERR-${Date.now()}`,
           requestId: `REQ-ERR-${Math.floor(Math.random() * 10000)}`,
-          actor: { userId: 'usr-doc-01', userName: 'Dr. Sarah Lin', role: 'DOCTOR' },
+          actor: { userId: 'usr-doc-01', userName: 'Dr. Shalini Kapoor, MD', role: 'DOCTOR' },
           purposeOfUse: 'TREATMENT',
           patientScope: 'NONE',
           inputSchema: { query: req.body?.query || '' },

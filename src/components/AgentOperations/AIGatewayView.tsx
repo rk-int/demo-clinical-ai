@@ -99,7 +99,7 @@ export type AgentId = 'patient_search_agent' | 'knowledge_agent' | 'workflow_age
 const AIGatewayContent: React.FC<AIGatewayViewProps> = ({
   currentUser = {
     id: 'DOC-401',
-    name: 'Dr. Sarah Lin, MD',
+    name: 'Dr. Shalini Kapoor, MD, MD',
     role: 'PHYSICIAN',
     department: 'Cardiology',
     hospitalSite: 'St. Jude Heart Center',
@@ -126,7 +126,7 @@ const AIGatewayContent: React.FC<AIGatewayViewProps> = ({
   const safePatient: SyntheticPatient = (selectedPatient && selectedPatient.id) ? selectedPatient : ((patients && patients.length > 0) ? patients[0] : {
     id: 'pat-1001',
     mrn: 'MRN-884920',
-    fullName: 'Elena Rostova',
+    fullName: 'Sunita Reddy',
     age: 68,
     birthDate: '1958-03-14',
     gender: 'FEMALE',
@@ -151,7 +151,7 @@ const AIGatewayContent: React.FC<AIGatewayViewProps> = ({
       frequency: 'Daily', 
       status: 'ACTIVE', 
       prescribedDate: '2023-01-15',
-      prescribingProvider: currentUser?.name || 'Dr. Sarah Lin, MD',
+      prescribingProvider: currentUser?.name || 'Dr. Shalini Kapoor, MD, MD',
       indications: 'Rate control & heart failure management'
     }],
     allergies: [{ 
@@ -186,7 +186,7 @@ const AIGatewayContent: React.FC<AIGatewayViewProps> = ({
     provenance: {
       sourceSystem: 'Epic Systems EHR / FHIR Bridge R4',
       ingestionTimestamp: new Date().toISOString(),
-      recordedBy: currentUser?.name || 'Dr. Sarah Lin, MD',
+      recordedBy: currentUser?.name || 'Dr. Shalini Kapoor, MD, MD',
       verificationStatus: 'VERIFIED',
       checksum: 'sha256-verified-patient-001',
     },
@@ -223,7 +223,7 @@ const AIGatewayContent: React.FC<AIGatewayViewProps> = ({
   const activeAgentId = getActiveAgentId(activeTrigger);
 
   // Trigger Metadata Configuration
-  const patientName = safePatient?.fullName || 'Elena Rostova';
+  const patientName = safePatient?.fullName || 'Sunita Reddy';
   const patientMrn = safePatient?.mrn || 'MRN-884920';
   const patientId = safePatient?.id || 'pat-1001';
 

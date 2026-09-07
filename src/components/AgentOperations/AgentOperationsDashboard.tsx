@@ -52,10 +52,10 @@ export const AgentOperationsDashboard: React.FC<AgentOperationsDashboardProps> =
   const [kpis, setKpis] = useState<KpiMetrics | null>(null);
   const [selectedDagNode, setSelectedDagNode] = useState<string>('GATEWAY');
 
-  // Healthcare Security Workflow Simulator State ("Can John Doe be discharged today?")
+  // Healthcare Security Workflow Simulator State ("Can Rajesh Sharma be discharged today?")
   const [simStep, setSimStep] = useState<number>(0);
   const [simRunning, setSimRunning] = useState<boolean>(false);
-  const [simPatientName, setSimPatientName] = useState<string>('John Doe (PT-1002 / Elena Rostova)');
+  const [simPatientName, setSimPatientName] = useState<string>('Rajesh Sharma (PT-1002 / Sunita Reddy)');
   const [doctorApproved, setDoctorApproved] = useState<boolean>(false);
 
   const fetchOpsData = async () => {
@@ -304,7 +304,7 @@ export const AgentOperationsDashboard: React.FC<AgentOperationsDashboardProps> =
         </div>
       )}
 
-      {/* Tab 2: Healthcare Security Workflow Simulator ("Can John Doe be discharged today?") */}
+      {/* Tab 2: Healthcare Security Workflow Simulator ("Can Rajesh Sharma be discharged today?") */}
       {activeOpsTab === 'SIMULATOR' && (
         <div className="bg-white/5 backdrop-blur-2xl border border-white/10 rounded-3xl p-6 sm:p-8 shadow-2xl space-y-6">
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-white/10 pb-4">
@@ -314,7 +314,7 @@ export const AgentOperationsDashboard: React.FC<AgentOperationsDashboardProps> =
                 Live Healthcare Security Workflow Simulator
               </h2>
               <p className="text-xs text-slate-300 mt-1">
-                Step-by-step trace of: <strong className="text-white">"Can John Doe be discharged today?"</strong> across all 8 security, knowledge, and clinical validation gates.
+                Step-by-step trace of: <strong className="text-white">"Can Rajesh Sharma be discharged today?"</strong> across all 8 security, knowledge, and clinical validation gates.
               </p>
             </div>
 
@@ -334,8 +334,8 @@ export const AgentOperationsDashboard: React.FC<AgentOperationsDashboardProps> =
               {
                 step: 1,
                 title: '1. User Request',
-                actor: 'Dr. Sarah Chen, MD',
-                desc: 'Doctor queries: "Can John Doe be discharged today?"',
+                actor: 'Dr. Sunita Sharma, MD',
+                desc: 'Doctor queries: "Can Rajesh Sharma be discharged today?"',
                 detail: 'Zero-trust intake logged with trace UUID and timestamp.',
               },
               {
@@ -356,7 +356,7 @@ export const AgentOperationsDashboard: React.FC<AgentOperationsDashboardProps> =
                 step: 4,
                 title: '4. Patient Data Agent',
                 actor: 'Patient Data Agent',
-                desc: 'Queries EHR for John Doe: Labs, Vitals, Medications, Inpatient notes.',
+                desc: 'Queries EHR for Rajesh Sharma: Labs, Vitals, Medications, Inpatient notes.',
                 detail: 'eGFR 44 (stable), NT-proBNP 680 (down from 1450), SpO2 96%.',
               },
               {

@@ -244,14 +244,14 @@ export const HealthNetWorkspace: React.FC<HealthNetWorkspaceProps> = ({
     {
       id: 'notif-1',
       title: 'Critical Lab Alert: K+ 6.2 mmol/L',
-      detail: 'Elena Rostova (Cardiology Bed 412) - Hyperkalemia detected',
+      detail: 'Sunita Reddy (Cardiology Bed 412) - Hyperkalemia detected',
       time: '10m ago',
       type: 'CRITICAL',
     },
     {
       id: 'notif-2',
       title: 'Pending Discharge Approval',
-      detail: 'Jane Smith (Med 3W) ready for clinical note sign-off',
+      detail: 'Ananya Sen (Med 3W) ready for clinical note sign-off',
       time: '25m ago',
       type: 'APPROVAL',
     },

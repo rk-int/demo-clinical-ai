@@ -35,7 +35,7 @@ interface AppointmentsCenterViewProps {
 const INITIAL_APPOINTMENTS: AppointmentData[] = [
   {
     id: 'APT-100881',
-    patientName: 'John Doe',
+    patientName: 'Rajesh Sharma',
     age: '58',
     phoneNumber: '(555) 234-5678',
     email: 'john.doe@healthnet-patient.org',
@@ -51,7 +51,7 @@ const INITIAL_APPOINTMENTS: AppointmentData[] = [
   },
   {
     id: 'APT-100882',
-    patientName: 'Elena Rostova',
+    patientName: 'Sunita Reddy',
     age: '64',
     phoneNumber: '(555) 345-6789',
     email: 'elena.rostova@healthnet-patient.org',
@@ -83,7 +83,7 @@ const INITIAL_APPOINTMENTS: AppointmentData[] = [
   },
   {
     id: 'APT-100884',
-    patientName: 'Sarah Jenkins',
+    patientName: 'Pooja Patel',
     age: '49',
     phoneNumber: '(555) 567-8901',
     email: 'sarah.jenkins@healthnet-patient.org',

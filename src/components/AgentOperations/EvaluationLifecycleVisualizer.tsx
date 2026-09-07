@@ -88,7 +88,7 @@ const DAG_NODES_DATA: Record<DAGNodeId, DAGNodeMeta> = {
     description: 'Practitioner, nurse, specialist, or clinical coordinator initiating a clinical query or order request.',
     metricLabel: 'Session State',
     metricValue: 'Authenticated (MFA Verified)',
-    telemetryLog: 'User session active (Dr. Elena Rostova / Portal Admin); Client IP verified with institutional TLS v1.3.',
+    telemetryLog: 'User session active (Dr. Sunita Reddy / Portal Admin); Client IP verified with institutional TLS v1.3.',
   },
   REQUEST_VALIDATION: {
     id: 'REQUEST_VALIDATION',
@@ -106,7 +106,7 @@ const DAG_NODES_DATA: Record<DAGNodeId, DAGNodeMeta> = {
     description: 'Enforces Attribute-Based Access Control (ABAC), verifying practitioner license, assigned patient scope, and active patient consent.',
     metricLabel: 'Consent & RBAC',
     metricValue: 'ACTIVE_CONSENT Validated',
-    telemetryLog: 'Patient Elena Rostova (PT-1002) consent status is ACTIVE_CONSENT. Purpose of use: TREATMENT verified.',
+    telemetryLog: 'Patient Sunita Reddy (PT-1002) consent status is ACTIVE_CONSENT. Purpose of use: TREATMENT verified.',
   },
   AI_GATEWAY: {
     id: 'AI_GATEWAY',
@@ -240,7 +240,7 @@ const DAG_NODES_DATA: Record<DAGNodeId, DAGNodeMeta> = {
     category: 'HITL',
     description: 'Physician approves the clinical recommendation and digitally signs the clinical order.',
     metricLabel: 'Digital Signature',
-    metricValue: 'SIGNED (Dr. Elena Rostova)',
+    metricValue: 'SIGNED (Dr. Sunita Reddy)',
     telemetryLog: 'Clinician provided digital signature (SHA-256 HMAC) authorizing order execution.',
   },
   REJECT: {
@@ -327,7 +327,7 @@ export const EvaluationLifecycleVisualizer: React.FC<EvaluationLifecycleVisualiz
   const [humanDecision, setHumanDecision] = useState<'APPROVE' | 'REJECT' | null>(null);
   const [passedNodes, setPassedNodes] = useState<Set<DAGNodeId>>(new Set(['USER']));
   const [testQuery, setTestQuery] = useState(
-    'Can patient Elena Rostova (PT-1002) with HFpEF and eGFR 38 be safely initiated on Empagliflozin 10mg daily?'
+    'Can patient Sunita Reddy (PT-1002) with HFpEF and eGFR 38 be safely initiated on Empagliflozin 10mg daily?'
   );
 
   // Sequential execution sequence before Human Review

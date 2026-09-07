@@ -66,7 +66,7 @@ export const WideAgenticWorkflowCanvas: React.FC<WideAgenticWorkflowCanvasProps>
   const [selectedNodeId, setSelectedNodeId] = useState<string | null>('risk_scoring_node');
   const [showTelemetryDrawer, setShowTelemetryDrawer] = useState<boolean>(false);
 
-  const patientName = patient?.fullName || 'Elena Rostova';
+  const patientName = patient?.fullName || 'Sunita Reddy';
   const patientMrn = patient?.mrn || 'MRN-884920';
   const patientCondition = patient?.conditions?.[0]?.name || 'Heart Failure with Preserved Ejection Fraction (HFpEF)';
   const eGfrValue = patient?.observations?.find(o => o.name.toLowerCase().includes('egfr') || o.code === 'egfr')?.value || 38;
@@ -130,7 +130,7 @@ export const WideAgenticWorkflowCanvas: React.FC<WideAgenticWorkflowCanvasProps>
       description: 'Enforces Zero-Trust token authentication, active consent check, and ABAC purpose-of-use binding before record ingress.',
       telemetry: {
         latency: '14ms',
-        details: `User: ${currentUser?.name || 'Dr. Sarah Lin, MD'} | Purpose: ${purposeOfUse} | Consent: ACTIVE_CONSENT`,
+        details: `User: ${currentUser?.name || 'Dr. Shalini Kapoor, MD, MD'} | Purpose: ${purposeOfUse} | Consent: ACTIVE_CONSENT`,
         payloadSnippet: `{"auth": "PASSED", "purpose": "${purposeOfUse}", "mfaVerified": true, "sessionToken": "JWT-ABAC-VERIFIED"}`,
       },
     },
@@ -182,7 +182,7 @@ export const WideAgenticWorkflowCanvas: React.FC<WideAgenticWorkflowCanvasProps>
       description: 'Human-in-the-Loop governance gate: Blocks autonomous unsigned EHR writes, preparing draft order for physician signature.',
       telemetry: {
         latency: '18ms (Gate Standby)',
-        details: `Reviewer: ${currentUser?.name || 'Dr. Sarah Lin, MD'} | State: Draft Order Staged for Digital Signing`,
+        details: `Reviewer: ${currentUser?.name || 'Dr. Shalini Kapoor, MD, MD'} | State: Draft Order Staged for Digital Signing`,
         payloadSnippet: `{"autonomousWriteBlocked": true, "digitalSignature": "PENDING_PHYSICIAN_APPROVAL", "reviewerRole": "ATTENDING"}`,
       },
     },

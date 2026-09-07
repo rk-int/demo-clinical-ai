@@ -109,7 +109,7 @@ export const HomeMetricDetailsPanel: React.FC<HomeMetricDetailsPanelProps> = ({
     {
       id: 'APP-101',
       patientId: patients[0]?.id || 'pat-1',
-      patientName: patients[0]?.fullName || 'Robert Chen',
+      patientName: patients[0]?.fullName || 'Rajan Verma',
       mrn: patients[0]?.mrn || 'MRN-90214',
       title: 'AI-Generated Inpatient Discharge Summary & Follow-Up Plan',
       type: 'DISCHARGE',
@@ -139,7 +139,7 @@ export const HomeMetricDetailsPanel: React.FC<HomeMetricDetailsPanelProps> = ({
       patientId: patients[2]?.id || 'pat-3',
       patientName: patients[2]?.fullName || 'Marcus Brody',
       mrn: patients[2]?.mrn || 'MRN-77401',
-      title: 'Outpatient Cardiac Electrophysiology Referral to Dr. Emily Vance',
+      title: 'Outpatient Cardiac Electrophysiology Referral to Dr. Ananya Rao, MD',
       type: 'REFERRAL',
       department: 'Electrophysiology',
       aiSafetyScore: 99.1,
@@ -151,7 +151,7 @@ export const HomeMetricDetailsPanel: React.FC<HomeMetricDetailsPanelProps> = ({
     {
       id: 'APP-104',
       patientId: patients[3]?.id || 'pat-4',
-      patientName: patients[3]?.fullName || 'Sarah Jenkins',
+      patientName: patients[3]?.fullName || 'Pooja Patel',
       mrn: patients[3]?.mrn || 'MRN-65120',
       title: 'Post-Procedural Transthoracic Echocardiogram (TTE) Order',
       type: 'ORDER',
@@ -193,7 +193,7 @@ export const HomeMetricDetailsPanel: React.FC<HomeMetricDetailsPanelProps> = ({
     {
       id: 'APP-107',
       patientId: patients[0]?.id || 'pat-1',
-      patientName: patients[0]?.fullName || 'Robert Chen',
+      patientName: patients[0]?.fullName || 'Rajan Verma',
       mrn: patients[0]?.mrn || 'MRN-90214',
       title: 'Cardiac Rehabilitation Phase II Program Enrollment Order',
       type: 'ORDER',
@@ -225,7 +225,7 @@ export const HomeMetricDetailsPanel: React.FC<HomeMetricDetailsPanelProps> = ({
     {
       id: 'ALT-201',
       patientId: patients[0]?.id || 'pat-1',
-      patientName: patients[0]?.fullName || 'Robert Chen',
+      patientName: patients[0]?.fullName || 'Rajan Verma',
       mrn: patients[0]?.mrn || 'MRN-90214',
       severity: 'CRITICAL',
       category: 'LAB_VALUE',
@@ -277,7 +277,7 @@ export const HomeMetricDetailsPanel: React.FC<HomeMetricDetailsPanelProps> = ({
     {
       id: 'ALT-205',
       patientId: patients[3]?.id || 'pat-4',
-      patientName: patients[3]?.fullName || 'Sarah Jenkins',
+      patientName: patients[3]?.fullName || 'Pooja Patel',
       mrn: patients[3]?.mrn || 'MRN-65120',
       severity: 'INFO',
       category: 'LAB_VALUE',
@@ -294,7 +294,7 @@ export const HomeMetricDetailsPanel: React.FC<HomeMetricDetailsPanelProps> = ({
     {
       id: 'TSK-301',
       patientId: patients[0]?.id || 'pat-1',
-      patientName: patients[0]?.fullName || 'Robert Chen',
+      patientName: patients[0]?.fullName || 'Rajan Verma',
       mrn: patients[0]?.mrn || 'MRN-90214',
       title: 'Perform femoral catheterization puncture site check & pedal pulse check',
       dueTime: 'In 45 minutes',
@@ -318,7 +318,7 @@ export const HomeMetricDetailsPanel: React.FC<HomeMetricDetailsPanelProps> = ({
     {
       id: 'TSK-303',
       patientId: patients[3]?.id || 'pat-4',
-      patientName: patients[3]?.fullName || 'Sarah Jenkins',
+      patientName: patients[3]?.fullName || 'Pooja Patel',
       mrn: patients[3]?.mrn || 'MRN-65120',
       title: 'Sign pending electronic discharge summary & prescription reconciliation',
       dueTime: 'Today by 4:30 PM',
@@ -337,7 +337,7 @@ export const HomeMetricDetailsPanel: React.FC<HomeMetricDetailsPanelProps> = ({
       priority: 'MEDIUM',
       category: 'COORDINATION',
       completed: true,
-      assignedTo: 'Jennifer Walsh, RN',
+      assignedTo: 'Priya Nair, RN',
       completedAt: '10:30 AM Today',
     },
     {
@@ -472,7 +472,7 @@ export const HomeMetricDetailsPanel: React.FC<HomeMetricDetailsPanelProps> = ({
       location: 'Heart Failure Clinic • Room 302',
       chiefComplaint: 'HFrEF follow-up, progressive dyspnea on exertion, medication reconciliation',
       vitals: { bp: '134/86', hr: '68 bpm', spo2: '96%', temp: '98.6°F' },
-      attendingDoctor: 'Dr. Emily Vance, MD',
+      attendingDoctor: 'Dr. Ananya Rao, MD',
       diagnosis: 'Heart Failure with Reduced Ejection Fraction (HFrEF)',
       riskLevel: 'HIGH',
     },
@@ -505,7 +505,7 @@ export const HomeMetricDetailsPanel: React.FC<HomeMetricDetailsPanelProps> = ({
       location: 'Inpatient Stepdown • Bed 8',
       chiefComplaint: 'COPD exacerbation with productive cough & nocturnal dyspnea',
       vitals: { bp: '122/78', hr: '88 bpm', spo2: '93%', temp: '99.1°F' },
-      attendingDoctor: 'Dr. Emily Vance, MD',
+      attendingDoctor: 'Dr. Ananya Rao, MD',
       diagnosis: 'Chronic Obstructive Pulmonary Disease (COPD)',
       riskLevel: 'MODERATE',
     },

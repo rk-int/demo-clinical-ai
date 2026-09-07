@@ -121,7 +121,7 @@ export const PatientSearchView: React.FC<PatientSearchViewProps> = ({
       rawText: `CLINICAL DISCHARGE SUMMARY & TRANSFER RECORD
 Patient: Eleanor Vance | DOB: 1964-05-18 | UPR: UPR-2026-NRH-992014
 Source Facility: North River Community Hospital -> Transfer to Metro St. Jude
-Attending: Dr. Gregory Ross, MD
+Attending: Dr. Vikram Malhotra, MD
 
 CHIEF COMPLAINT & ADMISSION:
 62 y/o female with chronic bronchiectasis presenting with 4-day history of productive mucopurulent sputum, pleuritic chest tightness, and dyspnea on minimal exertion (SpO2 89% room air).
@@ -595,7 +595,7 @@ IMPRESSION & FINDINGS:
               onKeyDown={(e) => {
                 if (e.key === 'Enter') handleExecuteSearch();
               }}
-              placeholder="Search by patient name (e.g. Elena Rostova, John Doe, Marcus), MRN, UPR ID, or Condition..."
+              placeholder="Search by patient name (e.g. Sunita Reddy, Rajesh Sharma, Marcus), MRN, UPR ID, or Condition..."
               className="w-full bg-white/5 border border-white/10 rounded-xl pl-10 pr-24 py-3 text-xs text-white placeholder-slate-400 focus:outline-none focus:border-blue-400 transition-colors backdrop-blur-md"
             />
             {searchTerm && (
@@ -1566,11 +1566,11 @@ IMPRESSION & FINDINGS:
             </div>
             <div className="flex flex-wrap items-center justify-center gap-2">
               {[
-                { name: 'Elena Rostova', query: 'Elena' },
-                { name: 'John Doe', query: 'John' },
-                { name: 'Jane Smith', query: 'Jane' },
+                { name: 'Sunita Reddy', query: 'Elena' },
+                { name: 'Rajesh Sharma', query: 'John' },
+                { name: 'Ananya Sen', query: 'Jane' },
                 { name: 'Marcus Vance', query: 'Marcus' },
-                { name: 'Robert Brown', query: 'Robert' },
+                { name: 'Ramesh Kumar', query: 'Robert' },
                 { name: 'Heart Failure', query: 'Heart' },
                 { name: 'North River Transfer', query: 'North River' }
               ].map((item) => (

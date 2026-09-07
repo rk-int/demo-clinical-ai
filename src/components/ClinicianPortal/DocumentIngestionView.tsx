@@ -56,11 +56,11 @@ const SAMPLE_PRESETS: SampleDocPreset[] = [
     name: 'Cardiology Inpatient Transfer Note (PDF)',
     modality: 'TEXT_PDF',
     fileName: 'Transfer_Summary_PT1002_Cardiology.pdf',
-    patientName: 'Elena Rostova (PT-1002)',
+    patientName: 'Sunita Reddy (PT-1002)',
     patientMrn: '1002491',
     rawSizeKb: 142,
     contentPreview: `CLINICAL TRANSFER SUMMARY
-PATIENT: Elena Rostova, 67yo F | MRN: 1002491 | UPR: UPR-2024-CITY-1002491
+PATIENT: Sunita Reddy, 67yo F | MRN: 1002491 | UPR: UPR-2024-CITY-1002491
 TRANSFERRING FACILITY: North River Community Hospital ICU
 RECEIVING UNIT: Metro St. Jude Academic Medical Center - Stepdown 4W
 CHIEF COMPLAINT & HPI: 67yo female with history of HFpEF and Stage 3a CKD (baseline eGFR 38 mL/min/1.73m2), admitted 4 days ago with acute pulmonary edema. Managed with IV Lasix.
@@ -80,7 +80,7 @@ RECOMMENDATIONS: Continue SGLT2i therapy as eGFR remains > 20 mL/min guideline s
     chunks: [
       {
         section: '1. Demographics & Transfer Context',
-        text: 'Patient Elena Rostova, 67yo F (MRN: 1002491). Transferred from North River Community ICU to Metro St. Jude Stepdown 4W following stabilization of acute heart failure decompensation.',
+        text: 'Patient Sunita Reddy, 67yo F (MRN: 1002491). Transferred from North River Community ICU to Metro St. Jude Stepdown 4W following stabilization of acute heart failure decompensation.',
         tokens: ['elena', 'rostova', 'transfer', 'stepdown', 'decompensation', 'heart', 'failure']
       },
       {

@@ -194,7 +194,7 @@ export const AuditComplianceCenterView: React.FC<AuditComplianceCenterViewProps>
       action: 'Access Attempt',
       actionType: 'SECURITY_BLOCK',
       resource: 'Restricted PHI Endpoint',
-      patient: patients[0]?.fullName || 'John Doe',
+      patient: patients[0]?.fullName || 'Rajesh Sharma',
       patientId: patients[0]?.mrn || 'PT-1000',
       hospitalCode: 'MET-GEN',
       hospitalName: 'Metropolitan General',
@@ -279,7 +279,7 @@ export const AuditComplianceCenterView: React.FC<AuditComplianceCenterViewProps>
 
   // Simulate a dynamic real-time audit event
   const handleSimulateLiveEvent = () => {
-    const randomPatient = patients.length > 0 ? patients[Math.floor(Math.random() * patients.length)] : { fullName: 'Sarah Jenkins', mrn: 'PT-1004', hospitalSite: 'MET-GEN' };
+    const randomPatient = patients.length > 0 ? patients[Math.floor(Math.random() * patients.length)] : { fullName: 'Pooja Patel', mrn: 'PT-1004', hospitalSite: 'MET-GEN' };
     const currentHosp = hospitalList.find((h) => h.code === randomPatient.hospitalSite || h.id === selectedHospitalFilter) || hospitalList[1];
     
     const actions: Array<{ action: string; actionType: DynamicAuditEntry['actionType']; status: DynamicAuditEntry['status']; resource: string; notes: string }> = [

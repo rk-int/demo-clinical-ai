@@ -326,13 +326,13 @@ export const KnowledgeQAView: React.FC<KnowledgeQAViewProps> = ({
       title: 'HFpEF SGLT2 Renal Threshold', 
       query: 'What is the guideline recommendation for Empagliflozin SGLT2 inhibitor initiation in HFpEF patients with eGFR 38?',
       specialty: 'CARDIOLOGY',
-      suggestedPatientId: 'PT-1002' // Elena Rostova
+      suggestedPatientId: 'PT-1002' // Sunita Reddy
     },
     { 
       title: 'Inpatient Hypoglycemia Protocol', 
       query: 'What is the step-by-step Rule of 15 protocol for treating acute hypoglycemia in conscious adult inpatients?',
       specialty: 'ENDOCRINOLOGY',
-      suggestedPatientId: 'PT-1001' // Jane Smith
+      suggestedPatientId: 'PT-1001' // Ananya Sen
     },
     { 
       title: 'COPD Exacerbation Antibiotics', 
@@ -344,7 +344,7 @@ export const KnowledgeQAView: React.FC<KnowledgeQAViewProps> = ({
       title: 'Severe Sepsis Fluid Resuscitation', 
       query: 'What is the recommended 3-hour crystalloid bolus volume for septic shock?',
       specialty: 'CRITICAL_CARE',
-      suggestedPatientId: 'PT-1000' // John Doe
+      suggestedPatientId: 'PT-1000' // Rajesh Sharma
     },
   ];
 

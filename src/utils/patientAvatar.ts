@@ -7,15 +7,15 @@ import { SyntheticPatient, UserProfile } from '../types';
 
 // Curated high-resolution professional studio & medical ID portraits (strictly decent, formal, non-social-media style)
 const CURATED_PATIENT_PHOTOS: Record<string, string> = {
-  // PT-1000: John Doe (45 M) - Formal Corporate Headshot
+  // PT-1000: Rajesh Sharma (45 M) - Formal Corporate Headshot
   'PT-1000': 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&q=80&w=256&h=256',
   'john doe': 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&q=80&w=256&h=256',
 
-  // PT-1001: Jane Smith (62 F) - Executive Clinical Headshot
+  // PT-1001: Ananya Sen (62 F) - Executive Clinical Headshot
   'PT-1001': 'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?auto=format&fit=crop&q=80&w=256&h=256',
   'jane smith': 'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?auto=format&fit=crop&q=80&w=256&h=256',
 
-  // PT-1002: Elena Rostova (67 F) - Senior Neutral Portrait
+  // PT-1002: Sunita Reddy (67 F) - Senior Neutral Portrait
   'PT-1002': 'https://images.unsplash.com/photo-1567532939604-b6b5b0db2604?auto=format&fit=crop&q=80&w=256&h=256',
   'elena rostova': 'https://images.unsplash.com/photo-1567532939604-b6b5b0db2604?auto=format&fit=crop&q=80&w=256&h=256',
   
@@ -23,11 +23,11 @@ const CURATED_PATIENT_PHOTOS: Record<string, string> = {
   'PT-1003': 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?auto=format&fit=crop&q=80&w=256&h=256',
   'marcus vance': 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?auto=format&fit=crop&q=80&w=256&h=256',
 
-  // PT-1004: Sarah Jenkins (42 F) - Professional Medical Staff Portrait
+  // PT-1004: Pooja Patel (42 F) - Professional Medical Staff Portrait
   'PT-1004': 'https://images.unsplash.com/photo-1580489944761-15a19d654956?auto=format&fit=crop&q=80&w=256&h=256',
   'sarah jenkins': 'https://images.unsplash.com/photo-1580489944761-15a19d654956?auto=format&fit=crop&q=80&w=256&h=256',
 
-  // PT-1004B: Robert Brown (58 M) - Neutral Corporate Portrait
+  // PT-1004B: Ramesh Kumar (58 M) - Neutral Corporate Portrait
   'PT-1004B': 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?auto=format&fit=crop&q=80&w=256&h=256',
   'robert brown': 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?auto=format&fit=crop&q=80&w=256&h=256',
 

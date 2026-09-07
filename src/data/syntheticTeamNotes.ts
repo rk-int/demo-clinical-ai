@@ -1,11 +1,11 @@
 import { ClinicalTeamNote, UserRole } from '../types';
 
 export const INITIAL_TEAM_NOTES: ClinicalTeamNote[] = [
-  // Notes for PT-1002 / pat-1 (Robert Chen / Eleanor Vance)
+  // Notes for PT-1002 / pat-1 (Rajan Verma / Eleanor Vance)
   {
     id: 'NOTE-DOC-001',
     patientId: 'PT-1002',
-    patientName: 'Robert Chen',
+    patientName: 'Rajan Verma',
     authorId: 'usr-doc-01',
     authorName: 'Dr. Marcus Vance, MD',
     authorRole: 'DOCTOR',
@@ -35,9 +35,9 @@ export const INITIAL_TEAM_NOTES: ClinicalTeamNote[] = [
   {
     id: 'NOTE-NURSE-001',
     patientId: 'PT-1002',
-    patientName: 'Robert Chen',
+    patientName: 'Rajan Verma',
     authorId: 'usr-nurse-01',
-    authorName: 'Sarah Jenkins, BSN, RN',
+    authorName: 'Pooja Patel, BSN, RN',
     authorRole: 'NURSE',
     authorDepartment: 'Cardiac Telemetry Unit 4B',
     noteType: 'NURSE_ASSESSMENT',
@@ -65,7 +65,7 @@ export const INITIAL_TEAM_NOTES: ClinicalTeamNote[] = [
   {
     id: 'NOTE-SPEC-001',
     patientId: 'PT-1002',
-    patientName: 'Robert Chen',
+    patientName: 'Rajan Verma',
     authorId: 'usr-spec-01',
     authorName: 'Dr. Priya Patel, MD, FACC',
     authorRole: 'SPECIALIST',
@@ -95,9 +95,9 @@ export const INITIAL_TEAM_NOTES: ClinicalTeamNote[] = [
   {
     id: 'NOTE-CARE-001',
     patientId: 'PT-1002',
-    patientName: 'Robert Chen',
+    patientName: 'Rajan Verma',
     authorId: 'usr-coord-01',
-    authorName: 'Carlos Mendez, MSW, CCM',
+    authorName: 'Arjun Patel, MSW, CCM',
     authorRole: 'CARE_COORDINATOR',
     authorDepartment: 'Transitions of Care & Population Health',
     noteType: 'CARE_COORDINATION',
@@ -125,7 +125,7 @@ export const INITIAL_TEAM_NOTES: ClinicalTeamNote[] = [
   {
     id: 'NOTE-ADMIN-001',
     patientId: 'PT-1002',
-    patientName: 'Robert Chen',
+    patientName: 'Rajan Verma',
     authorId: 'usr-admin-01',
     authorName: 'Alex Rivera, MBA',
     authorRole: 'ADMINISTRATOR',
@@ -154,7 +154,7 @@ export const INITIAL_TEAM_NOTES: ClinicalTeamNote[] = [
   {
     id: 'NOTE-PORTAL-001',
     patientId: 'PT-1002',
-    patientName: 'Robert Chen',
+    patientName: 'Rajan Verma',
     authorId: 'usr-portal-01',
     authorName: 'Taylor Reed, CISSP',
     authorRole: 'PORTAL_ADMIN',
@@ -164,7 +164,7 @@ export const INITIAL_TEAM_NOTES: ClinicalTeamNote[] = [
     timestamp: '2026-08-29T09:15:00Z',
     status: 'SIGNED_FINAL',
     content: {
-      subjective: 'Automated cryptographic security audit of electronic health record access for patient Robert Chen (MRN-90214).',
+      subjective: 'Automated cryptographic security audit of electronic health record access for patient Rajan Verma (MRN-90214).',
       objective: {
         vitals: 'Patient consent status: ACTIVE_CONSENT verified via Master Identity Index. No opt-out restrictions logged.',
         physicalExam: 'Zero unauthorized cross-tenant read events detected in past 72 hours. All access tokens bounded to PURPOSE_OF_USE: TREATMENT.',
@@ -213,7 +213,7 @@ export const INITIAL_TEAM_NOTES: ClinicalTeamNote[] = [
     patientId: 'PT-1001',
     patientName: 'Eleanor Vance',
     authorId: 'usr-nurse-01',
-    authorName: 'Sarah Jenkins, BSN, RN',
+    authorName: 'Pooja Patel, BSN, RN',
     authorRole: 'NURSE',
     authorDepartment: 'Heart Failure Stepdown',
     noteType: 'NURSE_ASSESSMENT',
@@ -265,7 +265,7 @@ export const INITIAL_TEAM_NOTES: ClinicalTeamNote[] = [
     patientId: 'PT-1001',
     patientName: 'Eleanor Vance',
     authorId: 'usr-coord-01',
-    authorName: 'Carlos Mendez, MSW, CCM',
+    authorName: 'Arjun Patel, MSW, CCM',
     authorRole: 'CARE_COORDINATOR',
     authorDepartment: 'Transitions of Care',
     noteType: 'CARE_COORDINATION',
@@ -287,13 +287,13 @@ export const INITIAL_TEAM_NOTES: ClinicalTeamNote[] = [
     signatureHash: 'sha256:dd1234567890abcdef1234567890abcdef1'
   },
 
-  // Notes for PT-1000 (John Doe)
+  // Notes for PT-1000 (Rajesh Sharma)
   {
     id: 'NOTE-DOC-003',
     patientId: 'PT-1000',
-    patientName: 'John Doe',
+    patientName: 'Rajesh Sharma',
     authorId: 'usr-doc-01',
-    authorName: 'Dr. Sarah Johnson, MD',
+    authorName: 'Dr. Swati Kulkarni, MD',
     authorRole: 'DOCTOR',
     authorDepartment: 'Inpatient Cardiology',
     noteType: 'DOCTOR_PROGRESS_NOTE',
@@ -317,9 +317,9 @@ export const INITIAL_TEAM_NOTES: ClinicalTeamNote[] = [
   {
     id: 'NOTE-NURSE-003',
     patientId: 'PT-1000',
-    patientName: 'John Doe',
+    patientName: 'Rajesh Sharma',
     authorId: 'usr-nurse-01',
-    authorName: 'Sarah Jenkins, BSN, RN',
+    authorName: 'Pooja Patel, BSN, RN',
     authorRole: 'NURSE',
     authorDepartment: 'Cath Lab Recovery / Telemetry',
     noteType: 'NURSE_ASSESSMENT',

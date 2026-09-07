@@ -177,7 +177,7 @@ export const RegisterNewPatientModal: React.FC<RegisterNewPatientModalProps> = (
     const gender = newPatientGender === 'FEMALE' ? 'female' : newPatientGender === 'MALE' ? 'male' : 'individual';
     const hospital = newPatientHospital.trim() || 'North River Community Hospital';
     const condition = newPatientCondition.trim() || 'Acute Exacerbation of Bronchiectasis with Hypoxemia';
-    const attending = currentUser.name ? `Dr. ${currentUser.name}` : 'Dr. Gregory Ross, MD';
+    const attending = currentUser.name ? `Dr. ${currentUser.name}` : 'Dr. Vikram Malhotra, MD';
 
     switch (selectedCategory) {
       case 'TEXT_PDF':
@@ -273,7 +273,7 @@ INTERPRETATION:
     const gender = newPatientGender;
     const hospital = newPatientHospital.trim() || 'North River Community Hospital';
     const condition = newPatientCondition.trim() || 'Acute Exacerbation of Bronchiectasis with Hypoxemia';
-    const attending = currentUser.name ? `Dr. ${currentUser.name}` : 'Dr. Gregory Ross, MD';
+    const attending = currentUser.name ? `Dr. ${currentUser.name}` : 'Dr. Vikram Malhotra, MD';
     const docId = `DOC-${selectedCategory}-${Math.floor(100000 + Math.random() * 900000)}`;
 
     switch (selectedCategory) {

@@ -74,7 +74,7 @@ export const LiveAgenticWorkflowGraph: React.FC<LiveAgenticWorkflowGraphProps> =
   query,
   currentUser = {
     id: 'DOC-401',
-    name: 'Dr. Sarah Lin, MD',
+    name: 'Dr. Shalini Kapoor, MD, MD',
     role: 'ATTENDING_PHYSICIAN',
     department: 'Cardiology',
     hospitalSite: 'St. Jude Heart Center',
@@ -89,7 +89,7 @@ export const LiveAgenticWorkflowGraph: React.FC<LiveAgenticWorkflowGraphProps> =
   const [selectedNodeId, setSelectedNodeId] = useState<string | null>(null);
   const [copiedQuery, setCopiedQuery] = useState<boolean>(false);
 
-  const patientName = patient?.fullName || 'Elena Rostova';
+  const patientName = patient?.fullName || 'Sunita Reddy';
   const patientMrn = patient?.mrn || 'MRN-884920';
   const patientId = patient?.id || 'pat-1001';
   const currentQuery = query || 'What is the minimum eGFR threshold to initiate Empagliflozin in patients with HFpEF?';

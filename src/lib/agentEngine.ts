@@ -246,7 +246,7 @@ export class WorkflowExecutionAgent {
         instructions: 'Verify medication fill, confirm daily weight log, and check for signs of volume overload.',
       };
       validationChecks.push(
-        { rule: 'Care Coordinator Assignment', passed: true, details: 'Carlos Mendez, MSW assigned as case navigator.' }
+        { rule: 'Care Coordinator Assignment', passed: true, details: 'Arjun Patel, MSW assigned as case navigator.' }
       );
     }
 

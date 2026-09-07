@@ -74,7 +74,7 @@ export const AIJudgeGovernanceView: React.FC<AIJudgeGovernanceViewProps> = ({
       rollbackPlan: 'Disable strict timestamp assert rule and fall back to manual physician signoff gate.',
       status: 'APPROVED_AND_DEPLOYED',
       createdAt: '2026-08-28T11:30:00Z',
-      approvedBy: 'Elena Rostova, PhD (Portal Admin)',
+      approvedBy: 'Dr. Kavita Verma, PhD (Portal Admin)',
     }
   ]);
 
@@ -182,7 +182,7 @@ export const AIJudgeGovernanceView: React.FC<AIJudgeGovernanceViewProps> = ({
               className="px-4 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white font-bold text-xs flex items-center gap-2 shadow-lg shadow-indigo-600/30 transition-all cursor-pointer whitespace-nowrap"
             >
               <UserCheck className="w-4 h-4" />
-              Switch to Portal Admin (Dr. Elena Rostova)
+              Switch to Portal Admin (Dr. Sunita Reddy)
             </button>
           )}
         </div>

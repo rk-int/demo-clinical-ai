@@ -5,7 +5,7 @@ export const SYNTHETIC_PATIENTS: SyntheticPatient[] = [
     id: 'PT-1000',
     mrn: '1000123',
     uprId: 'UPR-2024-CITY-1000123',
-    fullName: 'John Doe',
+    fullName: 'Rajesh Sharma',
     birthDate: '1979-05-18',
     age: 45,
     gender: 'MALE',
@@ -16,7 +16,7 @@ export const SYNTHETIC_PATIENTS: SyntheticPatient[] = [
     provenance: {
       sourceSystem: 'Epic Systems EHR / FHIR Bridge R4',
       ingestionTimestamp: '2024-05-12T14:30:00Z',
-      recordedBy: 'Dr. Sarah Johnson, MD',
+      recordedBy: 'Dr. Swati Kulkarni, MD',
       verificationStatus: 'VERIFIED',
       checksum: 'sha256-jd1000123a',
     },
@@ -51,7 +51,7 @@ export const SYNTHETIC_PATIENTS: SyntheticPatient[] = [
         frequency: 'Once daily at bedtime',
         status: 'ACTIVE',
         prescribedDate: '2024-02-10',
-        prescribingProvider: 'Dr. Sarah Johnson, MD',
+        prescribingProvider: 'Dr. Swati Kulkarni, MD',
         indications: 'Hyperlipidemia & secondary coronary prevention',
       },
       {
@@ -63,7 +63,7 @@ export const SYNTHETIC_PATIENTS: SyntheticPatient[] = [
         frequency: 'Daily in morning',
         status: 'ACTIVE',
         prescribedDate: '2024-03-01',
-        prescribingProvider: 'Dr. Sarah Johnson, MD',
+        prescribingProvider: 'Dr. Swati Kulkarni, MD',
         indications: 'Rate control and cardioprotection',
       }
     ],
@@ -110,7 +110,7 @@ export const SYNTHETIC_PATIENTS: SyntheticPatient[] = [
         provenance: {
           sourceSystem: 'Bedside Vitals Monitor',
           ingestionTimestamp: '2024-05-12T09:05:00Z',
-          recordedBy: 'Jennifer Walsh, RN',
+          recordedBy: 'Priya Nair, RN',
           verificationStatus: 'VERIFIED',
           checksum: 'sha256-bp101',
         }
@@ -123,7 +123,7 @@ export const SYNTHETIC_PATIENTS: SyntheticPatient[] = [
         admissionDate: '2024-05-12T09:30:00Z',
         dischargeDate: '2024-05-12T10:45:00Z',
         department: 'Cardiology Clinic',
-        attendingPhysician: 'Dr. Sarah Johnson, MD',
+        attendingPhysician: 'Dr. Swati Kulkarni, MD',
         chiefComplaint: 'Routine 6-month coronary artery disease follow-up. Patient reports good exercise tolerance.',
       }
     ]
@@ -132,7 +132,7 @@ export const SYNTHETIC_PATIENTS: SyntheticPatient[] = [
     id: 'PT-1001',
     mrn: '1000134',
     uprId: 'UPR-2024-CITY-1000134',
-    fullName: 'Jane Smith',
+    fullName: 'Ananya Sen',
     birthDate: '1962-09-04',
     age: 62,
     gender: 'FEMALE',
@@ -143,7 +143,7 @@ export const SYNTHETIC_PATIENTS: SyntheticPatient[] = [
     provenance: {
       sourceSystem: 'Cerner EHR / FHIR Bridge R4',
       ingestionTimestamp: '2024-05-11T16:00:00Z',
-      recordedBy: 'Dr. Sarah Johnson, MD',
+      recordedBy: 'Dr. Swati Kulkarni, MD',
       verificationStatus: 'VERIFIED',
       checksum: 'sha256-js1000134b',
     },
@@ -178,7 +178,7 @@ export const SYNTHETIC_PATIENTS: SyntheticPatient[] = [
         frequency: 'Twice daily with meals',
         status: 'ACTIVE',
         prescribedDate: '2024-01-18',
-        prescribingProvider: 'Dr. Sarah Johnson, MD',
+        prescribingProvider: 'Dr. Swati Kulkarni, MD',
         indications: 'Glycemic control in Type 2 DM',
       }
     ],
@@ -210,7 +210,7 @@ export const SYNTHETIC_PATIENTS: SyntheticPatient[] = [
         admissionDate: '2024-05-11T11:00:00Z',
         dischargeDate: '2024-05-11T11:50:00Z',
         department: 'Endocrinology & Primary Care',
-        attendingPhysician: 'Dr. Sarah Johnson, MD',
+        attendingPhysician: 'Dr. Swati Kulkarni, MD',
         chiefComplaint: 'Quarterly diabetic wellness review. HbA1c improved to 6.8%.',
       }
     ]
@@ -219,7 +219,7 @@ export const SYNTHETIC_PATIENTS: SyntheticPatient[] = [
     id: 'PT-1004B',
     mrn: '1000105',
     uprId: 'UPR-2024-CITY-1000105',
-    fullName: 'Robert Brown',
+    fullName: 'Ramesh Kumar',
     birthDate: '1966-01-22',
     age: 58,
     gender: 'MALE',
@@ -230,7 +230,7 @@ export const SYNTHETIC_PATIENTS: SyntheticPatient[] = [
     provenance: {
       sourceSystem: 'Epic Systems EHR / FHIR Bridge R4',
       ingestionTimestamp: '2024-05-10T11:20:00Z',
-      recordedBy: 'Dr. Gregory Ross, MD',
+      recordedBy: 'Dr. Vikram Malhotra, MD',
       verificationStatus: 'VERIFIED',
       checksum: 'sha256-rb1000105c',
     },
@@ -256,7 +256,7 @@ export const SYNTHETIC_PATIENTS: SyntheticPatient[] = [
         frequency: '2 inhalations once daily',
         status: 'ACTIVE',
         prescribedDate: '2024-02-28',
-        prescribingProvider: 'Dr. Gregory Ross, MD',
+        prescribingProvider: 'Dr. Vikram Malhotra, MD',
         indications: 'Long-term bronchodilation in COPD',
       }
     ],
@@ -298,7 +298,7 @@ export const SYNTHETIC_PATIENTS: SyntheticPatient[] = [
         admissionDate: '2024-05-10T14:15:00Z',
         dischargeDate: '2024-05-10T15:00:00Z',
         department: 'Pulmonary Care Clinic',
-        attendingPhysician: 'Dr. Gregory Ross, MD',
+        attendingPhysician: 'Dr. Vikram Malhotra, MD',
         chiefComplaint: 'Post-exacerbation checkup; lung sounds clear bilaterally, SpO2 stable on room air.',
       }
     ]
@@ -307,7 +307,7 @@ export const SYNTHETIC_PATIENTS: SyntheticPatient[] = [
     id: 'PT-1002',
     mrn: 'MRN-884920',
     uprId: 'UPR-2026-STJ-884920',
-    fullName: 'Elena Rostova',
+    fullName: 'Sunita Reddy',
     birthDate: '1959-04-12',
     age: 67,
     gender: 'FEMALE',
@@ -318,7 +318,7 @@ export const SYNTHETIC_PATIENTS: SyntheticPatient[] = [
     provenance: {
       sourceSystem: 'Epic EHR / Metro St. Jude FHIR Bridge',
       ingestionTimestamp: '2026-08-25T14:30:00Z',
-      recordedBy: 'Dr. Sarah Chen, MD',
+      recordedBy: 'Dr. Sunita Sharma, MD',
       verificationStatus: 'VERIFIED',
       checksum: 'sha256-8f92a10b47e2c91d8f1e4b',
     },
@@ -370,7 +370,7 @@ export const SYNTHETIC_PATIENTS: SyntheticPatient[] = [
         frequency: 'Daily in morning',
         status: 'ACTIVE',
         prescribedDate: '2025-11-04',
-        prescribingProvider: 'Dr. Sarah Chen, MD',
+        prescribingProvider: 'Dr. Sunita Sharma, MD',
         indications: 'Cardioprotection & glycemic control',
       },
       {
@@ -382,7 +382,7 @@ export const SYNTHETIC_PATIENTS: SyntheticPatient[] = [
         frequency: 'Twice daily',
         status: 'ACTIVE',
         prescribedDate: '2026-01-15',
-        prescribingProvider: 'Dr. Sarah Chen, MD',
+        prescribingProvider: 'Dr. Sunita Sharma, MD',
         indications: 'Heart failure with reduced/preserved ejection fraction',
       },
       {
@@ -394,7 +394,7 @@ export const SYNTHETIC_PATIENTS: SyntheticPatient[] = [
         frequency: 'Daily',
         status: 'ACTIVE',
         prescribedDate: '2026-02-10',
-        prescribingProvider: 'Dr. Sarah Chen, MD',
+        prescribingProvider: 'Dr. Sunita Sharma, MD',
         indications: 'Fluid retention & edema management',
       }
     ],
@@ -489,7 +489,7 @@ export const SYNTHETIC_PATIENTS: SyntheticPatient[] = [
         type: 'INPATIENT',
         admissionDate: '2026-08-23T06:40:00Z',
         department: 'Cardiovascular Inpatient Unit',
-        attendingPhysician: 'Dr. Sarah Chen, MD',
+        attendingPhysician: 'Dr. Sunita Sharma, MD',
         chiefComplaint: 'Worsening dyspnea on exertion and bilateral lower extremity edema (2+ pitting)',
         dischargeSummaryNote: 'Patient admitted for acute decompensated heart failure exacerbation on background of HFpEF. Responded well to IV diuresis.',
       },
@@ -499,7 +499,7 @@ export const SYNTHETIC_PATIENTS: SyntheticPatient[] = [
         admissionDate: '2026-06-14T10:00:00Z',
         dischargeDate: '2026-06-14T11:15:00Z',
         department: 'Heart Failure Specialty Clinic',
-        attendingPhysician: 'Dr. Sarah Chen, MD',
+        attendingPhysician: 'Dr. Sunita Sharma, MD',
         chiefComplaint: 'Routine 3-month follow-up for chronic HF management',
       }
     ]
@@ -616,18 +616,18 @@ export const SYNTHETIC_PATIENTS: SyntheticPatient[] = [
     id: 'PT-1004',
     mrn: 'MRN-773199',
     uprId: 'UPR-2026-NRH-773199',
-    fullName: 'Sarah Jenkins',
+    fullName: 'Pooja Patel',
     birthDate: '1984-07-30',
     age: 42,
     gender: 'FEMALE',
-    assignedPhysicianId: 'usr-doc-02', // Assigned to Dr. Emily Vance (used for Break-It unauthorized access test)
+    assignedPhysicianId: 'usr-doc-02', // Assigned to Dr. Ananya Rao, MD (used for Break-It unauthorized access test)
     hospitalSite: 'North River Community Hospital',
     roomBed: 'Post-Op Surgical - Bed 108',
     consentStatus: 'RESTRICTED_RESEARCH',
     provenance: {
       sourceSystem: 'Cerner Millennium',
       ingestionTimestamp: '2026-08-24T09:10:00Z',
-      recordedBy: 'Dr. Emily Vance, MD',
+      recordedBy: 'Dr. Ananya Rao, MD',
       verificationStatus: 'VERIFIED',
       checksum: 'sha256-cn993',
     },
@@ -653,7 +653,7 @@ export const SYNTHETIC_PATIENTS: SyntheticPatient[] = [
         frequency: 'Every 8 hours',
         status: 'ACTIVE',
         prescribedDate: '2026-08-23',
-        prescribingProvider: 'Dr. Emily Vance, MD',
+        prescribingProvider: 'Dr. Ananya Rao, MD',
         indications: 'Post-operative surgical prophylaxis',
       }
     ],
@@ -684,7 +684,7 @@ export const SYNTHETIC_PATIENTS: SyntheticPatient[] = [
         type: 'INPATIENT',
         admissionDate: '2026-08-23T14:00:00Z',
         department: 'General Surgery',
-        attendingPhysician: 'Dr. Emily Vance, MD',
+        attendingPhysician: 'Dr. Ananya Rao, MD',
         chiefComplaint: 'Severe right upper quadrant abdominal pain radiating to scapula',
       }
     ]
@@ -704,7 +704,7 @@ export const SYNTHETIC_PATIENTS: SyntheticPatient[] = [
     provenance: {
       sourceSystem: 'Epic EHR',
       ingestionTimestamp: '2026-08-25T16:00:00Z',
-      recordedBy: 'Dr. Sarah Chen, MD',
+      recordedBy: 'Dr. Sunita Sharma, MD',
       verificationStatus: 'VERIFIED',
       checksum: 'sha256-arthur77',
     },
@@ -747,7 +747,7 @@ export const SYNTHETIC_PATIENTS: SyntheticPatient[] = [
         frequency: 'Twice daily',
         status: 'ACTIVE',
         prescribedDate: '2026-01-10',
-        prescribingProvider: 'Dr. Sarah Chen, MD',
+        prescribingProvider: 'Dr. Sunita Sharma, MD',
         indications: 'Thromboembolism prophylaxis for Non-valvular Atrial Fibrillation',
       },
       {
@@ -800,7 +800,7 @@ export const SYNTHETIC_PATIENTS: SyntheticPatient[] = [
         type: 'INPATIENT',
         admissionDate: '2026-08-24T18:00:00Z',
         department: 'Geriatric Medicine',
-        attendingPhysician: 'Dr. Sarah Chen, MD',
+        attendingPhysician: 'Dr. Sunita Sharma, MD',
         chiefComplaint: 'Palpitations, lightheadedness, and elevated resting heart rate (118 bpm)',
       }
     ]
@@ -819,7 +819,7 @@ export const SYNTHETIC_PATIENTS: SyntheticPatient[] = [
     provenance: {
       sourceSystem: 'Epic Ambulatory',
       ingestionTimestamp: '2026-08-20T14:00:00Z',
-      recordedBy: 'Dr. Sarah Chen, MD',
+      recordedBy: 'Dr. Sunita Sharma, MD',
       verificationStatus: 'VERIFIED',
       checksum: 'sha256-aaliyah99',
     },
@@ -845,7 +845,7 @@ export const SYNTHETIC_PATIENTS: SyntheticPatient[] = [
         frequency: 'Daily 30 min before breakfast',
         status: 'ACTIVE',
         prescribedDate: '2024-03-10',
-        prescribingProvider: 'Dr. Sarah Chen, MD',
+        prescribingProvider: 'Dr. Sunita Sharma, MD',
         indications: 'Thyroid hormone replacement',
       }
     ],
@@ -877,7 +877,7 @@ export const SYNTHETIC_PATIENTS: SyntheticPatient[] = [
         admissionDate: '2026-08-15T09:00:00Z',
         dischargeDate: '2026-08-15T09:45:00Z',
         department: 'Endocrinology Clinic',
-        attendingPhysician: 'Dr. Sarah Chen, MD',
+        attendingPhysician: 'Dr. Sunita Sharma, MD',
         chiefComplaint: 'Annual wellness and thyroid panel review',
       }
     ]
@@ -896,7 +896,7 @@ export const SYNTHETIC_PATIENTS: SyntheticPatient[] = [
     provenance: {
       sourceSystem: 'Epic EHR',
       ingestionTimestamp: '2026-08-22T10:00:00Z',
-      recordedBy: 'Dr. Sarah Chen, MD',
+      recordedBy: 'Dr. Sunita Sharma, MD',
       verificationStatus: 'VERIFIED',
       checksum: 'sha256-mateo88',
     },
@@ -922,7 +922,7 @@ export const SYNTHETIC_PATIENTS: SyntheticPatient[] = [
         frequency: 'Nightly',
         status: 'ACTIVE',
         prescribedDate: '2025-06-01',
-        prescribingProvider: 'Dr. Sarah Chen, MD',
+        prescribingProvider: 'Dr. Sunita Sharma, MD',
         indications: 'High-intensity lipid lowering',
       }
     ],
@@ -963,7 +963,7 @@ export const SYNTHETIC_PATIENTS: SyntheticPatient[] = [
     provenance: {
       sourceSystem: 'Epic EHR',
       ingestionTimestamp: '2026-08-18T11:00:00Z',
-      recordedBy: 'Dr. Sarah Chen, MD',
+      recordedBy: 'Dr. Sunita Sharma, MD',
       verificationStatus: 'VERIFIED',
       checksum: 'sha256-chloe22',
     },
@@ -989,7 +989,7 @@ export const SYNTHETIC_PATIENTS: SyntheticPatient[] = [
         frequency: 'Every 14 days',
         status: 'ACTIVE',
         prescribedDate: '2024-01-20',
-        prescribingProvider: 'Dr. Sarah Chen, MD',
+        prescribingProvider: 'Dr. Sunita Sharma, MD',
         indications: 'TNF-alpha biologic suppression for IBD',
       }
     ],
@@ -1011,7 +1011,7 @@ export const SYNTHETIC_PATIENTS: SyntheticPatient[] = [
     provenance: {
       sourceSystem: 'Epic EHR',
       ingestionTimestamp: '2026-08-20T08:00:00Z',
-      recordedBy: 'Dr. Sarah Chen, MD',
+      recordedBy: 'Dr. Sunita Sharma, MD',
       verificationStatus: 'VERIFIED',
       checksum: 'sha256-darnell77',
     },
@@ -1037,7 +1037,7 @@ export const SYNTHETIC_PATIENTS: SyntheticPatient[] = [
         frequency: 'Daily',
         status: 'ACTIVE',
         prescribedDate: '2023-09-15',
-        prescribingProvider: 'Dr. Sarah Chen, MD',
+        prescribingProvider: 'Dr. Sunita Sharma, MD',
         indications: 'Uric acid reduction',
       }
     ],
@@ -1059,7 +1059,7 @@ export const SYNTHETIC_PATIENTS: SyntheticPatient[] = [
     provenance: {
       sourceSystem: 'Epic EHR',
       ingestionTimestamp: '2026-08-19T14:20:00Z',
-      recordedBy: 'Dr. Sarah Chen, MD',
+      recordedBy: 'Dr. Sunita Sharma, MD',
       verificationStatus: 'VERIFIED',
       checksum: 'sha256-brigitte52',
     },
@@ -1094,7 +1094,7 @@ export const SYNTHETIC_PATIENTS: SyntheticPatient[] = [
     provenance: {
       sourceSystem: 'Epic EHR',
       ingestionTimestamp: '2026-08-10T12:00:00Z',
-      recordedBy: 'Dr. Sarah Chen, MD',
+      recordedBy: 'Dr. Sunita Sharma, MD',
       verificationStatus: 'VERIFIED',
       checksum: 'sha256-liam90',
     },
@@ -1137,7 +1137,7 @@ export const SYNTHETIC_PATIENTS: SyntheticPatient[] = [
     provenance: {
       sourceSystem: 'Epic Pediatric EHR',
       ingestionTimestamp: '2026-08-21T15:00:00Z',
-      recordedBy: 'Dr. Sarah Chen, MD',
+      recordedBy: 'Dr. Sunita Sharma, MD',
       verificationStatus: 'VERIFIED',
       checksum: 'sha256-sophia12',
     },
@@ -1163,7 +1163,7 @@ export const SYNTHETIC_PATIENTS: SyntheticPatient[] = [
         frequency: 'Once daily at bedtime',
         status: 'ACTIVE',
         prescribedDate: '2025-10-01',
-        prescribingProvider: 'Dr. Sarah Chen, MD',
+        prescribingProvider: 'Dr. Sunita Sharma, MD',
         indications: 'Basal glycemic management',
       }
     ],
@@ -1185,7 +1185,7 @@ export const SYNTHETIC_PATIENTS: SyntheticPatient[] = [
     provenance: {
       sourceSystem: 'Epic EHR',
       ingestionTimestamp: '2026-08-22T09:00:00Z',
-      recordedBy: 'Dr. Sarah Chen, MD',
+      recordedBy: 'Dr. Sunita Sharma, MD',
       verificationStatus: 'VERIFIED',
       checksum: 'sha256-tanaka60',
     },
@@ -1211,7 +1211,7 @@ export const SYNTHETIC_PATIENTS: SyntheticPatient[] = [
 export const DEMO_USERS = [
   {
     id: 'usr-doc-01',
-    name: 'Dr. Sarah Chen, MD',
+    name: 'Dr. Sunita Sharma, MD',
     role: 'DOCTOR' as const,
     department: 'Chief of Cardiology & Attending Doctor',
     hospitalSite: 'Metro St. Jude Academic Medical Center',
@@ -1222,7 +1222,7 @@ export const DEMO_USERS = [
   },
   {
     id: 'usr-spec-01',
-    name: 'Dr. Emily Vance, MD',
+    name: 'Dr. Ananya Rao, MD',
     role: 'SPECIALIST' as const,
     department: 'Clinical Specialist & Surgical Consult',
     hospitalSite: 'North River Community Hospital',
@@ -1233,7 +1233,7 @@ export const DEMO_USERS = [
   },
   {
     id: 'usr-coord-01',
-    name: 'Carlos Mendez, MSW',
+    name: 'Arjun Patel, MSW',
     role: 'CARE_COORDINATOR' as const,
     department: 'Transitional Care & Discharge Navigation',
     hospitalSite: 'Metro St. Jude Academic Medical Center',
@@ -1244,7 +1244,7 @@ export const DEMO_USERS = [
   },
   {
     id: 'usr-rn-01',
-    name: 'Jennifer Walsh, RN, BSN',
+    name: 'Priya Nair, RN, BSN',
     role: 'NURSE' as const,
     department: 'Inpatient Cardiology 4W & Acute Care',
     hospitalSite: 'Metro St. Jude Academic Medical Center',
@@ -1255,7 +1255,7 @@ export const DEMO_USERS = [
   },
   {
     id: 'usr-admin-01',
-    name: 'Dr. Rebecca Thorne, MD',
+    name: 'Dr. Rajesh Iyer, MD',
     role: 'CLINICIAN' as const,
     department: 'General Internal Medicine & Outpatient Clinic',
     hospitalSite: 'Metro St. Jude Academic Medical Center',
@@ -1266,7 +1266,7 @@ export const DEMO_USERS = [
   },
   {
     id: 'usr-portal-admin-01',
-    name: 'Elena Rostova, PhD',
+    name: 'Dr. Kavita Verma, PhD',
     role: 'PORTAL_ADMIN' as const,
     department: 'Enterprise AI Governance & Self-Improvement Council',
     hospitalSite: 'Enterprise Health Intelligence Network',
@@ -1277,7 +1277,7 @@ export const DEMO_USERS = [
   },
   {
     id: 'usr-audit-01',
-    name: 'Arthur Sterling, CISA, HCISPP',
+    name: 'Aarav Mehta, CISA, HCISPP',
     role: 'AUDITOR' as const,
     department: 'Compliance & HIPAA Data Governance',
     hospitalSite: 'Enterprise Health Network',

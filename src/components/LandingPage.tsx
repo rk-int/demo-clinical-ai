@@ -758,7 +758,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({
                             <span>Vector DB</span>
                           </td>
                           <td className="py-2.5 px-4 font-mono font-bold text-slate-100 border-r border-white/10">
-                            PostgreSQL + pgvector Extension
+                            PostgreSQL + pgvector / Chroma DB
                           </td>
                           <td className="py-2.5 px-4 text-slate-300">
                             High-dimensional vector similarity search & hybrid BM25 lexical ranking

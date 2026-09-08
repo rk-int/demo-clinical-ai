@@ -24,7 +24,10 @@ import {
   Check,
   ZoomIn,
   ZoomOut,
-  RotateCcw
+  RotateCcw,
+  Target,
+  XCircle,
+  ShieldAlert
 } from 'lucide-react';
 import { UserProfile } from '../types';
 import { HospitalVideoBackground } from './HospitalVideoBackground';
@@ -48,7 +51,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({
 
   // Floating Navigator Pane & Modal States
   const [isPaneEnabled, setIsPaneEnabled] = useState(false);
-  const [activeModal, setActiveModal] = useState<'INTRO' | 'ARCHITECTURE' | 'TECH_STACK' | 'RAG' | null>(null);
+  const [activeModal, setActiveModal] = useState<'INTRO' | 'ARCHITECTURE' | 'SCOPE' | 'TECH_STACK' | 'RAG' | null>(null);
   const [archZoomLevel, setArchZoomLevel] = useState<number>(1);
 
   // Handle toggle click to open panel on first click and close panel on second click
@@ -126,6 +129,18 @@ export const LandingPage: React.FC<LandingPageProps> = ({
               >
                 <Layers className="w-3.5 h-3.5 text-purple-300" />
                 <span>Architecture</span>
+              </button>
+
+              <button
+                onClick={() => setActiveModal('SCOPE')}
+                className={`px-3.5 py-1.5 rounded-xl text-xs font-mono font-bold flex items-center gap-1.5 transition-all cursor-pointer whitespace-nowrap ${
+                  activeModal === 'SCOPE' 
+                    ? 'bg-blue-600 text-white shadow-lg ring-1 ring-cyan-400/50' 
+                    : 'bg-white/5 hover:bg-white/10 text-slate-200 border border-white/10 hover:border-cyan-500/40'
+                }`}
+              >
+                <Target className="w-3.5 h-3.5 text-cyan-300" />
+                <span>Scope (In/Out)</span>
               </button>
 
               <button
@@ -332,6 +347,8 @@ export const LandingPage: React.FC<LandingPageProps> = ({
             <div className={`relative bg-slate-900/98 border border-cyan-500/30 rounded-3xl shadow-2xl overflow-y-auto text-slate-100 transition-all ${
               activeModal === 'ARCHITECTURE'
                 ? 'w-full h-[98vh] max-w-[99vw] max-h-[98vh] flex flex-col p-3 sm:p-5 space-y-3 border-purple-500/50'
+                : activeModal === 'SCOPE'
+                ? 'w-full max-w-5xl max-h-[88vh] p-6 sm:p-8 space-y-6'
                 : 'w-full max-w-3xl max-h-[85vh] p-6 sm:p-8 space-y-6'
             }`}>
               
@@ -340,12 +357,14 @@ export const LandingPage: React.FC<LandingPageProps> = ({
                 <div className="flex items-center gap-3">
                   {activeModal === 'INTRO' && <Info className="w-6 h-6 text-cyan-400" />}
                   {activeModal === 'ARCHITECTURE' && <Layers className="w-6 h-6 text-purple-400" />}
+                  {activeModal === 'SCOPE' && <Target className="w-6 h-6 text-cyan-400" />}
                   {activeModal === 'TECH_STACK' && <Cpu className="w-6 h-6 text-emerald-400" />}
                   {activeModal === 'RAG' && <Database className="w-6 h-6 text-amber-400" />}
 
                   <h2 className="text-xl font-extrabold text-white tracking-tight">
                     {activeModal === 'INTRO' && 'Platform Overview & Clinical Vision'}
                     {activeModal === 'ARCHITECTURE' && 'Enterprise System Architecture Blueprint (Full Presentation View)'}
+                    {activeModal === 'SCOPE' && 'Executive Demo Scope Matrix (In-Scope vs. Out-of-Scope)'}
                     {activeModal === 'TECH_STACK' && 'Technology Stack & Cloud Infrastructure'}
                     {activeModal === 'RAG' && 'Governed Clinical RAG & Knowledge Pipeline'}
                   </h2>
@@ -471,6 +490,143 @@ export const LandingPage: React.FC<LandingPageProps> = ({
                           backfaceVisibility: 'hidden',
                         }}
                       />
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              {/* MODAL CONTENT: SCOPE (IN-SCOPE VS OUT-OF-SCOPE) */}
+              {activeModal === 'SCOPE' && (
+                <div className="space-y-5 text-xs leading-relaxed text-slate-300">
+                  <div className="p-4 rounded-2xl bg-cyan-950/40 border border-cyan-500/30 space-y-1.5">
+                    <h3 className="text-sm font-bold text-cyan-300 flex items-center gap-2">
+                      <Target className="w-4 h-4 text-cyan-400" />
+                      <span>Executive Management Scope Matrix</span>
+                    </h3>
+                    <p className="text-slate-300">
+                      Clear operational boundaries defining implemented technical features versus intentional platform safeguards.
+                    </p>
+                  </div>
+
+                  <div className="grid grid-cols-1 lg:grid-cols-2 gap-5">
+                    {/* IN SCOPE BOX */}
+                    <div className="p-4 rounded-2xl bg-emerald-950/30 border border-emerald-500/40 space-y-3.5 shadow-xl">
+                      <div className="flex items-center gap-2 text-emerald-400 font-extrabold text-sm border-b border-emerald-500/30 pb-2.5">
+                        <CheckCircle2 className="w-5 h-5 text-emerald-400 shrink-0" />
+                        <span>5 IN-SCOPE TECHNICAL HIGHLIGHTS</span>
+                      </div>
+                      
+                      <div className="space-y-2.5">
+                        <div className="p-3 rounded-xl bg-black/50 border border-emerald-500/20 space-y-1">
+                          <div className="font-bold text-emerald-300 text-xs flex items-center gap-1.5">
+                            <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 shrink-0" />
+                            <span>1. Clinician Workspaces & Synthetic FHIR 360</span>
+                          </div>
+                          <p className="text-slate-300 text-[11px] leading-relaxed pl-3">
+                            Multi-hospital patient search directory and Patient 360 workspace running on synthetic FHIR R4 medical records (vitals, labs, active conditions) with context-aware prompt injection.
+                          </p>
+                        </div>
+
+                        <div className="p-3 rounded-xl bg-black/50 border border-emerald-500/20 space-y-1">
+                          <div className="font-bold text-emerald-300 text-xs flex items-center gap-1.5">
+                            <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 shrink-0" />
+                            <span>2. Contextual Hybrid RAG & Evidence-Backed Q&A</span>
+                          </div>
+                          <p className="text-slate-300 text-[11px] leading-relaxed pl-3">
+                            Dual-engine retrieval (pgvector + BM25) querying institutional guidelines to generate clinical answers backed by explicit document citations and source attribution.
+                          </p>
+                        </div>
+
+                        <div className="p-3 rounded-xl bg-black/50 border border-emerald-500/20 space-y-1">
+                          <div className="font-bold text-emerald-300 text-xs flex items-center gap-1.5">
+                            <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 shrink-0" />
+                            <span>3. Multi-Role RBAC & Purpose-Driven PHI Governance</span>
+                          </div>
+                          <p className="text-slate-300 text-[11px] leading-relaxed pl-3">
+                            Role-based access control supporting 6 clinical personas with Purpose-of-Use authorization (<code className="text-emerald-400 font-mono">TREATMENT</code>, <code className="text-emerald-400 font-mono">CLINICAL_AUDIT</code>, <code className="text-emerald-400 font-mono">EMERGENCY</code>) and automated pre/post DLP PHI token masking.
+                          </p>
+                        </div>
+
+                        <div className="p-3 rounded-xl bg-black/50 border border-emerald-500/20 space-y-1">
+                          <div className="font-bold text-emerald-300 text-xs flex items-center gap-1.5">
+                            <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 shrink-0" />
+                            <span>4. Safety Guardrails, Confidence Metrics & Fallback</span>
+                          </div>
+                          <p className="text-slate-300 text-[11px] leading-relaxed pl-3">
+                            Calibrated evidence confidence scoring with NeMo safety guardrails that automatically trigger physician escalation whenever retrieval confidence falls below 85%.
+                          </p>
+                        </div>
+
+                        <div className="p-3 rounded-xl bg-black/50 border border-emerald-500/20 space-y-1">
+                          <div className="font-bold text-emerald-300 text-xs flex items-center gap-1.5">
+                            <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 shrink-0" />
+                            <span>5. Multi-Agent Orchestration & Live Audit Telemetry</span>
+                          </div>
+                          <p className="text-slate-300 text-[11px] leading-relaxed pl-3">
+                            Real-time visual graph tracking agent collaboration (<em>Triage → Patient Data → Knowledge → Workflow</em>) alongside live token stream metrics, latency tracking, and SHA-256 encrypted immutable audit trails.
+                          </p>
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* OUT OF SCOPE BOX */}
+                    <div className="p-4 rounded-2xl bg-rose-950/30 border border-rose-500/40 space-y-3.5 shadow-xl">
+                      <div className="flex items-center gap-2 text-rose-400 font-extrabold text-sm border-b border-rose-500/30 pb-2.5">
+                        <XCircle className="w-5 h-5 text-rose-400 shrink-0" />
+                        <span>5 OUT-OF-SCOPE BOUNDARIES</span>
+                      </div>
+                      
+                      <div className="space-y-2.5">
+                        <div className="p-3 rounded-xl bg-black/50 border border-rose-500/20 space-y-1">
+                          <div className="font-bold text-rose-300 text-xs flex items-center gap-1.5">
+                            <span className="w-1.5 h-1.5 rounded-full bg-rose-400 shrink-0" />
+                            <span>1. Autonomous Medical Treatment & Order Execution</span>
+                          </div>
+                          <p className="text-slate-300 text-[11px] leading-relaxed pl-3">
+                            System operates strictly as a <strong>Clinical Decision Support System (CDSS)</strong>; no autonomous clinical ordering or prescribing can occur without mandatory physician digital sign-off.
+                          </p>
+                        </div>
+
+                        <div className="p-3 rounded-xl bg-black/50 border border-rose-500/20 space-y-1">
+                          <div className="font-bold text-rose-300 text-xs flex items-center gap-1.5">
+                            <span className="w-1.5 h-1.5 rounded-full bg-rose-400 shrink-0" />
+                            <span>2. Direct Production EHR Database Write-Back</span>
+                          </div>
+                          <p className="text-slate-300 text-[11px] leading-relaxed pl-3">
+                            Sandboxed to synthetic FHIR R4 data models for zero-risk demonstration; live production EPIC/Cerner database mutations are intentionally excluded.
+                          </p>
+                        </div>
+
+                        <div className="p-3 rounded-xl bg-black/50 border border-rose-500/20 space-y-1">
+                          <div className="font-bold text-rose-300 text-xs flex items-center gap-1.5">
+                            <span className="w-1.5 h-1.5 rounded-full bg-rose-400 shrink-0" />
+                            <span>3. Unchecked Generative AI Output (No Ungrounded Responses)</span>
+                          </div>
+                          <p className="text-slate-300 text-[11px] leading-relaxed pl-3">
+                            The platform strictly forbids ungrounded model guessing; queries exceeding safety parameters or lacking verified literature automatically defer to human clinical evaluation.
+                          </p>
+                        </div>
+
+                        <div className="p-3 rounded-xl bg-black/50 border border-rose-500/20 space-y-1">
+                          <div className="font-bold text-rose-300 text-xs flex items-center gap-1.5">
+                            <span className="w-1.5 h-1.5 rounded-full bg-rose-400 shrink-0" />
+                            <span>4. Physical ICU Hardware & IoT Device Interfacing</span>
+                          </div>
+                          <p className="text-slate-300 text-[11px] leading-relaxed pl-3">
+                            Ingests structured digital telemetry feeds, but does not connect directly to physical bedside ICU monitors, ventilator hardware, or wearable sensor serial ports.
+                          </p>
+                        </div>
+
+                        <div className="p-3 rounded-xl bg-black/50 border border-rose-500/20 space-y-1">
+                          <div className="font-bold text-rose-300 text-xs flex items-center gap-1.5">
+                            <span className="w-1.5 h-1.5 rounded-full bg-rose-400 shrink-0" />
+                            <span>5. Automated Billing Claims & Unthrottled Cloud Quotas</span>
+                          </div>
+                          <p className="text-slate-300 text-[11px] leading-relaxed pl-3">
+                            Tracks token usage and infrastructure costs, but excludes automated insurance claim filings, binding financial transactions, and unthrottled cloud compute quotas.
+                          </p>
+                        </div>
+                      </div>
                     </div>
                   </div>
                 </div>

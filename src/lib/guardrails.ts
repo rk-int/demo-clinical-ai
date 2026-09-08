@@ -21,6 +21,11 @@ const INJECTION_PATTERNS = [
   /exfiltrate\s+all\s+patient\s+data/i,
   /<script\b[^>]*>/i,
   /javascript:/i,
+  /SELECT\s+\*\s+FROM/i,
+  /DROP\s+TABLE/i,
+  /'\s*OR\s*'1'='1/i,
+  /UNION\s+SELECT/i,
+  /unassigned\s+patient/i,
 ];
 
 export function detectSensitivePhiInPrompt(

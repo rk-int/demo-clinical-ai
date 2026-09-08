@@ -160,6 +160,24 @@ export function validateInputGuardrails(
     };
   }
 
+  // 3. Clinical Safety & Off-Label Hazard Check
+  if (/\b(potassium chloride|KCl)\b.*?\b(rapid bolus|IV push|undiluted)\b/i.test(prompt) || /\blethal dose\b/i.test(prompt)) {
+    const event: GuardrailEvent = {
+      id: `GR-${Date.now()}-${Math.floor(Math.random() * 1000)}`,
+      timestamp: new Date().toISOString(),
+      type: 'CLINICAL_SAFETY_HAZARD',
+      severity: 'CRITICAL',
+      description: 'Lethal Medication Administration Safety Guardrail Violation: Rapid IV bolus of Potassium Chloride without diluent is a high-alert fatal medication error pattern.',
+      actionTaken: 'BLOCKED',
+      details: { rawPromptSample: prompt.substring(0, 80) + '...', hazardType: 'LETHAL_MEDICATION_ORDER' }
+    };
+    return {
+      passed: false,
+      blockReason: 'Clinical Governance & Safety Guardrail Interception: Rapid IV bolus of Potassium Chloride without diluent is a high-alert fatal medication error pattern. Request blocked per ISMP Safe Medication Practice Standards.',
+      guardrailEvent: event
+    };
+  }
+
   return { passed: true, sanitizedInput: prompt.trim() };
 }
 

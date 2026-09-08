@@ -33,7 +33,7 @@ async function runLiveTestFramework() {
   // TC-02: Purpose-of-Use Access Control & Consent Check
   try {
     const actor = DEMO_USERS[0]; // Dr. Sunita Sharma, MD
-    const ptResult = PatientDataAgent.getPatient360('PT-1002', actor, 'DIRECT_PATIENT_CARE');
+    const ptResult = PatientDataAgent.getPatient360('PT-1002', actor, 'TREATMENT');
     if (ptResult.patient && ptResult.authDecision.allowed) {
       testResults.push({
         tcId: 'TC-02',
@@ -116,7 +116,7 @@ async function runLiveTestFramework() {
   // TC-06: Human-in-the-Loop Workflow Order Drafting & Sign-off Gate
   try {
     const actor = DEMO_USERS[0];
-    const draft = WorkflowExecutionAgent.generateDraftAction('CLINICAL_NOTE', 'PT-1000', actor, 'DIRECT_PATIENT_CARE');
+    const draft = WorkflowExecutionAgent.generateDraftAction('CLINICAL_NOTE', 'PT-1000', actor, 'TREATMENT');
     if (draft.state === 'PENDING_HUMAN_APPROVAL') {
       const approved = WorkflowExecutionAgent.approveAction(draft.id, actor);
       if (approved && approved.state === 'EXECUTED_SIMULATION' && approved.approver) {

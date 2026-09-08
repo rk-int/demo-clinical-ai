@@ -150,6 +150,7 @@ export function App() {
             activePatientName={undefined}
             onSignInClick={() => setIsSignInModalOpen(true)}
             onSignOut={handleSignOut}
+            onEnterPortal={() => handleEnterClinicianWithUser()}
           />
 
           <main className="flex-1 relative z-10">

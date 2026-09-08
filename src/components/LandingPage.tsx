@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { 
   ShieldCheck, 
   FileCheck, 
@@ -6,7 +6,25 @@ import {
   UserCheck, 
   Cpu,
   ArrowRight,
-  Download
+  Download,
+  ToggleLeft,
+  ToggleRight,
+  Sparkles,
+  Info,
+  Layers,
+  Database,
+  X,
+  BookOpen,
+  CheckCircle2,
+  Server,
+  Lock,
+  Activity,
+  Zap,
+  Globe,
+  Check,
+  ZoomIn,
+  ZoomOut,
+  RotateCcw
 } from 'lucide-react';
 import { UserProfile } from '../types';
 import { HospitalVideoBackground } from './HospitalVideoBackground';
@@ -28,6 +46,22 @@ export const LandingPage: React.FC<LandingPageProps> = ({
 }) => {
   const { isDark } = useTheme();
 
+  // Floating Navigator Pane & Modal States
+  const [isPaneEnabled, setIsPaneEnabled] = useState(false);
+  const [activeModal, setActiveModal] = useState<'INTRO' | 'ARCHITECTURE' | 'TECH_STACK' | 'RAG' | null>(null);
+  const [archZoomLevel, setArchZoomLevel] = useState<number>(1);
+
+  // Handle toggle click to open panel on first click and close panel on second click
+  const handleTogglePane = () => {
+    setIsPaneEnabled(prev => {
+      const nextState = !prev;
+      if (!nextState) {
+        setActiveModal(null);
+      }
+      return nextState;
+    });
+  };
+
   return (
     <div className={`relative min-h-screen overflow-hidden font-sans transition-colors duration-300 ${
       isDark ? 'text-slate-100' : 'text-slate-900'
@@ -35,12 +69,102 @@ export const LandingPage: React.FC<LandingPageProps> = ({
       {/* Full-Screen Hospital Video Background */}
       <HospitalVideoBackground initialSceneIndex={0} showOverlayControls={true} />
 
+      {/* FIXED TOGGLE BUTTON (ALWAYS ACCESSIBLE TO OPEN/CLOSE PANEL ON CLICK) */}
+      <div className="fixed top-20 right-6 z-50">
+        <button
+          onClick={handleTogglePane}
+          className={`px-3.5 py-2 rounded-full border text-xs font-mono font-bold flex items-center gap-2 transition-all cursor-pointer shadow-2xl backdrop-blur-2xl ${
+            isPaneEnabled 
+              ? 'bg-cyan-500/20 text-cyan-300 border-cyan-400/60 ring-2 ring-cyan-500/40' 
+              : 'bg-slate-950/90 text-slate-300 border-white/20 hover:text-white hover:border-cyan-500/50'
+          }`}
+          title={isPaneEnabled ? "Click to close presentation panel" : "Click to open presentation panel"}
+        >
+          <div className={`w-2.5 h-2.5 rounded-full ${isPaneEnabled ? 'bg-cyan-400 animate-pulse' : 'bg-slate-500'}`} />
+          <span>Presentation Pane</span>
+          {isPaneEnabled ? (
+            <ToggleRight className="w-5 h-5 text-cyan-400" />
+          ) : (
+            <ToggleLeft className="w-5 h-5 text-slate-400" />
+          )}
+        </button>
+      </div>
+
       {/* Main Content Layout */}
       <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-8 pb-20">
-        
+
         {/* ========================================================================= */}
-        {/* HERO SECTION                                                              */}
+        {/* HORIZONTAL FLOATING PANE (WHEN TOGGLE IS ENABLED)                          */}
         {/* ========================================================================= */}
+        {isPaneEnabled && (
+          <div className="fixed top-20 left-1/2 -translate-x-1/2 z-50 bg-slate-950/95 border border-cyan-500/40 rounded-2xl p-2 shadow-2xl backdrop-blur-2xl flex items-center gap-2 animate-in fade-in slide-in-from-top-4 duration-300">
+            <div className="flex items-center gap-1.5 px-3 py-1 text-[11px] font-mono font-bold text-cyan-400 border-r border-white/10 shrink-0">
+              <Sparkles className="w-3.5 h-3.5 text-amber-400 animate-pulse" />
+              <span>PRESENTATION</span>
+            </div>
+
+            <div className="flex items-center gap-1.5 overflow-x-auto py-0.5 px-1">
+              <button
+                onClick={() => setActiveModal('INTRO')}
+                className={`px-3.5 py-1.5 rounded-xl text-xs font-mono font-bold flex items-center gap-1.5 transition-all cursor-pointer whitespace-nowrap ${
+                  activeModal === 'INTRO' 
+                    ? 'bg-blue-600 text-white shadow-lg ring-1 ring-cyan-400/50' 
+                    : 'bg-white/5 hover:bg-white/10 text-slate-200 border border-white/10 hover:border-cyan-500/40'
+                }`}
+              >
+                <Info className="w-3.5 h-3.5 text-cyan-300" />
+                <span>Intro</span>
+              </button>
+
+              <button
+                onClick={() => setActiveModal('ARCHITECTURE')}
+                className={`px-3.5 py-1.5 rounded-xl text-xs font-mono font-bold flex items-center gap-1.5 transition-all cursor-pointer whitespace-nowrap ${
+                  activeModal === 'ARCHITECTURE' 
+                    ? 'bg-blue-600 text-white shadow-lg ring-1 ring-purple-400/50' 
+                    : 'bg-white/5 hover:bg-white/10 text-slate-200 border border-white/10 hover:border-purple-500/40'
+                }`}
+              >
+                <Layers className="w-3.5 h-3.5 text-purple-300" />
+                <span>Architecture</span>
+              </button>
+
+              <button
+                onClick={() => setActiveModal('TECH_STACK')}
+                className={`px-3.5 py-1.5 rounded-xl text-xs font-mono font-bold flex items-center gap-1.5 transition-all cursor-pointer whitespace-nowrap ${
+                  activeModal === 'TECH_STACK' 
+                    ? 'bg-blue-600 text-white shadow-lg ring-1 ring-emerald-400/50' 
+                    : 'bg-white/5 hover:bg-white/10 text-slate-200 border border-white/10 hover:border-emerald-500/40'
+                }`}
+              >
+                <Cpu className="w-3.5 h-3.5 text-emerald-300" />
+                <span>Tech Stack</span>
+              </button>
+
+              <button
+                onClick={() => setActiveModal('RAG')}
+                className={`px-3.5 py-1.5 rounded-xl text-xs font-mono font-bold flex items-center gap-1.5 transition-all cursor-pointer whitespace-nowrap ${
+                  activeModal === 'RAG' 
+                    ? 'bg-blue-600 text-white shadow-lg ring-1 ring-amber-400/50' 
+                    : 'bg-white/5 hover:bg-white/10 text-slate-200 border border-white/10 hover:border-amber-500/40'
+                }`}
+              >
+                <Database className="w-3.5 h-3.5 text-amber-300" />
+                <span>RAG</span>
+              </button>
+            </div>
+
+            <button
+              onClick={() => {
+                setIsPaneEnabled(false);
+                setActiveModal(null);
+              }}
+              className="p-1.5 rounded-xl hover:bg-white/10 text-slate-400 hover:text-white transition-colors ml-1 cursor-pointer shrink-0"
+              title="Close Presentation Pane"
+            >
+              <X className="w-3.5 h-3.5" />
+            </button>
+          </div>
+        )}
         {/* ========================================================================= */}
         {/* HERO SECTION (CENTERED PROPER HEADING PLACEMENT)                         */}
         {/* ========================================================================= */}
@@ -66,43 +190,6 @@ export const LandingPage: React.FC<LandingPageProps> = ({
             </span>
           </h1>
 
-          {/* Quick Action CTAs */}
-          <div className="flex flex-wrap items-center justify-center gap-3 pt-2">
-            {currentUser ? (
-              <>
-                <button
-                  onClick={() => onEnterClinicianPortal(currentUser)}
-                  className="px-7 py-3.5 rounded-2xl bg-blue-600 hover:bg-blue-500 active:scale-[0.99] text-white font-extrabold text-sm shadow-xl shadow-blue-600/30 transition-all flex items-center gap-2.5 cursor-pointer hover:scale-105"
-                >
-                  <LogIn className="w-4 h-4" />
-                  <span>Enter Clinical Workspace</span>
-                  <ArrowRight className="w-4 h-4 ml-0.5" />
-                </button>
-
-                {onOpenSignInModal && (
-                  <button
-                    onClick={onOpenSignInModal}
-                    className="px-5 py-3.5 rounded-2xl bg-slate-900/80 hover:bg-slate-800/90 active:scale-[0.99] text-cyan-300 hover:text-cyan-200 border border-cyan-500/30 hover:border-cyan-500/60 font-semibold text-sm shadow-xl backdrop-blur-xl transition-all flex items-center gap-2 cursor-pointer"
-                  >
-                    <UserCheck className="w-4 h-4 text-cyan-400" />
-                    <span>Switch Account / Role</span>
-                  </button>
-                )}
-
-                {currentUser.role === 'PORTAL_ADMIN' && (
-                  <a
-                    href="/api/export/zip"
-                    download="healthnet-clinical-ai-v1.zip"
-                    className="px-5 py-3.5 rounded-2xl bg-slate-900/80 hover:bg-slate-800/90 active:scale-[0.99] text-cyan-300 hover:text-cyan-200 border border-cyan-500/30 hover:border-cyan-500/60 font-semibold text-sm shadow-xl backdrop-blur-xl transition-all flex items-center gap-2 cursor-pointer"
-                    title="Download clean repository source code archive"
-                  >
-                    <Download className="w-4 h-4 text-cyan-400" />
-                    <span>Export Source ZIP (v1.0)</span>
-                  </a>
-                )}
-              </>
-            ) : null}
-          </div>
         </section>
 
         {/* ========================================================================= */}
@@ -234,6 +321,273 @@ export const LandingPage: React.FC<LandingPageProps> = ({
             </div>
           </div>
         </section>
+
+        {/* ========================================================================= */}
+        {/* MODAL DIALOGS FOR INTRO, ARCHITECTURE, TECH STACK, RAG                     */}
+        {/* ========================================================================= */}
+        {activeModal && (
+          <div className={`fixed inset-0 z-50 flex items-center justify-center bg-slate-950/95 backdrop-blur-md animate-in fade-in duration-200 ${
+            activeModal === 'ARCHITECTURE' ? 'p-1 sm:p-2' : 'p-4'
+          }`}>
+            <div className={`relative bg-slate-900/98 border border-cyan-500/30 rounded-3xl shadow-2xl overflow-y-auto text-slate-100 transition-all ${
+              activeModal === 'ARCHITECTURE'
+                ? 'w-full h-[98vh] max-w-[99vw] max-h-[98vh] flex flex-col p-3 sm:p-5 space-y-3 border-purple-500/50'
+                : 'w-full max-w-3xl max-h-[85vh] p-6 sm:p-8 space-y-6'
+            }`}>
+              
+              {/* Modal Header */}
+              <div className="flex items-center justify-between border-b border-white/10 pb-3 shrink-0">
+                <div className="flex items-center gap-3">
+                  {activeModal === 'INTRO' && <Info className="w-6 h-6 text-cyan-400" />}
+                  {activeModal === 'ARCHITECTURE' && <Layers className="w-6 h-6 text-purple-400" />}
+                  {activeModal === 'TECH_STACK' && <Cpu className="w-6 h-6 text-emerald-400" />}
+                  {activeModal === 'RAG' && <Database className="w-6 h-6 text-amber-400" />}
+
+                  <h2 className="text-xl font-extrabold text-white tracking-tight">
+                    {activeModal === 'INTRO' && 'Platform Overview & Clinical Vision'}
+                    {activeModal === 'ARCHITECTURE' && 'Enterprise System Architecture Blueprint (Full Presentation View)'}
+                    {activeModal === 'TECH_STACK' && 'Technology Stack & Cloud Infrastructure'}
+                    {activeModal === 'RAG' && 'Governed Clinical RAG & Knowledge Pipeline'}
+                  </h2>
+                </div>
+
+                <button
+                  onClick={() => setActiveModal(null)}
+                  className="p-2 rounded-xl bg-white/5 hover:bg-white/10 text-slate-400 hover:text-white transition-colors cursor-pointer"
+                  title="Close modal (Esc)"
+                >
+                  <X className="w-5 h-5" />
+                </button>
+              </div>
+
+              {/* MODAL CONTENT: INTRO */}
+              {activeModal === 'INTRO' && (
+                <div className="space-y-5 text-xs leading-relaxed text-slate-300">
+                  {/* High-Resolution Infographic Presentation Banner */}
+                  <div className="overflow-hidden rounded-2xl border border-cyan-500/40 shadow-2xl bg-slate-950 group relative">
+                    <img
+                      src="/intro_presentation_banner.jpg"
+                      alt="Enterprise AI Clinical Assistant Architecture Banner"
+                      className="w-full h-auto object-cover rounded-2xl transition-transform duration-500 group-hover:scale-[1.015]"
+                    />
+                    <div className="absolute bottom-3 right-3 bg-slate-950/85 backdrop-blur-md px-3 py-1.5 rounded-xl border border-cyan-400/30 text-[10px] font-mono text-cyan-300 flex items-center gap-1.5 shadow-lg">
+                      <Sparkles className="w-3.5 h-3.5 text-amber-400 animate-pulse" />
+                      <span>Clinical Intelligence Ecosystem Blueprint</span>
+                    </div>
+                  </div>
+
+                  <div className="p-4 rounded-2xl bg-cyan-950/40 border border-cyan-500/30 space-y-2">
+                    <h3 className="text-sm font-bold text-cyan-300 flex items-center gap-2">
+                      <Sparkles className="w-4 h-4 text-amber-400" />
+                      <span>Multi-Hospital Healthcare Network Clinical AI</span>
+                    </h3>
+                    <p>
+                      Enterprise AI Clinical Assistant empowers clinicians with real-time, evidence-based decision support, automated documentation, and patient record synthesis while maintaining strict HIPAA compliance and zero-trust security.
+                    </p>
+                  </div>
+
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                    <div className="p-3.5 rounded-xl bg-black/40 border border-white/10 space-y-1.5">
+                      <div className="font-bold text-white flex items-center gap-1.5">
+                        <ShieldCheck className="w-4 h-4 text-emerald-400" />
+                        <span>Zero-Trust Privacy</span>
+                      </div>
+                      <p className="text-[11px] text-slate-400">
+                        Automatic DLP PHI tokenization masks patient names (`[REDACTED_PATIENT_NAME]`) before sending prompts to external cloud models.
+                      </p>
+                    </div>
+
+                    <div className="p-3.5 rounded-xl bg-black/40 border border-white/10 space-y-1.5">
+                      <div className="font-bold text-white flex items-center gap-1.5">
+                        <UserCheck className="w-4 h-4 text-purple-400" />
+                        <span>Human-in-the-Loop</span>
+                      </div>
+                      <p className="text-[11px] text-slate-400">
+                        Physician review mandate enforced on all AI outputs. Non-autonomous design guarantees clinicians retain complete decision authority.
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              {/* MODAL CONTENT: ARCHITECTURE (FULL SCREEN COVERAGE FOR AUDIENCE PRESENTATION) */}
+              {activeModal === 'ARCHITECTURE' && (
+                <div className="flex-1 flex flex-col min-h-0 space-y-3 text-xs leading-relaxed text-slate-300">
+                  {/* Floating Interactive Zoom Control Toolbar */}
+                  <div className="flex items-center justify-between bg-slate-950/90 border border-purple-500/40 rounded-2xl px-4 py-2.5 shadow-xl backdrop-blur-md shrink-0">
+                    <div className="flex items-center gap-2 font-mono text-[11px] text-purple-300 font-bold">
+                      <Layers className="w-4 h-4 text-purple-400" />
+                      <span>Enterprise Reference Architecture Diagram</span>
+                    </div>
+
+                    <div className="flex items-center gap-2">
+                      <button
+                        onClick={() => setArchZoomLevel((prev) => Math.max(0.6, prev - 0.25))}
+                        className="p-2 rounded-xl bg-white/5 hover:bg-white/10 text-slate-300 hover:text-white border border-white/10 transition-colors cursor-pointer flex items-center gap-1.5 text-xs font-semibold"
+                        title="Zoom Out (-25%)"
+                      >
+                        <ZoomOut className="w-4 h-4" />
+                        <span className="hidden sm:inline">Zoom Out</span>
+                      </button>
+
+                      <div className="px-3.5 py-1.5 rounded-xl bg-purple-500/20 border border-purple-500/40 text-purple-300 font-mono text-xs font-bold min-w-[65px] text-center shadow-inner">
+                        {Math.round(archZoomLevel * 100)}%
+                      </div>
+
+                      <button
+                        onClick={() => setArchZoomLevel((prev) => Math.min(3.0, prev + 0.25))}
+                        className="p-2 rounded-xl bg-purple-600 hover:bg-purple-500 text-white transition-colors cursor-pointer flex items-center gap-1.5 text-xs font-semibold shadow-md shadow-purple-600/30"
+                        title="Zoom In (+25%)"
+                      >
+                        <ZoomIn className="w-4 h-4" />
+                        <span className="hidden sm:inline">Zoom In</span>
+                      </button>
+
+                      <button
+                        onClick={() => setArchZoomLevel(1)}
+                        className="p-2 rounded-xl bg-white/5 hover:bg-white/10 text-slate-400 hover:text-white border border-white/10 transition-colors cursor-pointer"
+                        title="Reset Zoom to 100%"
+                      >
+                        <RotateCcw className="w-4 h-4" />
+                      </button>
+                    </div>
+                  </div>
+
+                  {/* Full-Screen Zoomable & Scrollable Diagram Viewport */}
+                  <div className="flex-1 overflow-auto rounded-2xl border border-purple-500/40 shadow-2xl bg-white p-3 relative custom-scrollbar flex items-start justify-center">
+                    <div
+                      className="transition-transform duration-200 ease-out origin-top-center flex items-center justify-center min-w-full"
+                      style={{
+                        transform: `scale(${archZoomLevel})`,
+                        width: archZoomLevel > 1 ? `${archZoomLevel * 100}%` : '100%',
+                      }}
+                    >
+                      <img
+                        src="/architecture_reference_blueprint.png"
+                        alt="Enterprise AI Clinical Assistant - Reference Architecture Blueprint"
+                        className="w-full h-auto object-contain rounded-xl shadow-md"
+                        style={{
+                          imageRendering: '-webkit-optimize-contrast',
+                          backfaceVisibility: 'hidden',
+                        }}
+                      />
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              {/* MODAL CONTENT: TECH STACK */}
+              {activeModal === 'TECH_STACK' && (
+                <div className="space-y-4 text-xs leading-relaxed text-slate-300">
+                  <div className="p-4 rounded-2xl bg-emerald-950/40 border border-emerald-500/30 space-y-2">
+                    <h3 className="text-sm font-bold text-emerald-300 flex items-center gap-2">
+                      <Cpu className="w-4 h-4 text-emerald-400" />
+                      <span>Enterprise Application Technology Matrix</span>
+                    </h3>
+                    <p>
+                      Modern full-stack web technology built for ultra-fast response latency, strict security compliance, and dynamic micro-animations.
+                    </p>
+                  </div>
+
+                  <div className="grid grid-cols-2 sm:grid-cols-3 gap-2.5 font-mono text-[11px]">
+                    <div className="p-3 rounded-xl bg-black/40 border border-white/10 space-y-1">
+                      <span className="text-slate-400 block text-[10px] uppercase font-sans">Frontend</span>
+                      <span className="font-bold text-cyan-300">React 18 + Vite</span>
+                    </div>
+                    <div className="p-3 rounded-xl bg-black/40 border border-white/10 space-y-1">
+                      <span className="text-slate-400 block text-[10px] uppercase font-sans">Styling</span>
+                      <span className="font-bold text-indigo-300">TailwindCSS</span>
+                    </div>
+                    <div className="p-3 rounded-xl bg-black/40 border border-white/10 space-y-1">
+                      <span className="text-slate-400 block text-[10px] uppercase font-sans">Language</span>
+                      <span className="font-bold text-blue-300">TypeScript ES2022</span>
+                    </div>
+                    <div className="p-3 rounded-xl bg-black/40 border border-white/10 space-y-1">
+                      <span className="text-slate-400 block text-[10px] uppercase font-sans">AI API</span>
+                      <span className="font-bold text-amber-300">Google GenAI SDK</span>
+                    </div>
+                    <div className="p-3 rounded-xl bg-black/40 border border-white/10 space-y-1">
+                      <span className="text-slate-400 block text-[10px] uppercase font-sans">Primary Model</span>
+                      <span className="font-bold text-purple-300">Gemini 3.6 Flash</span>
+                    </div>
+                    <div className="p-3 rounded-xl bg-black/40 border border-white/10 space-y-1">
+                      <span className="text-slate-400 block text-[10px] uppercase font-sans">Vector Database</span>
+                      <span className="font-bold text-emerald-300">PostgreSQL pgvector</span>
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              {/* MODAL CONTENT: RAG */}
+              {activeModal === 'RAG' && (
+                <div className="space-y-4 text-xs leading-relaxed text-slate-300">
+                  <div className="p-4 rounded-2xl bg-amber-950/40 border border-amber-500/30 space-y-2">
+                    <h3 className="text-sm font-bold text-amber-300 flex items-center gap-2">
+                      <Database className="w-4 h-4 text-amber-400" />
+                      <span>Governed Clinical RAG Pipeline Architecture</span>
+                    </h3>
+                    <p>
+                      Retrieval-Augmented Generation (RAG) grounds LLM responses in real-time FHIR clinical observations, active conditions, and institutional clinical practice guidelines.
+                    </p>
+                  </div>
+
+                  <div className="space-y-2 font-mono text-[11px]">
+                    <div className="p-3 rounded-xl bg-black/50 border border-white/10 space-y-1">
+                      <div className="flex items-center justify-between text-cyan-300 font-bold">
+                        <span>Step 1: Patient FHIR Context Ingestion</span>
+                        <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400" />
+                      </div>
+                      <p className="text-slate-400 font-sans text-[11px]">
+                        Loads patient vitals, eGFR, meds, and team notes directly from PostgreSQL store.
+                      </p>
+                    </div>
+
+                    <div className="p-3 rounded-xl bg-black/50 border border-white/10 space-y-1">
+                      <div className="flex items-center justify-between text-purple-300 font-bold">
+                        <span>Step 2: DLP PHI Tokenization & Masking</span>
+                        <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400" />
+                      </div>
+                      <p className="text-slate-400 font-sans text-[11px]">
+                        Replaces patient full name (`[REDACTED_PATIENT_NAME]`) and direct identifiers before LLM transmission.
+                      </p>
+                    </div>
+
+                    <div className="p-3 rounded-xl bg-black/50 border border-white/10 space-y-1">
+                      <div className="flex items-center justify-between text-amber-300 font-bold">
+                        <span>Step 3: Hybrid Lexical (BM25) + Vector Retrieval</span>
+                        <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400" />
+                      </div>
+                      <p className="text-slate-400 font-sans text-[11px]">
+                        Retrieves top matching AHA/ACC, ADA, and GOLD clinical guideline chunks via pgvector.
+                      </p>
+                    </div>
+
+                    <div className="p-3 rounded-xl bg-black/50 border border-white/10 space-y-1">
+                      <div className="flex items-center justify-between text-emerald-300 font-bold">
+                        <span>Step 4: Gemini LLM Synthesis & Groundedness Audit</span>
+                        <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400" />
+                      </div>
+                      <p className="text-slate-400 font-sans text-[11px]">
+                        Synthesizes response, validates claims against citations, and outputs live token consumption metrics.
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              {/* Modal Footer */}
+              <div className="pt-2 flex justify-end">
+                <button
+                  onClick={() => setActiveModal(null)}
+                  className="px-5 py-2 rounded-xl bg-blue-600 hover:bg-blue-500 text-white font-bold text-xs transition-colors cursor-pointer"
+                >
+                  Close Overview
+                </button>
+              </div>
+
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );

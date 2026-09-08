@@ -38,6 +38,7 @@ interface NavbarProps {
   activePatientName?: string;
   onSignInClick?: () => void;
   onSignOut?: () => void;
+  onEnterPortal?: () => void;
 }
 
 export const Navbar: React.FC<NavbarProps> = ({
@@ -52,6 +53,7 @@ export const Navbar: React.FC<NavbarProps> = ({
   activePatientName,
   onSignInClick,
   onSignOut,
+  onEnterPortal,
 }) => {
   const [userDropdownOpen, setUserDropdownOpen] = React.useState(false);
   const [purposeDropdownOpen, setPurposeDropdownOpen] = React.useState(false);

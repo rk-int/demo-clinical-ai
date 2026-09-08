@@ -26,6 +26,7 @@ import {
   Shield
 } from 'lucide-react';
 import { UserProfile, PurposeOfUse, SyntheticPatient } from '../../types';
+import { DEMO_USERS } from '../../data/syntheticFhirData';
 import { useTheme } from '../../context/ThemeContext';
 import { NETWORK_HOSPITALS, HospitalFacility } from '../../data/hospitalNetwork';
 import { getUserAvatarUrl } from '../../utils/patientAvatar';
@@ -328,7 +329,7 @@ export const AuditComplianceCenterView: React.FC<AuditComplianceCenterViewProps>
       actionType: chosen.actionType,
       resource: chosen.resource,
       patient: randomPatient.fullName,
-      patientId: randomPatient.mrn || randomPatient.id || 'PT-1000',
+      patientId: ('mrn' in randomPatient && randomPatient.mrn) ? randomPatient.mrn : 'PT-1000',
       hospitalCode: currentHosp.code,
       hospitalName: currentHosp.shortName,
       time: `Today ${formattedTime}`,

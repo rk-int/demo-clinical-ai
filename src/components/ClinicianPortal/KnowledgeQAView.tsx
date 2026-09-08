@@ -163,7 +163,7 @@ interface KnowledgeQAViewProps {
   patients?: SyntheticPatient[];
   onSelectPatient?: (patientId: string) => void;
   initialQuery?: string;
-  onSendToNote?: (content: string) => void;
+  onSendToNote?: (content: string, patientRef?: SyntheticPatient | null) => void;
   onSelectTrace?: (trace: AgentContract) => void;
   onBack?: () => void;
 }
@@ -1180,9 +1180,9 @@ export const KnowledgeQAView: React.FC<KnowledgeQAViewProps> = ({
 
                           {onSendToNote && (
                             <button
-                              onClick={() => onSendToNote(msg.text)}
+                              onClick={() => onSendToNote(msg.text, msg.attachedPatient || attachedPatient)}
                               className="px-2.5 py-1 rounded bg-blue-600 hover:bg-blue-500 text-white font-bold text-[10px] flex items-center gap-1 cursor-pointer transition-colors shadow-sm"
-                              title="Send to Clinical Note Draft"
+                              title="Send to Clinical Note Draft for attached patient"
                             >
                               <FileText className="w-3 h-3" />
                               <span>Insert Note</span>

@@ -1612,7 +1612,13 @@ export const HealthNetWorkspace: React.FC<HealthNetWorkspaceProps> = ({
                 }
               }}
               initialQuery={qaPrefilledQuery}
-              onSendToNote={() => setActiveTab('WORKFLOW')}
+              onSendToNote={(content, patientRef) => {
+                const targetPatient = patientRef || qaAttachedPatient;
+                if (targetPatient) {
+                  onSelectPatient(targetPatient.id);
+                }
+                setActiveTab('WORKFLOW');
+              }}
               onBack={handleGoBack}
             />
           </div>

@@ -1,9 +1,10 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { 
   FileText, 
   CheckCircle2, 
   AlertTriangle, 
   ShieldCheck, 
+  ShieldAlert,
   RotateCcw, 
   Lock, 
   Clock, 
@@ -63,6 +64,13 @@ export const WorkflowWorkspaceView: React.FC<WorkflowWorkspaceViewProps> = ({
   onNavigateToReports,
 }) => {
   const [patientId, setPatientId] = useState(selectedPatientId);
+
+  // Synchronize patientId state whenever selectedPatientId prop changes (e.g. from Insert Note)
+  useEffect(() => {
+    if (selectedPatientId) {
+      setPatientId(selectedPatientId);
+    }
+  }, [selectedPatientId]);
   const [workflowType, setWorkflowType] = useState<WorkflowType>('CLINICAL_NOTE');
   const [isGenerating, setIsGenerating] = useState(false);
   const [activeAction, setActiveAction] = useState<WorkflowAction | null>(null);
@@ -103,6 +111,14 @@ export const WorkflowWorkspaceView: React.FC<WorkflowWorkspaceViewProps> = ({
 
   const activePatients = patients && patients.length > 0 ? patients : SYNTHETIC_PATIENTS;
   const currentPatient = activePatients.find((p) => p.id === patientId) || activePatients[0];
+
+  // ABAC Authorization Check: Patient mapping to doctor roster
+  const isPatientAssigned = 
+    currentUser.role === 'AUDITOR' || 
+    currentUser.role === 'ADMINISTRATOR' || 
+    currentUser.role === 'PORTAL_ADMIN' || 
+    purposeOfUse === 'EMERGENCY_OVERRIDE' || 
+    (currentUser.assignedPatientIds && currentUser.assignedPatientIds.includes(currentPatient.id));
 
   // Dynamic Draft Button Label based on Logged-in User Role (User Request #2)
   const getDynamicDraftButtonText = (): string => {
@@ -160,6 +176,7 @@ export const WorkflowWorkspaceView: React.FC<WorkflowWorkspaceViewProps> = ({
   };
 
   const handleGenerateDraft = async () => {
+    if (!isPatientAssigned) return;
     setIsGenerating(true);
     setApprovalSuccessMessage(null);
     try {
@@ -511,14 +528,36 @@ export const WorkflowWorkspaceView: React.FC<WorkflowWorkspaceViewProps> = ({
           <div className="flex items-end">
             <button
               onClick={handleGenerateDraft}
-              disabled={isGenerating}
-              className="w-full py-2.5 rounded-xl bg-blue-600 hover:bg-blue-500 text-white font-bold text-xs flex items-center justify-center gap-2 shadow-lg shadow-blue-600/30 transition-all cursor-pointer disabled:opacity-50"
+              disabled={isGenerating || !isPatientAssigned}
+              className="w-full py-2.5 rounded-xl bg-blue-600 hover:bg-blue-500 text-white font-bold text-xs flex items-center justify-center gap-2 shadow-lg shadow-blue-600/30 transition-all cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
+              title={!isPatientAssigned ? `Access Denied: Patient ${currentPatient.fullName} is not mapped under your care cohort.` : undefined}
             >
               {isGenerating ? <Loader2 className="w-4 h-4 animate-spin" /> : <Sparkles className="w-4 h-4" />}
               <span>{getDynamicDraftButtonText()} with Safety Checks</span>
             </button>
           </div>
         </div>
+
+        {/* ABAC Authorization Warning Banner when patient is NOT mapped under current doctor */}
+        {!isPatientAssigned && (
+          <div className="mt-4 p-4 rounded-2xl bg-rose-950/90 border border-rose-500/60 backdrop-blur-md flex items-start gap-3 text-rose-200 shadow-2xl animate-in fade-in duration-300">
+            <ShieldAlert className="w-5 h-5 text-rose-400 shrink-0 mt-0.5" />
+            <div className="flex-1">
+              <div className="font-bold text-xs text-rose-300 flex items-center gap-2">
+                <span>ABAC Access Control Policy Interception</span>
+                <span className="text-[10px] px-2 py-0.5 rounded bg-rose-500/20 text-rose-300 font-mono border border-rose-500/40">
+                  ACCESS DENIED
+                </span>
+              </div>
+              <p className="text-xs text-rose-100 mt-1 font-mono">
+                Patient <strong>{currentPatient.fullName}</strong> ({currentPatient.id}) is not treated under you or in your active clinical care roster under HIPAA §164.506.
+              </p>
+              <p className="text-[11px] text-rose-300/80 mt-1">
+                LoggedIn Clinicians (<strong>{currentUser.name}</strong>) can only draft notes for patients mapped under their assigned care cohort. Please select a patient treated under your care roster.
+              </p>
+            </div>
+          </div>
+        )}
 
         {/* Workflow Agentic Orchestration Graph Toggle (Hidden by default - User Request #2) */}
         <div className="mt-4 pt-3 border-t border-white/10 flex items-center justify-between">
@@ -1029,10 +1068,11 @@ export const WorkflowWorkspaceView: React.FC<WorkflowWorkspaceViewProps> = ({
                     <div className="flex items-center gap-2">
                       <button
                         onClick={handleRollbackAction}
-                        className="px-4 py-2.5 rounded-xl bg-rose-500/20 hover:bg-rose-500/30 border border-rose-500/40 text-rose-200 font-bold text-xs flex items-center gap-2 transition-all cursor-pointer"
+                        className="px-4 py-2.5 rounded-xl bg-rose-500/20 hover:bg-rose-500/30 border border-rose-500/40 text-rose-200 font-bold text-xs flex items-center gap-2 transition-all cursor-pointer shadow-md active:scale-95"
+                        title="Rollback approved clinical note and revert transaction"
                       >
                         <RotateCcw className="w-4 h-4 text-rose-400" />
-                        Rollback Transaction
+                        <span>Rollback</span>
                       </button>
                       {onNavigateToPatient360 && (
                         <button

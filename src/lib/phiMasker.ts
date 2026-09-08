@@ -26,7 +26,7 @@ export function maskPhi(text: string): string {
 
   // Full names matching synthetic patient cohorts
   const patientNames = [
-    'Sunita Reddy', 'Madhavan Venkatesh', 'Pooja Patel', 'Aditya Pendse', 
+    'Rajesh Sharma', 'Sunita Reddy', 'Madhavan Venkatesh', 'Pooja Patel', 'Aditya Pendse', 
     'Aaliyah Khan', 'Manish Mehta', 'Charu Sen', 'Devendra Verma',
     'Bhavna Desai', 'Lokesh Gupta', 'Sneha Mishra', 'Rohan Trivedi'
   ];

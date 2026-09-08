@@ -347,7 +347,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({
             <div className={`relative bg-slate-900/98 border border-cyan-500/30 rounded-3xl shadow-2xl overflow-y-auto text-slate-100 transition-all ${
               activeModal === 'ARCHITECTURE'
                 ? 'w-full h-[98vh] max-w-[99vw] max-h-[98vh] flex flex-col p-3 sm:p-5 space-y-3 border-purple-500/50'
-                : activeModal === 'SCOPE'
+                : activeModal === 'SCOPE' || activeModal === 'TECH_STACK'
                 ? 'w-full max-w-5xl max-h-[88vh] p-6 sm:p-8 space-y-6'
                 : 'w-full max-w-3xl max-h-[85vh] p-6 sm:p-8 space-y-6'
             }`}>
@@ -635,41 +635,228 @@ export const LandingPage: React.FC<LandingPageProps> = ({
               {/* MODAL CONTENT: TECH STACK */}
               {activeModal === 'TECH_STACK' && (
                 <div className="space-y-4 text-xs leading-relaxed text-slate-300">
-                  <div className="p-4 rounded-2xl bg-emerald-950/40 border border-emerald-500/30 space-y-2">
-                    <h3 className="text-sm font-bold text-emerald-300 flex items-center gap-2">
-                      <Cpu className="w-4 h-4 text-emerald-400" />
-                      <span>Enterprise Application Technology Matrix</span>
-                    </h3>
-                    <p>
-                      Modern full-stack web technology built for ultra-fast response latency, strict security compliance, and dynamic micro-animations.
-                    </p>
+                  <div className="p-4 rounded-2xl bg-emerald-950/40 border border-emerald-500/30 space-y-1.5 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
+                    <div>
+                      <h3 className="text-sm font-bold text-emerald-300 flex items-center gap-2">
+                        <Cpu className="w-4 h-4 text-emerald-400" />
+                        <span>Enterprise Tech Stack & Framework Architecture</span>
+                      </h3>
+                      <p className="text-slate-300 text-[11px] mt-0.5">
+                        Comprehensive mapping of developer tools, AI frameworks, data standards, and cloud infrastructure components powering this application.
+                      </p>
+                    </div>
+                    <div className="px-3 py-1 rounded-full bg-emerald-500/10 border border-emerald-500/30 text-[10px] font-mono text-emerald-300 font-bold shrink-0 self-start sm:self-auto">
+                      15 Technical Layers
+                    </div>
                   </div>
 
-                  <div className="grid grid-cols-2 sm:grid-cols-3 gap-2.5 font-mono text-[11px]">
-                    <div className="p-3 rounded-xl bg-black/40 border border-white/10 space-y-1">
-                      <span className="text-slate-400 block text-[10px] uppercase font-sans">Frontend</span>
-                      <span className="font-bold text-cyan-300">React 18 + Vite</span>
-                    </div>
-                    <div className="p-3 rounded-xl bg-black/40 border border-white/10 space-y-1">
-                      <span className="text-slate-400 block text-[10px] uppercase font-sans">Styling</span>
-                      <span className="font-bold text-indigo-300">TailwindCSS</span>
-                    </div>
-                    <div className="p-3 rounded-xl bg-black/40 border border-white/10 space-y-1">
-                      <span className="text-slate-400 block text-[10px] uppercase font-sans">Language</span>
-                      <span className="font-bold text-blue-300">TypeScript ES2022</span>
-                    </div>
-                    <div className="p-3 rounded-xl bg-black/40 border border-white/10 space-y-1">
-                      <span className="text-slate-400 block text-[10px] uppercase font-sans">AI API</span>
-                      <span className="font-bold text-amber-300">Google GenAI SDK</span>
-                    </div>
-                    <div className="p-3 rounded-xl bg-black/40 border border-white/10 space-y-1">
-                      <span className="text-slate-400 block text-[10px] uppercase font-sans">Primary Model</span>
-                      <span className="font-bold text-purple-300">Gemini 3.6 Flash</span>
-                    </div>
-                    <div className="p-3 rounded-xl bg-black/40 border border-white/10 space-y-1">
-                      <span className="text-slate-400 block text-[10px] uppercase font-sans">Vector Database</span>
-                      <span className="font-bold text-emerald-300">PostgreSQL pgvector</span>
-                    </div>
+                  {/* STRUCTURED TECH STACK TABLE */}
+                  <div className="overflow-x-auto rounded-2xl border border-emerald-500/30 shadow-2xl bg-slate-950/80 backdrop-blur-md custom-scrollbar">
+                    <table className="w-full text-left border-collapse min-w-[640px]">
+                      <thead>
+                        <tr className="bg-gradient-to-r from-slate-900 via-emerald-950/60 to-slate-900 border-b border-emerald-500/40 text-[11px] font-mono font-bold text-emerald-300">
+                          <th className="py-3 px-4 border-r border-white/10 w-1/4">Layer</th>
+                          <th className="py-3 px-4 border-r border-white/10 w-1/3">Dev tools / frameworks</th>
+                          <th className="py-3 px-4 w-5/12">What it is used for</th>
+                        </tr>
+                      </thead>
+                      <tbody className="divide-y divide-white/10 text-[11px]">
+                        <tr className="hover:bg-slate-800/60 transition-colors">
+                          <td className="py-2.5 px-4 font-bold text-cyan-300 border-r border-white/10 flex items-center gap-2">
+                            <span className="w-1.5 h-1.5 rounded-full bg-cyan-400 shrink-0" />
+                            <span>Frontend</span>
+                          </td>
+                          <td className="py-2.5 px-4 font-mono font-bold text-slate-100 border-r border-white/10">
+                            React 19 + Vite 6 + TailwindCSS v4
+                          </td>
+                          <td className="py-2.5 px-4 text-slate-300">
+                            Clinician portal UI, Patient 360 dashboards, AI Assistant chat & Presentation Pane
+                          </td>
+                        </tr>
+
+                        <tr className="hover:bg-slate-800/60 transition-colors bg-white/[0.02]">
+                          <td className="py-2.5 px-4 font-bold text-cyan-300 border-r border-white/10 flex items-center gap-2">
+                            <span className="w-1.5 h-1.5 rounded-full bg-cyan-400 shrink-0" />
+                            <span>Backend / APIs</span>
+                          </td>
+                          <td className="py-2.5 px-4 font-mono font-bold text-slate-100 border-r border-white/10">
+                            Node.js + Express + tsx + REST APIs
+                          </td>
+                          <td className="py-2.5 px-4 text-slate-300">
+                            FHIR data search endpoints, code ZIP exporter, token analytics & fallback routing
+                          </td>
+                        </tr>
+
+                        <tr className="hover:bg-slate-800/60 transition-colors">
+                          <td className="py-2.5 px-4 font-bold text-amber-300 border-r border-white/10 flex items-center gap-2">
+                            <span className="w-1.5 h-1.5 rounded-full bg-amber-400 shrink-0" />
+                            <span>AI Framework</span>
+                          </td>
+                          <td className="py-2.5 px-4 font-mono font-bold text-slate-100 border-r border-white/10">
+                            Google GenAI SDK (@google/genai)
+                          </td>
+                          <td className="py-2.5 px-4 text-slate-300">
+                            Multimodal model interactions, structured JSON extraction & multi-turn clinical chat
+                          </td>
+                        </tr>
+
+                        <tr className="hover:bg-slate-800/60 transition-colors bg-white/[0.02]">
+                          <td className="py-2.5 px-4 font-bold text-purple-300 border-r border-white/10 flex items-center gap-2">
+                            <span className="w-1.5 h-1.5 rounded-full bg-purple-400 shrink-0" />
+                            <span>Agent Workflows</span>
+                          </td>
+                          <td className="py-2.5 px-4 font-mono font-bold text-slate-100 border-r border-white/10">
+                            Custom Multi-Agent State Graph Engine
+                          </td>
+                          <td className="py-2.5 px-4 text-slate-300">
+                            Agent orchestration (<em>Triage, Patient Info, Knowledge Q&A, Workflow</em>) & state transitions
+                          </td>
+                        </tr>
+
+                        <tr className="hover:bg-slate-800/60 transition-colors">
+                          <td className="py-2.5 px-4 font-bold text-amber-300 border-r border-white/10 flex items-center gap-2">
+                            <span className="w-1.5 h-1.5 rounded-full bg-amber-400 shrink-0" />
+                            <span>RAG Framework</span>
+                          </td>
+                          <td className="py-2.5 px-4 font-mono font-bold text-slate-100 border-r border-white/10">
+                            Hybrid Contextual RAG (pgvector + BM25)
+                          </td>
+                          <td className="py-2.5 px-4 text-slate-300">
+                            Medical guidelines ingestion, semantic chunking, keyword indexing & similarity retrieval
+                          </td>
+                        </tr>
+
+                        <tr className="hover:bg-slate-800/60 transition-colors bg-white/[0.02]">
+                          <td className="py-2.5 px-4 font-bold text-purple-300 border-r border-white/10 flex items-center gap-2">
+                            <span className="w-1.5 h-1.5 rounded-full bg-purple-400 shrink-0" />
+                            <span>LLM</span>
+                          </td>
+                          <td className="py-2.5 px-4 font-mono font-bold text-slate-100 border-r border-white/10">
+                            Gemini 3.6 Flash / 3.1 Flash-Lite / 3.7 Flash
+                          </td>
+                          <td className="py-2.5 px-4 text-slate-300">
+                            Clinical reasoning, medical summarization, note generation & diagnostic Q&A
+                          </td>
+                        </tr>
+
+                        <tr className="hover:bg-slate-800/60 transition-colors">
+                          <td className="py-2.5 px-4 font-bold text-indigo-300 border-r border-white/10 flex items-center gap-2">
+                            <span className="w-1.5 h-1.5 rounded-full bg-indigo-400 shrink-0" />
+                            <span>Embeddings</span>
+                          </td>
+                          <td className="py-2.5 px-4 font-mono font-bold text-slate-100 border-r border-white/10">
+                            Gecko / Text Embedding 004 (768-dim)
+                          </td>
+                          <td className="py-2.5 px-4 text-slate-300">
+                            Clinical guideline chunk vector embeddings & real-time query vector generation
+                          </td>
+                        </tr>
+
+                        <tr className="hover:bg-slate-800/60 transition-colors bg-white/[0.02]">
+                          <td className="py-2.5 px-4 font-bold text-emerald-300 border-r border-white/10 flex items-center gap-2">
+                            <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 shrink-0" />
+                            <span>Vector DB</span>
+                          </td>
+                          <td className="py-2.5 px-4 font-mono font-bold text-slate-100 border-r border-white/10">
+                            PostgreSQL + pgvector Extension
+                          </td>
+                          <td className="py-2.5 px-4 text-slate-300">
+                            High-dimensional vector similarity search & hybrid BM25 lexical ranking
+                          </td>
+                        </tr>
+
+                        <tr className="hover:bg-slate-800/60 transition-colors">
+                          <td className="py-2.5 px-4 font-bold text-blue-300 border-r border-white/10 flex items-center gap-2">
+                            <span className="w-1.5 h-1.5 rounded-full bg-blue-400 shrink-0" />
+                            <span>Data Standards</span>
+                          </td>
+                          <td className="py-2.5 px-4 font-mono font-bold text-slate-100 border-r border-white/10">
+                            Synthetic HL7 FHIR R4 JSON Schema
+                          </td>
+                          <td className="py-2.5 px-4 text-slate-300">
+                            Standardized patient records (Patient, Condition, Observation, MedicationRequest)
+                          </td>
+                        </tr>
+
+                        <tr className="hover:bg-slate-800/60 transition-colors bg-white/[0.02]">
+                          <td className="py-2.5 px-4 font-bold text-rose-300 border-r border-white/10 flex items-center gap-2">
+                            <span className="w-1.5 h-1.5 rounded-full bg-rose-400 shrink-0" />
+                            <span>Guardrails</span>
+                          </td>
+                          <td className="py-2.5 px-4 font-mono font-bold text-slate-100 border-r border-white/10">
+                            NVIDIA NeMo Guardrails + DLP PHI Engine
+                          </td>
+                          <td className="py-2.5 px-4 text-slate-300">
+                            Automatic PHI token masking (<code className="text-rose-300 font-mono text-[10px]">[REDACTED_PATIENT_NAME]</code>), input/output policy validation
+                          </td>
+                        </tr>
+
+                        <tr className="hover:bg-slate-800/60 transition-colors">
+                          <td className="py-2.5 px-4 font-bold text-amber-300 border-r border-white/10 flex items-center gap-2">
+                            <span className="w-1.5 h-1.5 rounded-full bg-amber-400 shrink-0" />
+                            <span>Evaluation</span>
+                          </td>
+                          <td className="py-2.5 px-4 font-mono font-bold text-slate-100 border-r border-white/10">
+                            LLM-as-a-Judge + Ragas Framework
+                          </td>
+                          <td className="py-2.5 px-4 text-slate-300">
+                            Groundedness testing, citation accuracy verification & fallback triggers (&lt;85% confidence)
+                          </td>
+                        </tr>
+
+                        <tr className="hover:bg-slate-800/60 transition-colors bg-white/[0.02]">
+                          <td className="py-2.5 px-4 font-bold text-cyan-300 border-r border-white/10 flex items-center gap-2">
+                            <span className="w-1.5 h-1.5 rounded-full bg-cyan-400 shrink-0" />
+                            <span>Observability</span>
+                          </td>
+                          <td className="py-2.5 px-4 font-mono font-bold text-slate-100 border-r border-white/10">
+                            Real-Time LLM Token Telemetry + SHA-256 Logs
+                          </td>
+                          <td className="py-2.5 px-4 text-slate-300">
+                            Tracing prompt/completion tokens, latency metrics, cloud costs & HIPAA audit trails
+                          </td>
+                        </tr>
+
+                        <tr className="hover:bg-slate-800/60 transition-colors">
+                          <td className="py-2.5 px-4 font-bold text-emerald-300 border-r border-white/10 flex items-center gap-2">
+                            <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 shrink-0" />
+                            <span>Authentication</span>
+                          </td>
+                          <td className="py-2.5 px-4 font-mono font-bold text-slate-100 border-r border-white/10">
+                            Enterprise SSO Gateway + Purpose-of-Use ABAC
+                          </td>
+                          <td className="py-2.5 px-4 text-slate-300">
+                            Role-based login (6 personas) with Purpose-of-Use checks (<code className="text-emerald-300 font-mono text-[10px]">TREATMENT</code>, <code className="text-emerald-300 font-mono text-[10px]">AUDIT</code>, <code className="text-emerald-300 font-mono text-[10px]">EMERGENCY</code>)
+                          </td>
+                        </tr>
+
+                        <tr className="hover:bg-slate-800/60 transition-colors bg-white/[0.02]">
+                          <td className="py-2.5 px-4 font-bold text-blue-300 border-r border-white/10 flex items-center gap-2">
+                            <span className="w-1.5 h-1.5 rounded-full bg-blue-400 shrink-0" />
+                            <span>Containerization</span>
+                          </td>
+                          <td className="py-2.5 px-4 font-mono font-bold text-slate-100 border-r border-white/10">
+                            Docker + Google Cloud Run / AWS Containers
+                          </td>
+                          <td className="py-2.5 px-4 text-slate-300">
+                            Scalable, high-availability microservice container deployment with TLS 1.3 ALB termination
+                          </td>
+                        </tr>
+
+                        <tr className="hover:bg-slate-800/60 transition-colors">
+                          <td className="py-2.5 px-4 font-bold text-purple-300 border-r border-white/10 flex items-center gap-2">
+                            <span className="w-1.5 h-1.5 rounded-full bg-purple-400 shrink-0" />
+                            <span>Development</span>
+                          </td>
+                          <td className="py-2.5 px-4 font-mono font-bold text-slate-100 border-r border-white/10">
+                            TypeScript 5.8 + Lucide Icons + Git / GitHub
+                          </td>
+                          <td className="py-2.5 px-4 text-slate-300">
+                            Type-safe development, modern icon system & version control on GitHub (<code className="text-purple-300 font-mono text-[10px]">main</code> branch)
+                          </td>
+                        </tr>
+                      </tbody>
+                    </table>
                   </div>
                 </div>
               )}

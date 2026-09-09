@@ -213,6 +213,16 @@ async function startServer() {
     res.sendFile(videoPath, { headers: { 'Content-Type': 'video/mp4' } });
   });
 
+  // Top 20 Q&A Word Document download endpoints
+  app.get(['/api/download/top-20-qa', '/Top_20_Demo_Executive_QA_Guide.docx'], (req, res) => {
+    const docxPath = path.join(process.cwd(), 'Top_20_Demo_Executive_QA_Guide.docx');
+    res.download(docxPath, 'Top_20_Demo_Executive_QA_Guide.docx', (err) => {
+      if (err && !res.headersSent) {
+        res.status(500).json({ error: 'Failed to download Top 20 Q&A Word document' });
+      }
+    });
+  });
+
   // 1. Health check
   app.get('/api/health', (req, res) => {
     const ai = getGeminiClient();

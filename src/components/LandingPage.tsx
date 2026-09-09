@@ -51,8 +51,9 @@ export const LandingPage: React.FC<LandingPageProps> = ({
 
   // Floating Navigator Pane & Modal States
   const [isPaneEnabled, setIsPaneEnabled] = useState(false);
-  const [activeModal, setActiveModal] = useState<'INTRO' | 'ARCHITECTURE' | 'SCOPE' | 'TECH_STACK' | 'RAG' | null>(null);
+  const [activeModal, setActiveModal] = useState<'INTRO' | 'ARCHITECTURE' | 'SCOPE' | 'TECH_STACK' | 'RAG' | 'EXECUTION_FLOW' | null>(null);
   const [archZoomLevel, setArchZoomLevel] = useState<number>(1);
+  const [flowZoomLevel, setFlowZoomLevel] = useState<number>(1);
 
   // Handle toggle click to open panel on first click and close panel on second click
   const handleTogglePane = () => {
@@ -165,6 +166,21 @@ export const LandingPage: React.FC<LandingPageProps> = ({
               >
                 <Database className="w-3.5 h-3.5 text-amber-300" />
                 <span>RAG</span>
+              </button>
+
+              <button
+                onClick={() => {
+                  setActiveModal('EXECUTION_FLOW');
+                  setFlowZoomLevel(1.0);
+                }}
+                className={`px-3.5 py-1.5 rounded-xl text-xs font-mono font-bold flex items-center gap-1.5 transition-all cursor-pointer whitespace-nowrap ${
+                  activeModal === 'EXECUTION_FLOW' 
+                    ? 'bg-blue-600 text-white shadow-lg ring-1 ring-cyan-400/50' 
+                    : 'bg-white/5 hover:bg-white/10 text-slate-200 border border-white/10 hover:border-cyan-500/40'
+                }`}
+              >
+                <Activity className="w-3.5 h-3.5 text-cyan-300" />
+                <span>Execution Flow</span>
               </button>
             </div>
 
@@ -342,11 +358,11 @@ export const LandingPage: React.FC<LandingPageProps> = ({
         {/* ========================================================================= */}
         {activeModal && (
           <div className={`fixed inset-0 z-50 flex items-center justify-center bg-slate-950/95 backdrop-blur-md animate-in fade-in duration-200 ${
-            activeModal === 'ARCHITECTURE' ? 'p-1 sm:p-2' : 'p-4'
+            activeModal === 'ARCHITECTURE' || activeModal === 'EXECUTION_FLOW' ? 'p-1 sm:p-2' : 'p-4'
           }`}>
             <div className={`relative bg-slate-900/98 border border-cyan-500/30 rounded-3xl shadow-2xl overflow-y-auto text-slate-100 transition-all ${
-              activeModal === 'ARCHITECTURE'
-                ? 'w-full h-[98vh] max-w-[99vw] max-h-[98vh] flex flex-col p-3 sm:p-5 space-y-3 border-purple-500/50'
+              activeModal === 'ARCHITECTURE' || activeModal === 'EXECUTION_FLOW'
+                ? 'w-full h-[98vh] max-w-[99vw] max-h-[98vh] flex flex-col p-3 sm:p-5 space-y-3 border-cyan-500/50'
                 : activeModal === 'SCOPE' || activeModal === 'TECH_STACK' || activeModal === 'RAG'
                 ? 'w-full max-w-5xl max-h-[88vh] p-6 sm:p-8 space-y-6 border-amber-500/40'
                 : 'w-full max-w-3xl max-h-[85vh] p-6 sm:p-8 space-y-6'
@@ -360,6 +376,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({
                   {activeModal === 'SCOPE' && <Target className="w-6 h-6 text-cyan-400" />}
                   {activeModal === 'TECH_STACK' && <Cpu className="w-6 h-6 text-emerald-400" />}
                   {activeModal === 'RAG' && <Database className="w-6 h-6 text-amber-400" />}
+                  {activeModal === 'EXECUTION_FLOW' && <Activity className="w-6 h-6 text-cyan-400 animate-pulse" />}
 
                   <h2 className="text-xl font-extrabold text-white tracking-tight">
                     {activeModal === 'INTRO' && 'Platform Overview & Clinical Vision'}
@@ -367,6 +384,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({
                     {activeModal === 'SCOPE' && 'Executive Demo Scope Matrix (In-Scope vs. Out-of-Scope)'}
                     {activeModal === 'TECH_STACK' && 'Technology Stack & Cloud Infrastructure'}
                     {activeModal === 'RAG' && 'Governed Clinical RAG & Knowledge Pipeline'}
+                    {activeModal === 'EXECUTION_FLOW' && 'System Execution Flow Blueprint (Mermaid Sequence Flow)'}
                   </h2>
                 </div>
 
@@ -997,6 +1015,91 @@ export const LandingPage: React.FC<LandingPageProps> = ({
                     </div>
                   </div>
 
+                </div>
+              )}
+
+              {/* MODAL CONTENT: EXECUTION FLOW (FULL LANDSCAPE CANVAS & INTERACTIVE ZOOM/SCROLL) */}
+              {activeModal === 'EXECUTION_FLOW' && (
+                <div className="space-y-4 text-xs leading-relaxed text-slate-300">
+                  {/* Header Box & Zoom Controls Bar */}
+                  <div className="p-4 rounded-2xl bg-cyan-950/40 border border-cyan-500/40 flex flex-col md:flex-row md:items-center justify-between gap-3 backdrop-blur-md">
+                    <div>
+                      <h3 className="text-sm font-bold text-cyan-300 flex items-center gap-2">
+                        <Activity className="w-4 h-4 text-cyan-400" />
+                        <span>System Execution Flow Blueprint (Mermaid Sequence Flow)</span>
+                      </h3>
+                      <p className="text-slate-300 text-[11px] mt-0.5">
+                        Interactive sequence diagram illustrating end-to-end user requests, API gateway routing, NeMo guardrails, and Gemini LLM synthesis.
+                      </p>
+                    </div>
+
+                    {/* Interactive Zoom & Reset Controls */}
+                    <div className="flex items-center gap-2 shrink-0 flex-wrap">
+                      <div className="flex items-center bg-slate-900 border border-cyan-500/30 rounded-xl p-1 gap-1">
+                        <button
+                          type="button"
+                          onClick={() => setFlowZoomLevel(prev => Math.max(0.5, Number((prev - 0.15).toFixed(2))))}
+                          className="p-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-200 hover:text-white transition-colors cursor-pointer"
+                          title="Zoom Out"
+                        >
+                          <ZoomOut className="w-4 h-4 text-cyan-400" />
+                        </button>
+                        <span className="px-2.5 font-mono text-[11px] font-bold text-cyan-300 min-w-[50px] text-center">
+                          {Math.round(flowZoomLevel * 100)}%
+                        </span>
+                        <button
+                          type="button"
+                          onClick={() => setFlowZoomLevel(prev => Math.min(2.5, Number((prev + 0.15).toFixed(2))))}
+                          className="p-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-200 hover:text-white transition-colors cursor-pointer"
+                          title="Zoom In"
+                        >
+                          <ZoomIn className="w-4 h-4 text-cyan-400" />
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => setFlowZoomLevel(1.0)}
+                          className="p-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-200 hover:text-white transition-colors cursor-pointer border-l border-white/10"
+                          title="Reset Zoom to 100%"
+                        >
+                          <RotateCcw className="w-3.5 h-3.5 text-slate-400" />
+                        </button>
+                      </div>
+
+                      <div className="px-3 py-1.5 rounded-xl bg-cyan-500/10 border border-cyan-500/30 text-cyan-300 font-mono text-[10px] font-bold flex items-center gap-1.5">
+                        <span className="w-2 h-2 rounded-full bg-cyan-400 animate-pulse" />
+                        <span>Full Landscape Canvas</span>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Navigation Hint Bar */}
+                  <div className="px-3.5 py-2 rounded-xl bg-slate-900/80 border border-white/10 text-[11px] font-mono text-slate-300 flex items-center justify-between gap-2">
+                    <span className="flex items-center gap-1.5 text-cyan-300 font-bold">
+                      <Info className="w-3.5 h-3.5 text-cyan-400" />
+                      <span>Scroll left/right and up/down to inspect all 5 execution phases.</span>
+                    </span>
+                    <span className="text-[10px] text-slate-400 hidden sm:inline font-sans">
+                      Use scrollbars or Shift + Mouse wheel for horizontal panning.
+                    </span>
+                  </div>
+
+                  {/* Scrollable & Zoomable Full Landscape Image Canvas Container */}
+                  <div className="flex-1 overflow-auto h-[calc(98vh-200px)] min-h-[550px] w-full rounded-2xl border-2 border-cyan-500/40 bg-slate-950 p-4 shadow-[0_25px_60px_rgba(0,0,0,0.95)] custom-scrollbar">
+                    <div 
+                      className="inline-block min-w-full transition-transform duration-150 ease-out origin-top-left"
+                      style={{ transform: `scale(${flowZoomLevel})` }}
+                    >
+                      <img
+                        src="/images/execution_flow_diagram.png"
+                        alt="End-to-End System Execution Flow Diagram (Mermaid Sequence Blueprint)"
+                        className="max-w-none w-auto h-auto rounded-xl shadow-2xl"
+                        style={{
+                          imageRendering: '-webkit-optimize-contrast',
+                          backfaceVisibility: 'hidden',
+                        }}
+                      />
+                    </div>
+                  </div>
                 </div>
               )}
 

@@ -60,7 +60,9 @@ import { AuditComplianceCenterView } from './ClinicianPortal/AuditComplianceCent
 import { AppointmentsCenterView } from './ClinicianPortal/AppointmentsCenterView';
 import { ExecutiveDashboardView } from './ClinicianPortal/ExecutiveDashboardView';
 import { AwsTechStackView } from './ClinicianPortal/AwsTechStackView';
-import { FileUp, GitBranch, Scale, Database as DatabaseIcon, Server } from 'lucide-react';
+import { ExecutionFlowView } from './ClinicianPortal/ExecutionFlowView';
+import { ApiArchitectureView } from './ClinicianPortal/ApiArchitectureView';
+import { FileUp, GitBranch, Scale, Database as DatabaseIcon, Server, Code2 } from 'lucide-react';
 import { HospitalNetworkSelector } from './HospitalNetworkSelector';
 import { NETWORK_HOSPITALS, HospitalFacility } from '../data/hospitalNetwork';
 
@@ -83,6 +85,9 @@ export type WorkspaceTab =
   | 'AUDIT_CENTER'
   | 'EXECUTIVE_DASHBOARD'
   | 'AWS_TECH_STACK'
+  | 'EXECUTION_FLOW'
+  | 'API_ARCHITECTURE'
+  | 'API_INFO'
   | 'SETTINGS';
 
 interface HealthNetWorkspaceProps {
@@ -468,6 +473,36 @@ export const HealthNetWorkspace: React.FC<HealthNetWorkspaceProps> = ({
                   <div className="flex items-center justify-between w-full">
                     <span>PostgreSQL Layer</span>
                     <span className="text-[9px] px-1.5 py-0.2 rounded bg-emerald-500/20 text-emerald-300 font-mono">RDS</span>
+                  </div>
+                </button>
+
+                <button
+                  onClick={() => setActiveTab('EXECUTION_FLOW')}
+                  className={`w-full flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-xs font-semibold transition-all cursor-pointer ${
+                    activeTab === 'EXECUTION_FLOW'
+                      ? 'bg-blue-600 text-white shadow-lg shadow-blue-600/30'
+                      : 'text-slate-300 hover:bg-white/10 hover:text-white'
+                  }`}
+                >
+                  <Activity className="w-4 h-4 text-cyan-400 animate-pulse" />
+                  <div className="flex items-center justify-between w-full">
+                    <span>Execution Flow</span>
+                    <span className="text-[9px] px-1.5 py-0.2 rounded bg-cyan-500/20 text-cyan-300 font-mono font-bold">Admin</span>
+                  </div>
+                </button>
+
+                <button
+                  onClick={() => setActiveTab('API_INFO')}
+                  className={`w-full flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-xs font-semibold transition-all cursor-pointer ${
+                    activeTab === 'API_INFO' || activeTab === 'API_ARCHITECTURE'
+                      ? 'bg-blue-600 text-white shadow-lg shadow-blue-600/30'
+                      : 'text-slate-300 hover:bg-white/10 hover:text-white'
+                  }`}
+                >
+                  <Server className="w-4 h-4 text-purple-400" />
+                  <div className="flex items-center justify-between w-full">
+                    <span>API Info</span>
+                    <span className="text-[9px] px-1.5 py-0.2 rounded bg-purple-500/20 text-purple-300 font-mono font-bold">Admin</span>
                   </div>
                 </button>
               </>
@@ -1861,6 +1896,36 @@ export const HealthNetWorkspace: React.FC<HealthNetWorkspaceProps> = ({
           !isAdmin ? renderRestrictedAdminBanner('Enterprise AWS Tech Stack Architecture') : (
             <div className="flex-1 overflow-y-auto p-6">
               <AwsTechStackView
+                currentUser={currentUser}
+                purposeOfUse={purposeOfUse}
+                onGoBack={handleGoBack}
+              />
+            </div>
+          )
+        )}
+
+        {/* ========================================================================= */}
+        {/* TAB 12: EXECUTION FLOW BLUEPRINT (PORTAL ADMIN ONLY)                      */}
+        {/* ========================================================================= */}
+        {activeTab === 'EXECUTION_FLOW' && (
+          !isAdmin ? renderRestrictedAdminBanner('System Execution Flow Blueprint') : (
+            <div className="flex-1 overflow-y-auto p-6">
+              <ExecutionFlowView
+                currentUser={currentUser}
+                purposeOfUse={purposeOfUse}
+                onGoBack={handleGoBack}
+              />
+            </div>
+          )
+        )}
+
+        {/* ========================================================================= */}
+        {/* TAB 13: API ARCHITECTURE DIRECTORY (PORTAL ADMIN ONLY)                   */}
+        {/* ========================================================================= */}
+        {(activeTab === 'API_INFO' || activeTab === 'API_ARCHITECTURE') && (
+          !isAdmin ? renderRestrictedAdminBanner('API Info & Directory') : (
+            <div className="flex-1 overflow-y-auto p-6">
+              <ApiArchitectureView
                 currentUser={currentUser}
                 purposeOfUse={purposeOfUse}
                 onGoBack={handleGoBack}
